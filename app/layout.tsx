@@ -64,7 +64,7 @@ export default async function RootLayout({
 
 const MainSection = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className="bg-primary-light w-1/2 min-h-screen max-w-[1440px] mx-auto">
+    <main className="bg-primary-light w-full min-h-screen max-w-[1440px] mx-auto">
       {children}
     </main>
   );
