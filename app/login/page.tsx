@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
 import { Form } from "./components";
+import Logo from "@/public/logo-color.webp";
+import TempForm from "./components/TempForm";
 
 export const metadata: Metadata = {
   title: "Log in",
@@ -15,15 +17,14 @@ const LoginPage = () => {
           <Link href="/">
             <Image
               className="w-full max-w-[300px] h-auto"
-              src="/logo-color.webp"
+              src={Logo}
               alt="Peques logo"
-              width={200}
-              height={200}
               priority
             />
           </Link>
         </div>
         <Form />
+        {/* <TempForm /> */}
       </div>
     </div>
   );

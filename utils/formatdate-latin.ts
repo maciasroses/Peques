@@ -13,11 +13,11 @@ const months = [
   "diciembre",
 ];
 
-const formatDateLatinAmerican = (date: Date) => {
+const formatDateLatinAmerican = (date: string | Date) => {
   const d = new Date(date);
-  const month = months[d.getMonth()];
-  const day = d.getDate();
-  const year = d.getFullYear();
+  const month = months[d.getUTCMonth()];
+  const day = d.getUTCDate();
+  const year = d.getUTCFullYear();
   return `${day} de ${month} de ${year}`;
 };
 

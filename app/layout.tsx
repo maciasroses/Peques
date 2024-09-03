@@ -40,7 +40,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="bg-accent-light dark:bg-neutral">
+      <body className="bg-neutral-light dark:bg-neutral">
         <ThemeComponent>
           <AuthComponent>
             <Header user={user} />
@@ -64,7 +64,7 @@ export default async function RootLayout({
 
 const MainSection = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className="bg-primary-light w-full min-h-screen max-w-[1440px] mx-auto">
+    <main className="bg-white dark:bg-gray-900 w-full min-h-screen max-w-[1440px] mx-auto">
       {children}
     </main>
   );

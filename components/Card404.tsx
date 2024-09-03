@@ -1,3 +1,5 @@
+import { XBox } from "@/public/icons";
+
 interface Card404Props {
   title: string;
   description: string;
@@ -6,7 +8,9 @@ interface Card404Props {
 const Card404 = ({ title, description }: Card404Props) => {
   return (
     <div className="p-4 text-center">
-      <p className="text-5xl pb-4">X</p>
+      <div className="w-full flex justify-center">
+        <XBox />
+      </div>
       <strong className="text-3xl">404. Not found</strong>
       <p className="text-2xl">{title}</p>
       <small className="text-xl">{description}</small>

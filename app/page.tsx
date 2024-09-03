@@ -10,7 +10,7 @@ export default function Home() {
         alt="Peques logo"
         priority
       />
-      <h1 className="text-3xl">Coming soon</h1>
+      <h1 className="text-3xl">Próximamente...</h1>
     </div>
   );
 }

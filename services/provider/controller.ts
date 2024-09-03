@@ -1,13 +1,12 @@
 "use server";
 
 import { validateSchema } from "./schema";
-import { redirect, RedirectType } from "next/navigation";
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { create, read, update, deleteById, deleteMassive } from "./model";
 
 export async function getProviders({ q }: { q?: string }) {
   try {
-    // await new Promise((resolve) => setTimeout(resolve, 10000));
     return await read({ q });
   } catch (error) {
     console.error(error);
@@ -18,6 +17,7 @@ export async function getProviders({ q }: { q?: string }) {
 export async function createProvider(formData: FormData) {
   const data = {
     name: formData.get("name"),
+    alias: formData.get("alias"),
   };
 
   const errors = validateSchema("create", data);
@@ -29,6 +29,15 @@ export async function createProvider(formData: FormData) {
     };
 
   try {
+    const provider = await read({ alias: data.alias as string });
+
+    if (provider) {
+      return {
+        errors: { alias: "Este alias ya existe." },
+        success: false,
+      };
+    }
+
     await create({ data });
   } catch (error) {
     console.error(error);
@@ -42,6 +51,7 @@ export async function createProvider(formData: FormData) {
 export async function updateProvider(formData: FormData, providerId: string) {
   const data = {
     name: formData.get("name"),
+    alias: formData.get("alias"),
   };
 
   const errors = validateSchema("update", data);

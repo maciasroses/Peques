@@ -1,3 +1,4 @@
+import XBox from "./XBox";
 import XMark from "./XMark";
 import MXFlag from "./MXFlag";
 import Upload from "./Upload";
@@ -12,9 +13,11 @@ import LightIcon from "./Light";
 import SystemIcon from "./System";
 import PencilIcon from "./Pencil";
 import PlusCircle from "./PlusCircle";
+import MinusCircle from "./MinusCircle";
 import ShoppingBag from "./ShoppingBag";
 
 export {
+  XBox,
   XMark,
   MXFlag,
   Upload,
@@ -29,5 +32,6 @@ export {
   SystemIcon,
   PencilIcon,
   PlusCircle,
+  MinusCircle,
   ShoppingBag,
 };

@@ -1,26 +1,23 @@
 import z, { UnknownKeysParam, ZodRawShape } from "zod";
 
-const userLoginSchema = z.object({
+const baseSchema = z.object({
   email: z.string().email({
-    message: "Please enter a valid email address",
+    message: "Introduce una dirección de correo electrónico válida",
   }),
   password: z.string().min(1, {
-    message: "Please enter a valid password",
+    message: "Introduce una contraseña válida",
   }),
 });
 
-const userRegisterSchema = z.object({
+const userLoginSchema = baseSchema.extend({});
+
+const userRegisterSchema = baseSchema.extend({
   username: z.string().min(2, {
-    message: "Name must be at least 2 characters long",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters long",
+    message: "El nombre debe tener al menos 2 caracteres",
   }),
   confirmPassword: z.string().min(8, {
-    message: "Confirm password must be at least 8 characters long",
+    message:
+      "La contraseña de confirmación debe tener la misma longitud que la contraseña",
   }),
 });
 

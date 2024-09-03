@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { INITIAL_STATE_RESPONSE } from "@/constants";
 import { GenericInput, SubmitButton } from "@/components";
 import {
@@ -63,31 +63,48 @@ const Form = ({ provider, action, onClose }: IForm) => {
       <form onSubmit={submitAction}>
         <fieldset disabled={isPending}>
           {action !== "delete" && action !== "massiveDelete" ? (
-            <GenericInput
-              id="name"
-              type="text"
-              ariaLabel="Nombre"
-              placeholder="Juan Perez"
-              defaultValue={(provider as IProvider)?.name ?? ""}
-              error={badResponse.errors?.name}
-            />
+            <GenericPairDiv>
+              <GenericDiv>
+                <GenericInput
+                  id="name"
+                  type="text"
+                  ariaLabel="Nombre"
+                  placeholder="Juan Perez"
+                  defaultValue={(provider as IProvider)?.name ?? ""}
+                  error={badResponse.errors?.name}
+                />
+              </GenericDiv>
+              <GenericDiv>
+                <GenericInput
+                  id="alias"
+                  type="text"
+                  ariaLabel="Alias"
+                  placeholder="juanperez"
+                  defaultValue={(provider as IProvider)?.alias ?? ""}
+                  error={badResponse.errors?.alias}
+                />
+              </GenericDiv>
+            </GenericPairDiv>
           ) : (
             <>
               {action === "delete" ? (
-                <h1 className="text-center text-xl md:text-4xl">
-                  ¿Estás seguro que deseas eliminar al proveedor "
-                  {(provider as IProvider).name}"?
+                <h1 className="text-center text-base md:text-xl">
+                  ¿Estás seguro que deseas eliminar al proveedor{' "'}
+                  {(provider as IProvider).name}
+                  {'"'}?
                 </h1>
               ) : (
                 <div className="text-center flex flex-col gap-2">
-                  <h1 className="text-xl md:text-4xl">
+                  <h1 className="text-xl md:text-xl">
                     ¿Estás seguro que deseas eliminar a los proveedores
                     seleccionados?:
                   </h1>
-                  <div className="flex flex-col max-h-[60px] overflow-y-auto">
-                    {(provider as IProvider[]).map((p) => (
-                      <span key={p.id}>{p.name}</span>
-                    ))}
+                  <div className="max-h-[60px] overflow-y-auto">
+                    <ul className="list-disc list-inside text-left">
+                      {(provider as IProvider[]).map((p) => (
+                        <li key={p.id}>{p.name}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}
@@ -102,7 +119,7 @@ const Form = ({ provider, action, onClose }: IForm) => {
                   ? "Actualizar"
                   : "Eliminar"
               }
-              color="primary"
+              color="accent"
               pending={isPending}
             />
           </div>
@@ -113,3 +130,13 @@ const Form = ({ provider, action, onClose }: IForm) => {
 };
 
 export default Form;
+
+const GenericPairDiv = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="flex flex-col sm:flex-row gap-4 w-full">{children}</div>
+  );
+};
+
+const GenericDiv = ({ children }: { children: ReactNode }) => {
+  return <div className="flex flex-col gap-2 w-full sm:w-1/2">{children}</div>;
+};

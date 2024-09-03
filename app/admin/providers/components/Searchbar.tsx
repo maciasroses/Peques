@@ -9,7 +9,7 @@ const Searchbar = () => {
   const { filters, handleSearch } = useSearchFilter(defaultFilters);
 
   return (
-    <search className="max-w-lg mx-auto mt-6">
+    <search className="max-w-lg mx-auto mt-6 mb-4">
       <div className="flex flex-col md:flex-row">
         <GenericSearchInput
           type="text"

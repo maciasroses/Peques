@@ -2,7 +2,10 @@ import z, { UnknownKeysParam, ZodRawShape } from "zod";
 
 const baseSchema = z.object({
   name: z.string().min(2, {
-    message: "Name must be at least 2 characters long",
+    message: "El nombre debe tener al menos 2 caracteres",
+  }),
+  alias: z.string().min(2, {
+    message: "El alias debe tener al menos 2 caracteres",
   }),
 });
 
