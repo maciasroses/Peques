@@ -8,11 +8,12 @@ const colorMap: { [key: string]: string } = {
 const Upload = ({ color = "gray" }: { color?: string }) => {
   return (
     <svg
-      className={clsx("w-8 h-8 mb-4", `${colorMap[color]}`)}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 20 16"
+      style={{ width: "25px", height: "25px" }}
+      className={clsx("mb-4", `${colorMap[color]}`)}
     >
       <path
         stroke="currentColor"

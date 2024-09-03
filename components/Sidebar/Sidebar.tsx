@@ -4,7 +4,7 @@ import type { IUser } from "@/interfaces";
 const Sidebar = ({ user }: { user: IUser }) => {
   return (
     <aside className="fixed z-30 top-0 w-48 h-screen transition-transform -translate-x-full sm:translate-x-0">
-      <div className="h-full px-4 pt-24 pb-4 overflow-y-auto bg-neutral-light dark:bg-primary-dark text-primary-light">
+      <div className="h-full px-4 pt-24 pb-4 overflow-y-auto bg-accent-light dark:bg-primary-dark text-primary-light">
         <ul className="space-y-2 font-medium">
           <li>
             <LinkComp

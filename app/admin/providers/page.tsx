@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { DatatableSkeleton } from "@/components";
-import { Action, DataFetch, Searchbar } from "./components";
+import { Action, DatatableSkeleton } from "@/components";
+import { Form, DataFetch, Searchbar } from "./components";
 
 interface IAdminProvidersPage {
   searchParams?: {
@@ -8,7 +8,7 @@ interface IAdminProvidersPage {
   };
 }
 
-const AdminProvidersPage = ({ searchParams }: IAdminProvidersPage) => {
+const AdminProvidersPage = async ({ searchParams }: IAdminProvidersPage) => {
   const { q = "" } = searchParams || {};
 
   const searchParamsForDatatable = { q };
@@ -16,7 +16,11 @@ const AdminProvidersPage = ({ searchParams }: IAdminProvidersPage) => {
   return (
     <>
       <div className="w-full text-right">
-        <Action action="create" />
+        {/* <Action action="create" /> */}
+        <Action action="create">
+          {/* @ts-ignore */}
+          <Form />
+        </Action>
       </div>
       <Searchbar />
       <Suspense key={q} fallback={<DatatableSkeleton />}>

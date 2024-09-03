@@ -11,7 +11,11 @@ export interface IUser {
 export interface IProvider {
   id: string;
   name: string;
+  alias: string;
   products: IProduct[];
+  _count: {
+    products: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +23,7 @@ export interface IProvider {
 export interface IProduct {
   id: string;
   name: string;
+  key: string;
   quantityPerCarton: number;
   chinesePriceUSD: number;
   pricePerCartonOrProductUSD: number;
@@ -31,6 +36,9 @@ export interface IProduct {
   orderDate: Date;
   provider: IProvider;
   orders: IOrder[];
+  _count: {
+    orders: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,5 +81,33 @@ export interface IRegisterState extends ISharedState {
 export interface ICreateNUpdateProviderState extends ISharedState {
   errors?: {
     name?: string;
+    alias?: string;
+  };
+}
+
+export interface ICreateNUpdateProductState extends ISharedState {
+  errors?: {
+    dollarExchangeRate?: string;
+    name?: string;
+    key?: string;
+    quantityPerCarton?: string;
+    chinesePriceUSD?: string;
+    shippingCostMXN?: string;
+    salePriceMXN?: string;
+    orderDate?: string;
+    providerId?: string;
+  };
+}
+
+export interface ICreateOrder extends ISharedState {
+  errors?: {
+    order?: {
+      client?: string;
+      shipmentType?: string;
+    };
+    products?: {
+      productKey?: string;
+      quantity?: string;
+    }[];
   };
 }

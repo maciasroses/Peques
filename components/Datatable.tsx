@@ -18,8 +18,8 @@ const customStyles = (theme: string): TableStyles => {
     },
     rows: {
       style: {
-        backgroundColor: theme === "dark" ? "#D2D8C0" : "#AEB898",
-        color: theme === "dark" ? "#000000" : "#F7EDE6",
+        backgroundColor: theme === "dark" ? "#D2D8C0" : "#F7EDE6",
+        color: theme === "dark" ? "#000000" : "#000000",
       },
     },
     pagination: {
@@ -70,11 +70,19 @@ const Datatable = <T extends object>({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const paginationComponentOptions = {
+    rowsPerPageText: "Filas por página:",
+    rangeSeparatorText: "de",
+    selectAllRowsItem: true,
+    selectAllRowsItemText: "Todo",
+  };
+
   return (
     <DataTable
       columns={columns}
       data={data}
       pagination
+      paginationComponentOptions={paginationComponentOptions}
       fixedHeader
       fixedHeaderScrollHeight={scrollHeight}
       selectableRows

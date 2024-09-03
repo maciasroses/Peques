@@ -1,4 +1,5 @@
 import Modal from "./Modal";
+import Action from "./Action";
 import Card404 from "./Card404";
 import Loading from "./Loading";
 import { Header } from "./Header";
@@ -13,6 +14,7 @@ import { GenericInput, SubmitButton, GenericSearchInput } from "./Form";
 
 export {
   Modal,
+  Action,
   Header,
   Footer,
   Sidebar,

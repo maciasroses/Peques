@@ -11,7 +11,7 @@ const Footer = ({ user }: { user: IUser | null }) => {
           user && "sm:ml-48"
         )}
       >
-        <p>&copy; {currentYear} - Peques. All rights reserved.</p>
+        <p>&copy; {currentYear} - Peques. Todos los derechos reservados.</p>
       </div>
     </footer>
   );

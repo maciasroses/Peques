@@ -28,7 +28,7 @@ const Form = () => {
   return (
     <div className="w-full sm:w-1/2 flex flex-col justify-center">
       <div className="text-center">
-        <h1 className="text-3xl md:text-6xl">Login</h1>
+        <h1 className="text-3xl md:text-6xl">Inicio de sesión</h1>
         {badResponse.message && (
           <p className="text-red-600">{badResponse.message}</p>
         )}
@@ -39,18 +39,18 @@ const Form = () => {
             <GenericDiv>
               <GenericInput
                 id="email"
-                ariaLabel="Email"
+                ariaLabel="Correo electrónico"
                 type="email"
-                placeholder="email"
+                placeholder="alguien@mail.com"
                 error={badResponse.errors?.email}
               />
             </GenericDiv>
             <GenericDiv>
               <GenericInput
                 id="password"
-                ariaLabel="Password"
+                ariaLabel="Contraseña"
                 type="password"
-                placeholder="password"
+                placeholder="********"
                 error={badResponse.errors?.password}
               />
             </GenericDiv>

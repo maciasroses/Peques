@@ -13,6 +13,11 @@ interface IGenericInput {
   className?: string;
   labelClassName?: string;
   error?: string;
+  onChange?: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
 }
 
 const GenericInput: React.FC<IGenericInput> = ({
@@ -28,12 +33,14 @@ const GenericInput: React.FC<IGenericInput> = ({
   className = "",
   labelClassName = "",
   error,
+  onChange,
 }) => {
   const commonProps = {
     id,
     name: id,
-    "aria-label": ariaLabel,
+    onChange,
     defaultValue,
+    "aria-label": ariaLabel,
     className: clsx(
       "border w-full p-2.5 text-sm rounded-lg",
       className,

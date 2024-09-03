@@ -95,7 +95,8 @@ export async function register(formData: FormData) {
     const userAlreadyExists = await read({
       email: dataToValidate.email as string,
     });
-    if (userAlreadyExists) return { message: "User already exists" };
+    if (userAlreadyExists)
+      return { message: "User already exists", success: false };
 
     const { confirmPassword, ...data } = dataToValidate;
 

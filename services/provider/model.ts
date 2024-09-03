@@ -12,10 +12,16 @@ export async function create({
   });
 }
 
-export async function read({ id, q }: { id?: string; q?: string }) {
-  if (id) {
-    return await prisma.provider.findUnique({ where: { id } });
-  }
+interface IRead {
+  id?: string;
+  alias?: string;
+  q?: string;
+}
+
+export async function read({ id, alias, q }: IRead) {
+  if (id) return await prisma.provider.findUnique({ where: { id } });
+
+  if (alias) return await prisma.provider.findUnique({ where: { alias } });
 
   interface Where {
     name?: object;
@@ -28,6 +34,7 @@ export async function read({ id, q }: { id?: string; q?: string }) {
   return await prisma.provider.findMany({
     where,
     orderBy: { updatedAt: "desc" },
+    include: { _count: { select: { products: true } } },
   });
 }
 
