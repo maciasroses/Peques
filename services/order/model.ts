@@ -12,15 +12,15 @@ export async function create({
   });
 }
 
-export async function createMassive({
-  data,
-}: {
-  data: (typeof prisma.order.createMany)["arguments"]["data"];
-}) {
-  return await prisma.order.createMany({
-    data,
-  });
-}
+// export async function createMassive({
+//   data,
+// }: {
+//   data: (typeof prisma.order.createMany)["arguments"]["data"];
+// }) {
+//   return await prisma.order.createMany({
+//     data,
+//   });
+// }
 
 interface ISearchParams {
   id?: string;

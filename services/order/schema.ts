@@ -4,6 +4,15 @@ const baseSchema = z.object({
   client: z.string().min(2, {
     message: "El nombre del cliente debe tener al menos 2 caracteres",
   }),
+  discount: z
+    .number()
+    .min(0, {
+      message: "El descuento debe ser mayor o igual a 0%",
+    })
+    .max(100, {
+      message: "El descuento no puede ser mayor al 100%",
+    })
+    .optional(),
   shipmentType: z.string().min(2, {
     message: "El tipo de envío debe tener al menos 2 caracteres",
   }),

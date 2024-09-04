@@ -26,7 +26,7 @@ const Form = () => {
   };
 
   return (
-    <div className="w-full sm:w-1/2 flex flex-col justify-center">
+    <div className="w-full sm:w-1/2 flex flex-col justify-center dark:text-white">
       <div className="text-center">
         <h1 className="text-3xl md:text-6xl">Inicio de sesión</h1>
         {badResponse.message && (

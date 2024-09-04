@@ -58,7 +58,10 @@ export async function login(formData: FormData) {
         (user as IUser).password
       ))
     ) {
-      return { message: "Invalid mail or password", success: false };
+      return {
+        message: "Correo electrónico o contraseña incorrecto.",
+        success: false,
+      };
     }
 
     await createUserSession((user as IUser).id, (user as IUser).role);
@@ -89,14 +92,14 @@ export async function register(formData: FormData) {
   }
 
   if (dataToValidate.password !== dataToValidate.confirmPassword)
-    return { message: "Passwords do not match", success: false };
+    return { message: "Las contraseñas no coinciden.", success: false };
 
   try {
     const userAlreadyExists = await read({
       email: dataToValidate.email as string,
     });
     if (userAlreadyExists)
-      return { message: "User already exists", success: false };
+      return { message: "El usuario ya existe.", success: false };
 
     const { confirmPassword, ...data } = dataToValidate;
 
