@@ -136,6 +136,8 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                   <GenericInput
                     id="discount"
                     type="number"
+                    min="0"
+                    max="100"
                     ariaLabel="Descuento (Opcional)"
                     placeholder="10"
                     defaultValue={(order as IOrder)?.discount?.toString() ?? ""}
@@ -209,8 +211,11 @@ const Form = ({ onClose, products, order, action }: IForm) => {
         <>
           {badResponse.errors && (
             <div className="h-auto max-h-[60px] overflow-y-auto">
-              {badResponse.errors.order?.client}
-              {badResponse.errors.order?.shipmentType}
+              {Object.entries(badResponse.errors).map(([key, value]) => (
+                <p key={key} className="text-red-500 dark:text-red-400">
+                  {key}: {value as string}
+                </p>
+              ))}
             </div>
           )}
           <form onSubmit={submitAction} encType="multipart/form-data">
@@ -221,17 +226,35 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                   className={clsx(
                     "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer",
                     file
-                      ? "bg-green-50 dark:bg-green-700 dark:border-green-600 border-green-500"
+                      ? // ? "bg-green-50 dark:bg-green-700 dark:border-green-600 border-green-500"
+                        badResponse.errors &&
+                        Object.keys(badResponse.errors as object).length > 0
+                        ? "bg-red-50 dark:bg-red-700 dark:border-red-600 border-red-500"
+                        : "bg-green-50 dark:bg-green-700 dark:border-green-600 border-green-500"
                       : "bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500"
                   )}
                 >
                   <div className="flex flex-col items-center justify-center p-5">
-                    <Upload color={file ? "green" : ""} />
+                    <Upload
+                      color={
+                        file
+                          ? // ? "green"
+                            badResponse.errors &&
+                            Object.keys(badResponse.errors as object).length > 0
+                            ? "red"
+                            : "green"
+                          : ""
+                      }
+                    />
                     <p
                       className={clsx(
                         "mb-2 text-sm text-center",
                         file
-                          ? "text-green-500 dark:text-green-400"
+                          ? // ? "text-green-500 dark:text-green-400"
+                            badResponse.errors &&
+                            Object.keys(badResponse.errors as object).length > 0
+                            ? "text-red-500 dark:text-red-400"
+                            : "text-green-500 dark:text-green-400"
                           : "text-gray-500 dark:text-gray-400"
                       )}
                     >

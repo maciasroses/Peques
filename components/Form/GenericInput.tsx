@@ -5,6 +5,8 @@ interface IGenericInput {
   ariaLabel: string;
   type: string;
   step?: string;
+  min?: string;
+  max?: string;
   rows?: number;
   options?: { value: string; label: string }[];
   defaultValue?: string;
@@ -25,6 +27,8 @@ const GenericInput: React.FC<IGenericInput> = ({
   ariaLabel,
   type,
   step,
+  min,
+  max,
   rows = 3,
   options,
   defaultValue,
@@ -71,6 +75,8 @@ const GenericInput: React.FC<IGenericInput> = ({
           placeholder={placeholder}
           type={type}
           step={step}
+          min={min}
+          max={max}
           defaultChecked={defaultChecked}
           {...commonProps}
         />

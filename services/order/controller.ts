@@ -9,6 +9,8 @@ import {
   update as updateProduct,
 } from "@/services/product/model";
 import { read, create, update, updateMassive } from "./model";
+import { getProducts } from "../product/controller";
+import { IProduct } from "@/interfaces";
 
 interface ISearchParams {
   client?: string;
@@ -171,38 +173,170 @@ export async function createMassiveOrder(formData: FormData) {
     // Variables para almacenar los datos válidos y los errores
     const validData = [];
     const errors: { [key: string]: string } = {};
+    const localProductsStock = (await getProducts({})) as unknown as IProduct[];
+    const localQuantitiesPerProduct: { [key: string]: number } =
+      localProductsStock.reduce((acc, product) => {
+        acc[product.key] = product.quantityPerCarton;
+        return acc;
+      }, {} as { [key: string]: number });
 
     for (const [index, row] of jsonData.entries()) {
       try {
-        // Convertir y validar los datos de la fila
         const data = {
           client: row["Nombre Cliente"],
+          discount: row["Descuento"] ? Number(row["Descuento"]) : 0,
           shipmentType: row["Tipo de Envio"],
-          // discount: Number(row["Descuento"]) ?? 0
         };
 
         const rowErrors = validateSchema("create", data);
 
         if (Object.keys(rowErrors).length !== 0) {
-          for (const key in rowErrors) {
-            errors[`Fila ${index + 2}`] = rowErrors[key];
+          // Mapeo de errores
+          for (const [key, value] of Object.entries(rowErrors)) {
+            errors[`Fila ${index + 2} - ${key}`] = value;
           }
           continue;
         }
+
+        const products =
+          typeof row["Productos"] === "string"
+            ? row["Productos"].split(",")
+            : [row["Productos"]];
+        const quantities =
+          typeof row["Cantidad"] === "string"
+            ? row["Cantidad"].split(",").map(Number)
+            : [Number(row["Cantidad"])];
+
+        // Filtrar valores nulos o no válidos en productos y cantidades
+        const validatedProducts = products.filter(Boolean);
+        // console.log(validatedProducts);
+        const validatedQuantities = quantities.filter(Boolean);
+        // console.log(validatedQuantities);
+
+        // Verificar si la cantidad de productos y cantidades es la misma
+        if (validatedProducts.length !== validatedQuantities.length) {
+          errors[`Fila ${index + 2}`] =
+            "La cantidad de productos y cantidades no coincide";
+          continue;
+        }
+
+        let total = 0;
+        const processedProducts = new Set<string>();
+        const orderProducts = [];
+        // const discount = row["Descuento"] ? Number(row["Descuento"]) : 0;
+        const productsData: {
+          product: {
+            connect: {
+              key: string;
+            };
+          };
+          quantity: number;
+        }[] = [];
+
+        for (let i = 0; i < validatedProducts.length; i++) {
+          orderProducts[i] = {
+            productKey: validatedProducts[i],
+            quantity: validatedQuantities[i],
+          };
+
+          const orderProductErrors = validateSchema(
+            "products",
+            orderProducts[i]
+          );
+
+          if (Object.keys(orderProductErrors).length !== 0) {
+            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
+              JSON.stringify(orderProductErrors);
+            continue;
+          }
+
+          const currentProduct = validatedProducts[i] as string;
+
+          // Comprobar si el producto ya fue procesado
+          if (processedProducts.has(currentProduct)) {
+            errors[
+              `Fila ${index + 2} - Producto ${i + 1}`
+            ] = `Este producto (${currentProduct}) ya se consideró en esta orden`;
+            continue; // Saltar a la siguiente iteración
+          }
+
+          // Agregar el producto al conjunto de productos procesados
+          processedProducts.add(currentProduct);
+
+          const product = (await readProduct({
+            key: validatedProducts[i] as string,
+          })) as unknown as IProduct;
+
+          if (!product) {
+            errors[
+              `Fila ${index + 2} - Producto ${i + 1}`
+            ] = `Producto no encontrado`;
+            continue;
+          }
+
+          if (
+            validatedQuantities[i] >
+            localQuantitiesPerProduct[validatedProducts[i]]
+          ) {
+            errors[
+              `Fila ${index + 2} - Producto ${i + 1}`
+            ] = `La cantidad máxima permitida para este producto (${
+              validatedProducts[i]
+            }) es ${localQuantitiesPerProduct[validatedProducts[i]]}`;
+            continue;
+          }
+
+          localQuantitiesPerProduct[validatedProducts[i]] -=
+            validatedQuantities[i];
+
+          total += validatedQuantities[i] * product.salePriceMXN;
+
+          productsData.push({
+            product: {
+              connect: {
+                key: validatedProducts[i] as string,
+              },
+            },
+            quantity: validatedQuantities[i],
+          });
+        }
+
+        total = total - (total * data.discount) / 100;
+
+        const finalData = {
+          ...data,
+          total,
+          isPaid: data.discount === 100,
+          products: {
+            create: productsData,
+          },
+        };
+
+        validData.push(finalData);
       } catch (error: any) {
         errors[`Row ${index + 2}`] = `Internal error: ${error.message}`;
       }
-
-      if (Object.keys(errors).length !== 0) {
-        return { errors, success: false };
-      }
-
-      // await create({ data: validData });
     }
+
+    if (Object.keys(errors).length !== 0) return { errors, success: false };
+
+    validData.forEach(async (data) => {
+      data.products.create.forEach(async (product) => {
+        await updateProduct({
+          key: product.product.connect.key,
+          data: {
+            quantityPerCarton:
+              localQuantitiesPerProduct[product.product.connect.key],
+          },
+        });
+      });
+      await create({ data });
+    });
   } catch (error) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
+  console.log("Orders created successfully");
   revalidatePath("/admin/orders");
   redirect("/admin/orders");
 }

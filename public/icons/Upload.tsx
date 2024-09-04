@@ -2,6 +2,7 @@ import clsx from "clsx";
 
 const colorMap: { [key: string]: string } = {
   gray: "text-gray-500 dark:text-gray-400",
+  red: "text-red-500 dark:text-red-400",
   green: "text-green-500 dark:text-green-400",
 };
 
