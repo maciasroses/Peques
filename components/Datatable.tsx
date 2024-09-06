@@ -6,6 +6,7 @@ import DataTable from "react-data-table-component";
 import type {
   TableStyles,
   ConditionalStyles,
+  ExpanderComponentProps,
 } from "react-data-table-component";
 
 const customStyles = (theme: string): TableStyles => {
@@ -38,13 +39,17 @@ const customStyles = (theme: string): TableStyles => {
 };
 
 const Datatable = <T extends object>({
-  columns,
   data,
+  columns,
+  isExapandable = false,
+  expandableRowsComponent,
   onSelectedRowsChange,
   conditionalRowStyles,
 }: {
-  columns: object[];
   data: T[];
+  columns: object[];
+  isExapandable?: boolean;
+  expandableRowsComponent?: React.FC<ExpanderComponentProps<T>>;
   onSelectedRowsChange: (selected: { selectedRows: T[] }) => void;
   conditionalRowStyles?: (theme: string) => ConditionalStyles<T>[];
 }) => {
@@ -87,6 +92,8 @@ const Datatable = <T extends object>({
       fixedHeaderScrollHeight={scrollHeight}
       selectableRows
       onSelectedRowsChange={onSelectedRowsChange}
+      expandableRows={isExapandable}
+      expandableRowsComponent={expandableRowsComponent}
       conditionalRowStyles={conditionalRowStyles && conditionalRowStyles(theme)}
       customStyles={customStyles(theme)}
     />

@@ -7,28 +7,31 @@ import type { IProvider } from "@/interfaces";
 interface IAdminProductsPage {
   searchParams?: {
     q?: string;
-    quantityPerCartonFrom?: string;
-    quantityPerCartonTo?: string;
-    orderDateFrom?: string;
-    orderDateTo?: string;
+    availableQuantityFrom?: string;
+    availableQuantityTo?: string;
+    salePriceMXNFrom?: string;
+    salePriceMXNTo?: string;
+    provider?: string;
   };
 }
 
 const AdminProductsPage = async ({ searchParams }: IAdminProductsPage) => {
   const {
     q = "",
-    quantityPerCartonFrom = "",
-    quantityPerCartonTo = "",
-    orderDateFrom = "",
-    orderDateTo = "",
+    availableQuantityFrom = "",
+    availableQuantityTo = "",
+    salePriceMXNFrom = "",
+    salePriceMXNTo = "",
+    provider = "",
   } = searchParams || {};
 
   const searchParamsForDatatable = {
     q,
-    quantityPerCartonFrom,
-    quantityPerCartonTo,
-    orderDateFrom,
-    orderDateTo,
+    availableQuantityFrom,
+    availableQuantityTo,
+    salePriceMXNFrom,
+    salePriceMXNTo,
+    provider,
   };
 
   const providers = (await getProviders({})) as IProvider[];
@@ -43,14 +46,15 @@ const AdminProductsPage = async ({ searchParams }: IAdminProductsPage) => {
           </Action>
         </div>
       )}
-      <Searchbar />
+      <Searchbar providers={providers} />
       <Suspense
         key={
           q +
-          quantityPerCartonFrom +
-          quantityPerCartonTo +
-          orderDateFrom +
-          orderDateTo
+          availableQuantityFrom +
+          availableQuantityTo +
+          salePriceMXNFrom +
+          salePriceMXNTo +
+          provider
         }
         fallback={<DatatableSkeleton />}
       >

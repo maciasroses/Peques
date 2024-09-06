@@ -24,12 +24,19 @@ export async function read({ id, alias, q }: IRead) {
   if (alias) return await prisma.provider.findUnique({ where: { alias } });
 
   interface Where {
-    name?: object;
+    OR?: {
+      [key: string]: { contains: string; mode: "insensitive" };
+    }[];
   }
 
   const where: Where = {};
 
-  if (q) where.name = { contains: q, mode: "insensitive" };
+  if (q) {
+    where.OR = [
+      { name: { contains: q, mode: "insensitive" } },
+      { alias: { contains: q, mode: "insensitive" } },
+    ];
+  }
 
   return await prisma.provider.findMany({
     where,

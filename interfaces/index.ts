@@ -20,12 +20,11 @@ export interface IProvider {
   updatedAt: Date;
 }
 
-export interface IProduct {
+export interface IProductHistory {
   id: string;
-  name: string;
-  key: string;
   quantityPerCarton: number;
   chinesePriceUSD: number;
+  dollarExchangeRate: number;
   pricePerCartonOrProductUSD: number;
   costMXN: number;
   shippingCostMXN: number;
@@ -34,10 +33,24 @@ export interface IProduct {
   margin: number;
   salePerQuantity: number;
   orderDate: Date;
+  product: IProduct;
+  productId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IProduct {
+  id: string;
+  name: string;
+  key: string;
+  availableQuantity: number;
+  salePriceMXN: number;
   provider: IProvider;
+  history: IProductHistory[];
   orders: IOrder[];
   _count: {
     orders: number;
+    history: number;
   };
   createdAt: Date;
   updatedAt: Date;
@@ -45,6 +58,8 @@ export interface IProduct {
 
 export interface IOrder {
   id: string;
+  orderId?: string;
+  quantity?: number;
   client: string;
   discount?: number;
   total: number;
@@ -53,6 +68,7 @@ export interface IOrder {
   deliveryStatus: "PENDING" | "CANCELLED" | "DELIVERED";
   pendingPayment?: number;
   products: IProduct[];
+  productId: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -85,17 +101,28 @@ export interface ICreateNUpdateProviderState extends ISharedState {
   };
 }
 
-export interface ICreateNUpdateProductState extends ISharedState {
+export interface ICreateNUpdateProductHistoryState extends ISharedState {
   errors?: {
     dollarExchangeRate?: string;
-    name?: string;
-    key?: string;
     quantityPerCarton?: string;
     chinesePriceUSD?: string;
     shippingCostMXN?: string;
     salePriceMXN?: string;
     orderDate?: string;
+  };
+}
+
+export interface ICreateNUpdateProductState extends ISharedState {
+  errors?: {
+    name?: string;
+    key?: string;
     providerId?: string;
+    dollarExchangeRate?: string;
+    quantityPerCarton?: string;
+    chinesePriceUSD?: string;
+    shippingCostMXN?: string;
+    salePriceMXN?: string;
+    orderDate?: string;
   };
 }
 

@@ -6,10 +6,11 @@ interface IDatatable {
   providers: IProvider[];
   searchParams: {
     q?: string;
-    quantityPerCartonFrom?: string;
-    quantityPerCartonTo?: string;
-    orderDateFrom?: string;
-    orderDateTo?: string;
+    availableQuantityFrom?: string;
+    availableQuantityTo?: string;
+    salePriceMXNFrom?: string;
+    salePriceMXNTo?: string;
+    provider?: string;
   };
 }
 

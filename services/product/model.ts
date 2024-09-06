@@ -12,6 +12,16 @@ export async function create({
   });
 }
 
+export async function createHistory({
+  data,
+}: {
+  data: (typeof prisma.productHistory.create)["arguments"]["data"];
+}) {
+  return await prisma.productHistory.create({
+    data,
+  });
+}
+
 export async function createMassive({
   data,
 }: {
@@ -26,51 +36,101 @@ interface SearchParams {
   id?: string;
   key?: string;
   q?: string;
-  quantityPerCartonFrom?: number;
-  quantityPerCartonTo?: number;
-  orderDateFrom?: Date;
-  orderDateTo?: Date;
+  availableQuantityFrom?: number;
+  availableQuantityTo?: number;
+  salePriceMXNFrom?: number;
+  salePriceMXNTo?: number;
+  provider?: string;
 }
 
 export async function read({
   id,
   key,
   q,
-  quantityPerCartonFrom,
-  quantityPerCartonTo,
-  orderDateFrom,
-  orderDateTo,
+  availableQuantityFrom,
+  availableQuantityTo,
+  salePriceMXNFrom,
+  salePriceMXNTo,
+  provider,
 }: SearchParams) {
   if (id) {
-    return await prisma.product.findUnique({ where: { id } });
+    return await prisma.product.findUnique({
+      where: { id },
+      include: {
+        orders: true,
+        history: true,
+        provider: true,
+        _count: { select: { orders: true, history: true } },
+      },
+    });
   }
 
   if (key) {
-    return await prisma.product.findUnique({ where: { key } });
+    return await prisma.product.findUnique({
+      where: { key },
+      include: {
+        orders: true,
+        history: true,
+        provider: true,
+        _count: { select: { orders: true, history: true } },
+      },
+    });
   }
 
   interface Where {
-    name?: object;
-    quantityPerCarton?: object;
-    orderDate?: object;
+    OR?: {
+      [key: string]: { contains: string; mode: "insensitive" };
+    }[];
+    availableQuantity?: object;
+    salePriceMXN?: object;
+    provider?: object;
   }
 
   const where: Where = {};
 
-  if (q) where.name = { contains: q, mode: "insensitive" };
+  if (q) {
+    where.OR = [
+      { name: { contains: q, mode: "insensitive" } },
+      { key: { contains: q, mode: "insensitive" } },
+    ];
+  }
 
-  if (quantityPerCartonFrom || quantityPerCartonTo)
-    where.quantityPerCarton = {
-      gte: quantityPerCartonFrom,
-      lte: quantityPerCartonTo,
+  if (availableQuantityFrom || availableQuantityTo)
+    where.availableQuantity = {
+      gte: availableQuantityFrom,
+      lte: availableQuantityTo,
     };
 
-  if (orderDateFrom || orderDateTo)
-    where.orderDate = { gte: orderDateFrom, lte: orderDateTo };
+  if (salePriceMXNFrom || salePriceMXNTo)
+    where.salePriceMXN = { gte: salePriceMXNFrom, lte: salePriceMXNTo };
+
+  if (provider) where.provider = { alias: provider };
 
   return await prisma.product.findMany({
     where,
-    include: { provider: true, _count: { select: { orders: true } } },
+    include: {
+      orders: true,
+      history: true,
+      provider: true,
+      _count: { select: { orders: true, history: true } },
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+}
+
+export async function readHistory({
+  id,
+  productId,
+}: {
+  id?: string;
+  productId?: string;
+}) {
+  if (id) {
+    return await prisma.productHistory.findUnique({ where: { id } });
+  }
+
+  return await prisma.productHistory.findMany({
+    where: { productId },
     orderBy: { updatedAt: "desc" },
   });
 }
@@ -89,6 +149,21 @@ export async function update({
       id: id || undefined,
       key: key || undefined,
     },
+    data,
+  });
+}
+
+export async function updateHistory({
+  id,
+  productId,
+  data,
+}: {
+  id: string;
+  productId: string;
+  data: (typeof prisma.productHistory.update)["arguments"]["data"];
+}) {
+  return await prisma.productHistory.update({
+    where: { id, AND: { productId: productId } },
     data,
   });
 }
@@ -112,8 +187,32 @@ export async function deleteById({ id }: { id: string }) {
   });
 }
 
+export async function deleteHistoryById({
+  id,
+  productId,
+}: {
+  id: string;
+  productId: string;
+}) {
+  return await prisma.productHistory.delete({
+    where: { id, AND: { productId } },
+  });
+}
+
 export async function deleteMassive({ ids }: { ids: string[] }) {
   return await prisma.product.deleteMany({
     where: { id: { in: ids } },
+  });
+}
+
+export async function deleteHistoryMassive({
+  ids,
+  productId,
+}: {
+  ids: string[];
+  productId: string;
+}) {
+  return await prisma.productHistory.deleteMany({
+    where: { id: { in: ids }, AND: { productId } },
   });
 }

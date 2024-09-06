@@ -17,6 +17,7 @@ import {
   updateDeliveryStatus,
   updateMassiveDeliveryStatus,
 } from "@/services/order/controller";
+import { usePathname } from "next/navigation";
 
 interface IDatatable {
   orders: IOrder[];
@@ -33,6 +34,7 @@ interface IProductInOrder {
 }
 
 const Datatable = ({ orders, products }: IDatatable) => {
+  const pathname = usePathname();
   const { selectedRows, showMultiActions, handleSelectRows } =
     useRowSelection<IOrder>();
 
@@ -46,34 +48,40 @@ const Datatable = ({ orders, products }: IDatatable) => {
         selectedRows.map((row) => row.id),
         event.target.value
       );
-      location.reload();
+      location.replace(pathname);
+    } else {
+      await updateDeliveryStatus(id, event.target.value, pathname);
     }
-    await updateDeliveryStatus(id, event.target.value);
   };
 
   const handleIsPaid = async (id: string, isMassive?: boolean) => {
     if (isMassive) {
       await markMassiveAsPaid(selectedRows.map((row) => row.id));
       location.reload();
+    } else {
+      await markAsPaid(id);
     }
-    await markAsPaid(id);
   };
 
   const columns = [
-    {
-      name: "Acciones",
-      width: "200px",
-      cell: (row: IOrder) => (
-        <div className="flex justify-center gap-2">
-          <button
-            onClick={() => handleIsPaid(row.id)}
-            className={"bg-accent text-white rounded-md p-2"}
-          >
-            Marcar como Pagado
-          </button>
-        </div>
-      ),
-    },
+    ...(pathname === "/admin/orders"
+      ? [
+          {
+            name: "Acciones",
+            width: "200px",
+            cell: (row: IOrder) => (
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => handleIsPaid(row.id)}
+                  className={"bg-accent text-white rounded-md p-2"}
+                >
+                  Marcar como Pagado
+                </button>
+              </div>
+            ),
+          },
+        ]
+      : []),
     {
       name: "Estado de Entrega",
       selector: (row: { deliveryStatus: string }) => row.deliveryStatus,
@@ -90,11 +98,6 @@ const Datatable = ({ orders, products }: IDatatable) => {
           <option value="CANCELLED">Cancelado</option>
         </select>
       ),
-      // row.deliveryStatus === "PENDING"
-      //   ? "Pendiente"
-      //   : row.deliveryStatus === "DELIVERED"
-      //   ? "Entregado"
-      //   : "Cancelado",
     },
     {
       name: "Tipo de Envío",
@@ -126,6 +129,13 @@ const Datatable = ({ orders, products }: IDatatable) => {
       format: (row: { discount: number }) => `${row.discount}%`,
     },
     {
+      name: "Subtotal",
+      selector: (row: { subtotal: number }) => row.subtotal,
+      sortable: true,
+      format: (row: { subtotal: number }) =>
+        formatCurrency(row.subtotal, "MXN"),
+    },
+    {
       name: "Total",
       selector: (row: { total: number }) => row.total,
       sortable: true,
@@ -149,12 +159,14 @@ const Datatable = ({ orders, products }: IDatatable) => {
             <>
               {showMultiActions && (
                 <div className="flex justify-end gap-2 mb-4">
-                  <button
-                    onClick={() => handleIsPaid(selectedRows[0].id, true)}
-                    className={"bg-accent text-white rounded-md p-2"}
-                  >
-                    Marcar como Pagado
-                  </button>
+                  {pathname === "/admin/orders" && (
+                    <button
+                      onClick={() => handleIsPaid(selectedRows[0].id, true)}
+                      className={"bg-accent text-white rounded-md p-2"}
+                    >
+                      Marcar como Pagado
+                    </button>
+                  )}
                   <select
                     onChange={(event) =>
                       handleSelectDeliveryStatus(

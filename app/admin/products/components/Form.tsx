@@ -1,5 +1,7 @@
 "use client";
 
+import clsx from "clsx";
+import { Upload } from "@/public/icons";
 import { ReactNode, useState } from "react";
 import { INITIAL_STATE_RESPONSE } from "@/constants";
 import { GenericInput, SubmitButton } from "@/components";
@@ -15,9 +17,6 @@ import type {
   IProduct,
   IProvider,
 } from "@/interfaces";
-import clsx from "clsx";
-import { Upload } from "@/public/icons";
-import formatdateInput from "@/utils/formatdate-input";
 
 interface IForm {
   onClose: () => void;
@@ -114,15 +113,6 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
           <fieldset disabled={isPending}>
             {action !== "delete" && action !== "massiveDelete" ? (
               <div className="flex flex-col gap-4 text-xl">
-                <GenericInput
-                  type="number"
-                  step="0.01"
-                  placeholder="19.85"
-                  defaultValue="19.85"
-                  id="dollarExchangeRate"
-                  ariaLabel="Cambio de dólar"
-                  error={badResponse.errors?.dollarExchangeRate}
-                />
                 <GenericPairDiv>
                   <GenericDiv>
                     <GenericInput
@@ -145,93 +135,112 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
                     />
                   </GenericDiv>
                 </GenericPairDiv>
-                <GenericPairDiv>
-                  <GenericDiv>
-                    <GenericInput
-                      step="1"
-                      type="number"
-                      id="quantityPerCarton"
-                      ariaLabel="Cantidad por caja"
-                      placeholder="20"
-                      defaultValue={(
-                        product as IProduct
-                      )?.quantityPerCarton.toString()}
-                      error={badResponse.errors?.quantityPerCarton}
-                    />
-                  </GenericDiv>
-                  <GenericDiv>
-                    <GenericInput
-                      type="number"
-                      step="0.01"
-                      id="chinesePriceUSD"
-                      ariaLabel="Precio china (USD)"
-                      placeholder="100"
-                      defaultValue={(
-                        product as IProduct
-                      )?.chinesePriceUSD.toString()}
-                      error={badResponse.errors?.chinesePriceUSD}
-                    />
-                  </GenericDiv>
-                </GenericPairDiv>
-                <GenericPairDiv>
-                  <GenericDiv>
-                    <GenericInput
-                      type="number"
-                      step="0.01"
-                      id="shippingCostMXN"
-                      ariaLabel="Costo de envío (MXN)"
-                      placeholder="500"
-                      defaultValue={(
-                        product as IProduct
-                      )?.shippingCostMXN.toString()}
-                      error={badResponse.errors?.shippingCostMXN}
-                    />
-                  </GenericDiv>
-                  <GenericDiv>
-                    <GenericInput
-                      type="number"
-                      step="0.01"
-                      id="salePriceMXN"
-                      ariaLabel="Precio de venta (MXN)"
-                      placeholder="2000"
-                      defaultValue={(
-                        product as IProduct
-                      )?.salePriceMXN.toString()}
-                      error={badResponse.errors?.salePriceMXN}
-                    />
-                  </GenericDiv>
-                </GenericPairDiv>
-                <GenericPairDiv>
-                  <GenericDiv>
-                    <GenericInput
-                      type="date"
-                      id="orderDate"
-                      ariaLabel="Fecha de orden"
-                      defaultValue={
-                        (product as IProduct)?.orderDate
-                          ? formatdateInput(
-                              (product as IProduct)?.orderDate.toString()
-                            )
-                          : ""
-                      }
-                      error={badResponse.errors?.orderDate}
-                    />
-                  </GenericDiv>
-                  <GenericDiv>
-                    <GenericInput
-                      id="providerId"
-                      type="select"
-                      ariaLabel="Proveedor"
-                      placeholder="Selecciona un proveedor"
-                      defaultValue={(product as IProduct)?.provider.id ?? ""}
-                      options={providers?.map((provider) => ({
-                        value: provider.id,
-                        label: provider.alias,
-                      }))}
-                      error={badResponse.errors?.providerId}
-                    />
-                  </GenericDiv>
-                </GenericPairDiv>
+                <GenericInput
+                  id="providerId"
+                  type="select"
+                  ariaLabel="Proveedor"
+                  placeholder="Selecciona un proveedor"
+                  defaultValue={(product as IProduct)?.provider.id ?? ""}
+                  options={providers?.map((provider) => ({
+                    value: provider.id,
+                    label: provider.name,
+                  }))}
+                  error={badResponse.errors?.providerId}
+                />
+                {action === "create" && (
+                  <>
+                    {/* AFTER CHANGE TO A SEPARATE FORM */}
+                    <GenericPairDiv>
+                      <GenericDiv>
+                        <GenericInput
+                          type="number"
+                          step="0.01"
+                          placeholder="19.85"
+                          // defaultValue={(
+                          //   product as IProduct
+                          // )?.dollarExchangeRate.toString()}
+                          id="dollarExchangeRate"
+                          ariaLabel="Cambio de dólar"
+                          error={badResponse.errors?.dollarExchangeRate}
+                        />
+                      </GenericDiv>
+                      <GenericDiv>
+                        <GenericInput
+                          type="number"
+                          step="0.01"
+                          id="chinesePriceUSD"
+                          ariaLabel="Precio china (USD)"
+                          placeholder="100"
+                          // defaultValue={(
+                          //   product as IProduct
+                          // )?.chinesePriceUSD.toString()}
+                          error={badResponse.errors?.chinesePriceUSD}
+                        />
+                      </GenericDiv>
+                    </GenericPairDiv>
+                    <GenericPairDiv>
+                      <GenericDiv>
+                        <GenericInput
+                          type="number"
+                          step="0.01"
+                          id="shippingCostMXN"
+                          ariaLabel="Costo de envío (MXN)"
+                          placeholder="500"
+                          // defaultValue={(
+                          //   product as IProduct
+                          // )?.shippingCostMXN.toString()}
+                          error={badResponse.errors?.shippingCostMXN}
+                        />
+                      </GenericDiv>
+                      <GenericDiv>
+                        <GenericInput
+                          type="number"
+                          step="0.01"
+                          id="salePriceMXN"
+                          ariaLabel="Precio de venta (MXN)"
+                          placeholder="2000"
+                          // defaultValue={(
+                          //   product as IProduct
+                          // )?.salePriceMXN.toString()}
+                          error={badResponse.errors?.salePriceMXN}
+                        />
+                      </GenericDiv>
+                    </GenericPairDiv>
+                    <GenericPairDiv>
+                      <GenericDiv>
+                        <GenericInput
+                          step="1"
+                          type="number"
+                          id="quantityPerCarton"
+                          ariaLabel="Cantidad por caja"
+                          placeholder="20"
+                          // defaultValue={(
+                          //   product as IProduct
+                          // )?.quantityPerCarton.toString()}
+                          error={badResponse.errors?.quantityPerCarton}
+                        />
+                      </GenericDiv>
+                      <GenericDiv>
+                        <GenericInput
+                          type="date"
+                          id="orderDate"
+                          ariaLabel="Fecha de orden"
+                          max="9999-12-31"
+                          // defaultValue={
+                          //   (product as IProduct)?.history.orderDate
+                          //     ? formatdateInput(
+                          //         (
+                          //           product as IProduct
+                          //         )?.history.orderDate.toString()
+                          //       )
+                          //     : ""
+                          // }
+                          error={badResponse.errors?.orderDate}
+                        />
+                      </GenericDiv>
+                    </GenericPairDiv>
+                  </>
+                )}
               </div>
             ) : (
               <>

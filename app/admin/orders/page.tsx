@@ -8,13 +8,37 @@ interface IAdminOrdersPage {
   searchParams?: {
     client?: string;
     deliveryStatus?: string;
+    discountFrom?: string;
+    discountTo?: string;
+    subtotalFrom?: string;
+    subtotalTo?: string;
+    totalFrom?: string;
+    totalTo?: string;
   };
 }
 
 const AdminOrdersPage = async ({ searchParams }: IAdminOrdersPage) => {
-  const { client = "", deliveryStatus = "" } = searchParams || {};
+  const {
+    client = "",
+    deliveryStatus = "",
+    discountFrom = "",
+    discountTo = "",
+    subtotalFrom = "",
+    subtotalTo = "",
+    totalFrom = "",
+    totalTo = "",
+  } = searchParams || {};
 
-  const searchParamsForDatatable = { client, deliveryStatus };
+  const searchParamsForDatatable = {
+    client,
+    deliveryStatus,
+    discountFrom,
+    discountTo,
+    subtotalFrom,
+    subtotalTo,
+    totalFrom,
+    totalTo,
+  };
 
   const products = (await getProducts({})) as unknown as IProduct[];
 
@@ -29,7 +53,19 @@ const AdminOrdersPage = async ({ searchParams }: IAdminOrdersPage) => {
         </div>
       )}
       <Searchbar />
-      <Suspense key={deliveryStatus + client} fallback={<DatatableSkeleton />}>
+      <Suspense
+        key={
+          deliveryStatus +
+          client +
+          discountFrom +
+          discountTo +
+          subtotalFrom +
+          subtotalTo +
+          totalFrom +
+          totalTo
+        }
+        fallback={<DatatableSkeleton />}
+      >
         <DataFetch
           products={products}
           searchParams={searchParamsForDatatable}

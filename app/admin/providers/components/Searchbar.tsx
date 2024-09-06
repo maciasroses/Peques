@@ -13,7 +13,7 @@ const Searchbar = () => {
       <div className="flex flex-col md:flex-row">
         <GenericSearchInput
           type="text"
-          placeholder="Buscar..."
+          placeholder="Busca por nombre o alias..."
           value={filters.q}
           onChange={(value: string) => handleSearch("q", value)}
         />
