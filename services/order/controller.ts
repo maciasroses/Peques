@@ -8,27 +8,71 @@ import {
   read as readProduct,
   update as updateProduct,
 } from "@/services/product/model";
-import { read, create, update, updateMassive } from "./model";
+import { read, create, update, updateMassive, deleteById } from "./model";
 import { getProducts } from "../product/controller";
-import { IProduct } from "@/interfaces";
+import { IOrder, IProduct } from "@/interfaces";
 
 interface ISearchParams {
   client?: string;
   deliveryStatus?: string;
+  discountFrom?: string;
+  discountTo?: string;
+  subtotalFrom?: string;
+  subtotalTo?: string;
+  totalFrom?: string;
+  totalTo?: string;
 }
 
-export async function getOrders({ client, deliveryStatus }: ISearchParams) {
+export async function getOrders({
+  client,
+  deliveryStatus,
+  discountFrom,
+  discountTo,
+  subtotalFrom,
+  subtotalTo,
+  totalFrom,
+  totalTo,
+}: ISearchParams) {
   try {
-    return await read({ client, deliveryStatus, isPaid: false });
+    return await read({
+      client,
+      deliveryStatus,
+      isPaid: false,
+      discountFrom: discountFrom ? Number(discountFrom) : undefined,
+      discountTo: discountTo ? Number(discountTo) : undefined,
+      subtotalFrom: subtotalFrom ? Number(subtotalFrom) : undefined,
+      subtotalTo: subtotalTo ? Number(subtotalTo) : undefined,
+      totalFrom: totalFrom ? Number(totalFrom) : undefined,
+      totalTo: totalTo ? Number(totalTo) : undefined,
+    });
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");
   }
 }
 
-export async function getSales({ client, deliveryStatus }: ISearchParams) {
+export async function getSales({
+  client,
+  deliveryStatus,
+  discountFrom,
+  discountTo,
+  subtotalFrom,
+  subtotalTo,
+  totalFrom,
+  totalTo,
+}: ISearchParams) {
   try {
-    return await read({ client, deliveryStatus, isPaid: true });
+    return await read({
+      client,
+      deliveryStatus,
+      isPaid: true,
+      discountFrom: discountFrom ? Number(discountFrom) : undefined,
+      discountTo: discountTo ? Number(discountTo) : undefined,
+      subtotalFrom: subtotalFrom ? Number(subtotalFrom) : undefined,
+      subtotalTo: subtotalTo ? Number(subtotalTo) : undefined,
+      totalFrom: totalFrom ? Number(totalFrom) : undefined,
+      totalTo: totalTo ? Number(totalTo) : undefined,
+    });
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");
@@ -71,13 +115,13 @@ export async function createOrder(formData: FormData) {
         quantity: Number(productsQuantity[i]),
       };
 
-      const { quantityPerCarton } = (await readProduct({
+      const { availableQuantity } = (await readProduct({
         key: products[i] as string,
-      })) as { quantityPerCarton: number };
+      })) as unknown as IProduct;
 
-      if (Number(productsQuantity[i]) > quantityPerCarton) {
+      if (Number(productsQuantity[i]) > availableQuantity) {
         orderErrors.products[i] = {
-          quantity: `La cantidad máxima permitida para este producto es ${quantityPerCarton}`,
+          quantity: `La cantidad máxima permitida para este producto es ${availableQuantity}`,
         };
       }
 
@@ -109,18 +153,18 @@ export async function createOrder(formData: FormData) {
     const productPromise = orderProducts.map(async (product) => {
       const { salePriceMXN } = (await readProduct({
         key: product.productKey as string,
-      })) as { salePriceMXN: number };
+      })) as unknown as IProduct;
 
       total += Number(product.quantity) * salePriceMXN;
 
-      const { quantityPerCarton } = (await readProduct({
+      const { availableQuantity } = (await readProduct({
         key: product.productKey as string,
-      })) as { quantityPerCarton: number };
+      })) as unknown as IProduct;
 
       await updateProduct({
         key: product.productKey as string,
         data: {
-          quantityPerCarton: quantityPerCarton - product.quantity,
+          availableQuantity: availableQuantity - product.quantity,
         },
       });
 
@@ -136,10 +180,12 @@ export async function createOrder(formData: FormData) {
 
     await Promise.all(productPromise);
 
+    const subtotal = total;
     total = total - (total * discount) / 100;
 
     const finalData = {
       ...data,
+      subtotal,
       total,
       discount,
       isPaid: discount === 100,
@@ -176,7 +222,7 @@ export async function createMassiveOrder(formData: FormData) {
     const localProductsStock = (await getProducts({})) as unknown as IProduct[];
     const localQuantitiesPerProduct: { [key: string]: number } =
       localProductsStock.reduce((acc, product) => {
-        acc[product.key] = product.quantityPerCarton;
+        acc[product.key] = product.availableQuantity;
         return acc;
       }, {} as { [key: string]: number });
 
@@ -301,10 +347,12 @@ export async function createMassiveOrder(formData: FormData) {
           });
         }
 
+        const subtotal = total;
         total = total - (total * data.discount) / 100;
 
         const finalData = {
           ...data,
+          subtotal,
           total,
           isPaid: data.discount === 100,
           products: {
@@ -325,7 +373,7 @@ export async function createMassiveOrder(formData: FormData) {
         await updateProduct({
           key: product.product.connect.key,
           data: {
-            quantityPerCarton:
+            availableQuantity:
               localQuantitiesPerProduct[product.product.connect.key],
           },
         });
@@ -336,25 +384,71 @@ export async function createMassiveOrder(formData: FormData) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
-  console.log("Orders created successfully");
   revalidatePath("/admin/orders");
   redirect("/admin/orders");
 }
 
-export async function updateDeliveryStatus(id: string, deliveryStatus: string) {
+interface IOrderForUpdateDeliveryStatus {
+  products: {
+    product: {
+      id: string;
+      name: string;
+      key: string;
+      availableQuantity: number;
+      salePriceMXN: number;
+      providerId: string;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+    productId: string;
+    orderId: string;
+    quantity: number;
+  }[];
+  id: string;
+  client: string;
+  discount: number | null;
+  subtotal: number;
+  total: number;
+  shipmentType: string;
+  isPaid: boolean;
+  deliveryStatus: string;
+  pendingPayment: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export async function updateDeliveryStatus(
+  id: string,
+  deliveryStatus: string,
+  pathname: string
+) {
   try {
-    await update({
-      id,
-      data: {
-        deliveryStatus,
-      },
-    });
+    if (deliveryStatus === "CANCELLED") {
+      const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
+      order.products.forEach(async (product) => {
+        await updateProduct({
+          key: product.product.key,
+          data: {
+            availableQuantity:
+              product.product.availableQuantity + product.quantity,
+          },
+        });
+      });
+      await deleteById({ id });
+    } else {
+      await update({
+        id,
+        data: {
+          deliveryStatus,
+        },
+      });
+    }
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");
   }
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  revalidatePath(pathname);
+  redirect(pathname);
 }
 
 export async function updateMassiveDeliveryStatus(
@@ -362,12 +456,30 @@ export async function updateMassiveDeliveryStatus(
   deliveryStatus: string
 ) {
   try {
-    await updateMassive({
-      ids,
-      data: {
-        deliveryStatus,
-      },
-    });
+    if (deliveryStatus === "CANCELLED") {
+      ids.forEach(async (id) => {
+        const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
+        for (const product of order.products) {
+          const { availableQuantity } = (await readProduct({
+            key: product.product.key,
+          })) as unknown as IProduct;
+          await updateProduct({
+            key: product.product.key,
+            data: {
+              availableQuantity: availableQuantity + product.quantity,
+            },
+          });
+        }
+        await deleteById({ id });
+      });
+    } else {
+      await updateMassive({
+        ids,
+        data: {
+          deliveryStatus,
+        },
+      });
+    }
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");

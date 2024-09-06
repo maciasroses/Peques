@@ -7,6 +7,12 @@ interface IDataFetch {
   searchParams: {
     client?: string;
     deliveryStatus?: string;
+    discountFrom?: string;
+    discountTo?: string;
+    subtotalFrom?: string;
+    subtotalTo?: string;
+    totalFrom?: string;
+    totalTo?: string;
   };
 }
 

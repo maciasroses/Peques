@@ -8,6 +8,12 @@ const Searchbar = () => {
   const defaultFilters = {
     client: "",
     deliveryStatus: "",
+    discountFrom: "",
+    discountTo: "",
+    subtotalFrom: "",
+    subtotalTo: "",
+    totalFrom: "",
+    totalTo: "",
   };
 
   const { filters, handleSearch, clearFilters } =
@@ -26,7 +32,7 @@ const Searchbar = () => {
             options={[
               { value: "PENDING", label: "Pendiente" },
               { value: "DELIVERED", label: "Entregado" },
-              { value: "CANCELLED", label: "Cancelado" },
+              // { value: "CANCELLED", label: "Cancelado" },
             ]}
             onChange={(value: string) => handleSearch("deliveryStatus", value)}
           />
@@ -34,9 +40,75 @@ const Searchbar = () => {
         <GenericDiv>
           <FlexComponent>
             <GenericSearchInput
+              type="number"
+              id="discountFrom"
+              placeholder="15"
+              ariaLabel="Descuento desde"
+              value={filters.discountFrom}
+              onChange={(value: string) => handleSearch("discountFrom", value)}
+            />
+          </FlexComponent>
+          <FlexComponent>
+            <GenericSearchInput
+              type="number"
+              id="discountTo"
+              placeholder="50"
+              ariaLabel="Descuento hasta"
+              value={filters.discountTo}
+              onChange={(value: string) => handleSearch("discountTo", value)}
+            />
+          </FlexComponent>
+        </GenericDiv>
+        <GenericDiv>
+          <FlexComponent>
+            <GenericSearchInput
+              type="number"
+              id="subtotalFrom"
+              placeholder="100"
+              ariaLabel="Subtotal desde"
+              value={filters.subtotalFrom}
+              onChange={(value: string) => handleSearch("subtotalFrom", value)}
+            />
+          </FlexComponent>
+          <FlexComponent>
+            <GenericSearchInput
+              type="number"
+              id="subtotalTo"
+              placeholder="500"
+              ariaLabel="Subtotal hasta"
+              value={filters.subtotalTo}
+              onChange={(value: string) => handleSearch("subtotalTo", value)}
+            />
+          </FlexComponent>
+        </GenericDiv>
+        <GenericDiv>
+          <FlexComponent>
+            <GenericSearchInput
+              type="number"
+              id="totalFrom"
+              placeholder="250"
+              ariaLabel="Total desde"
+              value={filters.totalFrom}
+              onChange={(value: string) => handleSearch("totalFrom", value)}
+            />
+          </FlexComponent>
+          <FlexComponent>
+            <GenericSearchInput
+              type="number"
+              id="totalTo"
+              placeholder="900"
+              ariaLabel="Total hasta"
+              value={filters.totalTo}
+              onChange={(value: string) => handleSearch("totalTo", value)}
+            />
+          </FlexComponent>
+        </GenericDiv>
+        <GenericDiv>
+          <FlexComponent>
+            <GenericSearchInput
               type="text"
               value={filters.client}
-              placeholder="Buscar por cliente"
+              placeholder="Buscar por cliente..."
               onChange={(value: string) => handleSearch("client", value)}
             />
           </FlexComponent>

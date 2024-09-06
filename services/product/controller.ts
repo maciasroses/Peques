@@ -13,35 +13,43 @@ import {
   deleteById,
   createMassive,
   deleteMassive,
+  createHistory,
+  updateHistory,
+  readHistory,
+  deleteHistoryById,
+  deleteHistoryMassive,
 } from "./model";
-import type { IProvider } from "@/interfaces";
+import type { IProduct, IProductHistory, IProvider } from "@/interfaces";
 
 interface SearchParams {
   q?: string;
-  quantityPerCartonFrom?: string;
-  quantityPerCartonTo?: string;
-  orderDateFrom?: string;
-  orderDateTo?: string;
+  availableQuantityFrom?: string;
+  availableQuantityTo?: string;
+  salePriceMXNFrom?: string;
+  salePriceMXNTo?: string;
+  provider?: string;
 }
 
 export async function getProducts({
   q,
-  quantityPerCartonFrom,
-  quantityPerCartonTo,
-  orderDateFrom,
-  orderDateTo,
+  availableQuantityFrom,
+  availableQuantityTo,
+  salePriceMXNFrom,
+  salePriceMXNTo,
+  provider,
 }: SearchParams) {
   try {
     return await read({
       q,
-      quantityPerCartonFrom: quantityPerCartonFrom
-        ? Number(quantityPerCartonFrom)
+      availableQuantityFrom: availableQuantityFrom
+        ? Number(availableQuantityFrom)
         : undefined,
-      quantityPerCartonTo: quantityPerCartonTo
-        ? Number(quantityPerCartonTo)
+      availableQuantityTo: availableQuantityTo
+        ? Number(availableQuantityTo)
         : undefined,
-      orderDateFrom: orderDateFrom ? new Date(orderDateFrom) : undefined,
-      orderDateTo: orderDateTo ? new Date(orderDateTo) : undefined,
+      salePriceMXNFrom: salePriceMXNFrom ? Number(salePriceMXNFrom) : undefined,
+      salePriceMXNTo: salePriceMXNTo ? Number(salePriceMXNTo) : undefined,
+      provider,
     });
   } catch (error) {
     console.error(error);
@@ -51,11 +59,11 @@ export async function getProducts({
 
 export async function createProduct(formData: FormData) {
   const data = {
-    dollarExchangeRate: Number(formData.get("dollarExchangeRate")),
     name: formData.get("name"),
     key: formData.get("productKey"),
     quantityPerCarton: Number(formData.get("quantityPerCarton")),
     chinesePriceUSD: Number(formData.get("chinesePriceUSD")),
+    dollarExchangeRate: Number(formData.get("dollarExchangeRate")),
     shippingCostMXN: Number(formData.get("shippingCostMXN")),
     salePriceMXN: Number(formData.get("salePriceMXN")),
     orderDate: new Date(formData.get("orderDate") as string),
@@ -77,15 +85,24 @@ export async function createProduct(formData: FormData) {
   const margin = (data.salePriceMXN / totalCostMXN - 1) * 100;
   const salePerQuantity = data.salePriceMXN * data.quantityPerCarton;
 
-  const { dollarExchangeRate, ...rest } = data;
+  const { name, key, providerId, ...rest } = data;
 
   const updatedData = {
-    ...rest,
-    pricePerCartonOrProductUSD,
-    costMXN,
-    totalCostMXN,
-    margin,
-    salePerQuantity,
+    name,
+    key,
+    availableQuantity: data.quantityPerCarton,
+    salePriceMXN: data.salePriceMXN,
+    providerId,
+    history: {
+      create: {
+        ...rest,
+        pricePerCartonOrProductUSD,
+        costMXN,
+        totalCostMXN,
+        margin,
+        salePerQuantity,
+      },
+    },
   };
 
   try {
@@ -128,11 +145,11 @@ export async function createMassiveProduct(formData: FormData) {
       try {
         // Convertir y validar los datos de la fila
         const data = {
-          dollarExchangeRate: Number(row["Cambio Dolar"]),
           name: row["Nombre Producto"],
           key: row["Clave Producto"],
           quantityPerCarton: Number(row["Cantidad"]),
           chinesePriceUSD: Number(row["Precio China (USD)"]),
+          dollarExchangeRate: Number(row["Cambio Dolar"]),
           shippingCostMXN: Number(row["Costo de Envio (MXN)"]),
           salePriceMXN: Number(row["Precio de Venta (MXN)"]),
           orderDate: formatdateExcel(row["Fecha de Orden"]),
@@ -150,10 +167,10 @@ export async function createMassiveProduct(formData: FormData) {
         }
 
         // Buscar el proveedor por su alias
-        const providerId = (await readProvider({
+        const provider = (await readProvider({
           alias: data.providerAlias,
         })) as IProvider;
-        if (!providerId) {
+        if (!provider) {
           errors[`Fila ${index + 2}`] = `Proveedor no encontrado`;
           continue;
         }
@@ -172,16 +189,24 @@ export async function createMassiveProduct(formData: FormData) {
         const margin = (data.salePriceMXN / totalCostMXN - 1) * 100;
         const salePerQuantity = data.salePriceMXN * data.quantityPerCarton;
 
-        const { dollarExchangeRate, providerAlias, ...rest } = data;
+        const { name, key, providerAlias, ...rest } = data;
 
         const updatedData = {
-          ...rest,
-          providerId: providerId.id,
-          pricePerCartonOrProductUSD,
-          costMXN,
-          totalCostMXN,
-          margin,
-          salePerQuantity,
+          name,
+          key,
+          availableQuantity: data.quantityPerCarton,
+          salePriceMXN: data.salePriceMXN,
+          providerId: provider.id,
+          history: {
+            create: {
+              ...rest,
+              pricePerCartonOrProductUSD,
+              costMXN,
+              totalCostMXN,
+              margin,
+              salePerQuantity,
+            },
+          },
         };
 
         // Agregar a la lista de datos válidos
@@ -199,8 +224,9 @@ export async function createMassiveProduct(formData: FormData) {
     }
 
     if (validData.length > 0) {
-      // Crear productos válidos en la base de datos
-      await createMassive({ data: validData });
+      validData.forEach(async (data) => {
+        await create({ data });
+      });
     }
   } catch (error) {
     console.error(error);
@@ -210,20 +236,20 @@ export async function createMassiveProduct(formData: FormData) {
   redirect("/admin/products");
 }
 
-export async function updateProduct(formData: FormData, productId: string) {
+export async function createHistoryProduct(
+  formData: FormData,
+  productId: string
+) {
   const data = {
-    dollarExchangeRate: Number(formData.get("dollarExchangeRate")),
-    name: formData.get("name"),
-    key: formData.get("productKey"),
     quantityPerCarton: Number(formData.get("quantityPerCarton")),
     chinesePriceUSD: Number(formData.get("chinesePriceUSD")),
+    dollarExchangeRate: Number(formData.get("dollarExchangeRate")),
     shippingCostMXN: Number(formData.get("shippingCostMXN")),
     salePriceMXN: Number(formData.get("salePriceMXN")),
     orderDate: new Date(formData.get("orderDate") as string),
-    providerId: formData.get("providerId"),
   };
 
-  const errors = validateSchema("update", data);
+  const errors = validateSchema("addProduct", data);
 
   if (Object.keys(errors).length !== 0)
     return {
@@ -238,10 +264,101 @@ export async function updateProduct(formData: FormData, productId: string) {
   const margin = (data.salePriceMXN / totalCostMXN - 1) * 100;
   const salePerQuantity = data.salePriceMXN * data.quantityPerCarton;
 
-  const { dollarExchangeRate, ...rest } = data;
+  const updatedData = {
+    ...data,
+    pricePerCartonOrProductUSD,
+    costMXN,
+    totalCostMXN,
+    margin,
+    salePerQuantity,
+    productId,
+  };
+
+  try {
+    const product = (await read({ id: productId })) as unknown as IProduct;
+
+    if (!product) {
+      return {
+        errors: { productId: "Producto no encontrado" },
+        success: false,
+      };
+    }
+
+    await createHistory({ data: updatedData });
+
+    await update({
+      id: productId,
+      data: {
+        availableQuantity: product.availableQuantity + data.quantityPerCarton,
+        salePriceMXN: data.salePriceMXN,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    // throw new Error("An internal error occurred");
+    return { message: "An internal error occurred", success: false };
+  }
+  revalidatePath("/admin/products");
+  redirect("/admin/products");
+}
+
+export async function updateProduct(formData: FormData, productId: string) {
+  const data = {
+    name: formData.get("name"),
+    key: formData.get("productKey"),
+    providerId: formData.get("providerId"),
+  };
+
+  const errors = validateSchema("update", data);
+
+  if (Object.keys(errors).length !== 0)
+    return {
+      errors,
+      success: false,
+    };
+
+  try {
+    await update({ id: productId, data });
+  } catch (error) {
+    console.error(error);
+    // throw new Error("An internal error occurred");
+    return { message: "An internal error occurred", success: false };
+  }
+  revalidatePath("/admin/products");
+  redirect("/admin/products");
+}
+
+export async function updateHistoryProduct(
+  productId: string,
+  historyId: string,
+  formData: FormData
+) {
+  const data = {
+    quantityPerCarton: Number(formData.get("quantityPerCarton")),
+    chinesePriceUSD: Number(formData.get("chinesePriceUSD")),
+    dollarExchangeRate: Number(formData.get("dollarExchangeRate")),
+    shippingCostMXN: Number(formData.get("shippingCostMXN")),
+    salePriceMXN: Number(formData.get("salePriceMXN")),
+    orderDate: new Date(formData.get("orderDate") as string),
+  };
+
+  const errors = validateSchema("updateProduct", data);
+
+  if (Object.keys(errors).length !== 0)
+    return {
+      errors,
+      success: false,
+    };
+
+  const pricePerCartonOrProductUSD =
+    data.chinesePriceUSD * data.quantityPerCarton;
+  const costMXN = data.chinesePriceUSD * data.dollarExchangeRate;
+  const totalCostMXN = costMXN + data.shippingCostMXN;
+  const margin = (data.salePriceMXN / totalCostMXN - 1) * 100;
+  const salePerQuantity = data.salePriceMXN * data.quantityPerCarton;
 
   const updatedData = {
-    ...rest,
+    ...data,
     pricePerCartonOrProductUSD,
     costMXN,
     totalCostMXN,
@@ -250,7 +367,29 @@ export async function updateProduct(formData: FormData, productId: string) {
   };
 
   try {
-    await update({ id: productId, data: updatedData });
+    const { quantityPerCarton } = (await readHistory({
+      id: historyId,
+    })) as unknown as IProductHistory;
+
+    const newQuantity = data.quantityPerCarton - quantityPerCarton;
+
+    const { availableQuantity } = (await read({
+      id: productId,
+    })) as unknown as IProduct;
+
+    await update({
+      id: productId,
+      data: {
+        availableQuantity: availableQuantity + newQuantity,
+        salePriceMXN: data.salePriceMXN,
+      },
+    });
+
+    await updateHistory({
+      id: historyId,
+      productId,
+      data: updatedData,
+    });
   } catch (error) {
     console.error(error);
     // throw new Error("An internal error occurred");
@@ -275,6 +414,56 @@ export async function deleteProduct(productId: string) {
 export async function deleteMassiveProducts(ids: string[]) {
   try {
     await deleteMassive({ ids });
+  } catch (error) {
+    console.error(error);
+    // throw new Error("An internal error occurred");
+    return { message: "An internal error occurred", success: false };
+  }
+}
+
+export async function deleteHistoryProduct(
+  productId: string,
+  historyId: string
+) {
+  try {
+    const { quantityPerCarton } = (await readHistory({
+      id: historyId,
+    })) as unknown as IProductHistory;
+
+    const { availableQuantity } = (await read({
+      id: productId,
+    })) as unknown as IProduct;
+
+    await update({
+      id: productId,
+      data: {
+        availableQuantity: availableQuantity - quantityPerCarton,
+      },
+    });
+
+    await deleteHistoryById({ id: historyId, productId });
+  } catch (error) {
+    console.error(error);
+    // throw new Error("An internal error occurred");
+    return { message: "An internal error occurred", success: false };
+  }
+  revalidatePath("/admin/products");
+  redirect("/admin/products");
+}
+
+export async function deleteMassiveProductsHistory(
+  productId: string,
+  ids: string[]
+) {
+  try {
+    await update({
+      id: productId,
+      data: {
+        availableQuantity: 0,
+      },
+    });
+
+    await deleteHistoryMassive({ productId, ids });
   } catch (error) {
     console.error(error);
     // throw new Error("An internal error occurred");

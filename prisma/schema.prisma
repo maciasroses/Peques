@@ -41,11 +41,27 @@ model Provider {
 }
 
 model Product {
+  id                String @id @default(uuid())
+  name              String
+  key               String @unique
+  availableQuantity Int    @default(0)
+  salePriceMXN      Float
+
+  provider   Provider @relation(fields: [providerId], references: [id])
+  providerId String
+
+  history ProductHistory[]
+  orders  ProductOnOrder[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductHistory {
   id                         String   @id @default(uuid())
-  name                       String
-  key                        String   @unique
   quantityPerCarton          Int
   chinesePriceUSD            Float
+  dollarExchangeRate         Float
   pricePerCartonOrProductUSD Float
   costMXN                    Float
   shippingCostMXN            Float
@@ -55,10 +71,8 @@ model Product {
   salePerQuantity            Float
   orderDate                  DateTime
 
-  provider   Provider @relation(fields: [providerId], references: [id])
-  providerId String
-
-  orders ProductOnOrder[]
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -84,6 +98,7 @@ model Order {
   id             String         @id @default(uuid())
   client         String // CONSIDER CHANGE TO USER IN A FUTURE
   discount       Float?
+  subtotal       Float
   total          Float
   shipmentType   String
   isPaid         Boolean        @default(false)

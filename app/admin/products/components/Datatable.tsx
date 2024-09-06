@@ -1,10 +1,10 @@
 "use client";
 
-// import Action from "./Action";
 import Form from "./Form";
 import { useRowSelection } from "@/hooks";
 import { useEffect, useState } from "react";
 import formatCurrency from "@/utils/format-currency";
+import { Form as HistoryForm, Datatable as HistoryDatatable } from "./History";
 import formatDateLatinAmerican from "@/utils/formatdate-latin";
 import {
   Action,
@@ -13,6 +13,50 @@ import {
   DatatableSkeleton,
 } from "@/components";
 import type { IProduct, IProvider } from "@/interfaces";
+import type {
+  // ConditionalStyles,
+  ExpanderComponentProps,
+} from "react-data-table-component";
+
+const ExpandedComponent: React.FC<ExpanderComponentProps<IProduct>> = ({
+  data,
+}) => {
+  return (
+    <div className="pl-12 pb-4">
+      <HistoryDatatable orders={data._count.orders} history={data.history} />
+    </div>
+  );
+};
+
+// const conditionalRowStyles = (theme: string): ConditionalStyles<IProduct>[] => {
+//   return [
+//     {
+//       when: (row: IProduct) => {
+//         const historyQuantity = row.history.reduce(
+//           (acc, history) => acc + history.quantityPerCarton,
+//           0
+//         );
+//         const orderQuantity = row.orders.reduce(
+//           (acc, order) => acc + order.quantity!,
+//           0
+//         );
+//         const currentAvailableQuantity = historyQuantity - orderQuantity;
+
+//         const productQuantity = row.availableQuantity;
+
+//         const percentageAvailable =
+//           (currentAvailableQuantity / productQuantity) * 100;
+
+//         console.log(percentageAvailable);
+
+//         return percentageAvailable >= 75;
+//       },
+//       style: {
+//         backgroundColor: theme === "dark" ? "#E3FCE3" : "#E3FCE3",
+//       },
+//     },
+//   ];
+// };
 
 interface IDatatable {
   products: IProduct[];
@@ -23,15 +67,17 @@ const Datatable = ({ products, providers }: IDatatable) => {
   const columns = [
     {
       name: "Acciones",
-      wdith: "100px",
+      width: "200px",
       cell: (row: IProduct) => (
         <div className="flex justify-center gap-2">
-          {/* <Action action="update" product={row} providers={providers} /> */}
+          <Action action="create">
+            {/* @ts-ignore */}
+            <HistoryForm productId={row.id} />
+          </Action>
           <Action action="update">
             {/* @ts-ignore */}
             <Form product={row} providers={providers} />
           </Action>
-          {/* <Action action="delete" product={row} /> */}
           <Action action="delete" cannotDelete={row._count.orders > 0}>
             {/* @ts-ignore */}
             <Form product={row} />
@@ -53,83 +99,20 @@ const Datatable = ({ products, providers }: IDatatable) => {
       cell: (row: { key: string }) => row.key,
     },
     {
-      name: "Cantidad",
-      selector: (row: { quantityPerCarton: number }) => row.quantityPerCarton,
+      name: "Cantidad Disponible",
+      selector: (row: { availableQuantity: number }) => row.availableQuantity,
       sortable: true,
     },
     {
-      name: "Costo de China (USD)",
-      selector: (row: { chinesePriceUSD: number }) => row.chinesePriceUSD,
-      sortable: true,
-      format: (row: { chinesePriceUSD: number }) =>
-        formatCurrency(row.chinesePriceUSD, "USD"),
-    },
-    {
-      name: "Costo por cantidad (USD)",
-      selector: (row: { pricePerCartonOrProductUSD: number }) =>
-        row.pricePerCartonOrProductUSD,
-      sortable: true,
-      format: (row: { pricePerCartonOrProductUSD: number }) =>
-        formatCurrency(row.pricePerCartonOrProductUSD, "USD"),
-    },
-    {
-      name: "Costo (MXN)",
-      selector: (row: { costMXN: number }) => row.costMXN,
-      sortable: true,
-      format: (row: { costMXN: number }) => formatCurrency(row.costMXN, "MXN"),
-    },
-    {
-      name: "Costo de Envio (MXN)",
-      selector: (row: { shippingCostMXN: number }) => row.shippingCostMXN,
-      sortable: true,
-      format: (row: { shippingCostMXN: number }) =>
-        formatCurrency(row.shippingCostMXN, "MXN"),
-    },
-    {
-      name: "Costo Total (MXN)",
-      selector: (row: { totalCostMXN: number }) => row.totalCostMXN,
-      sortable: true,
-      format: (row: { totalCostMXN: number }) =>
-        formatCurrency(row.totalCostMXN, "MXN"),
-    },
-    {
-      name: "Precio de Venta (MXN)",
+      name: "Precio de Venta",
       selector: (row: { salePriceMXN: number }) => row.salePriceMXN,
       sortable: true,
       format: (row: { salePriceMXN: number }) =>
         formatCurrency(row.salePriceMXN, "MXN"),
     },
     {
-      name: "Margen (%)",
-      selector: (row: { margin: number }) => row.margin,
-      sortable: true,
-      format: (row: { margin: number }) => (
-        <span
-          className={`${
-            row.margin >= 0 ? "text-green-900" : "text-red-900"
-          } font-semibold`}
-        >
-          {row.margin.toFixed(2)}%
-        </span>
-      ),
-    },
-    {
-      name: "Venta por cantidad (MXN)",
-      selector: (row: { salePerQuantity: number }) => row.salePerQuantity,
-      sortable: true,
-      format: (row: { salePerQuantity: number }) =>
-        formatCurrency(row.salePerQuantity, "MXN"),
-    },
-    {
-      name: "Fecha de Pedido",
-      selector: (row: { orderDate: Date }) => row.orderDate,
-      sortable: true,
-      format: (row: { orderDate: Date }) =>
-        formatDateLatinAmerican(row.orderDate),
-    },
-    {
       name: "Proveedor",
-      selector: (row: { provider: { alias: string } }) => row.provider.alias,
+      selector: (row: { provider: { name: string } }) => row.provider.name,
       sortable: true,
     },
     {
@@ -167,7 +150,6 @@ const Datatable = ({ products, providers }: IDatatable) => {
             <>
               {showMultiActions && (
                 <div className="flex justify-end gap-2 mb-4">
-                  {/* <Action action="massiveDelete" product={selectedRows} /> */}
                   <Action
                     action="massiveDelete"
                     cannotDelete={selectedRows.some(
@@ -183,6 +165,11 @@ const Datatable = ({ products, providers }: IDatatable) => {
                 columns={columns}
                 data={products}
                 onSelectedRowsChange={handleSelectRows}
+                isExapandable
+                expandableRowsComponent={(props) => (
+                  <ExpandedComponent {...props} />
+                )}
+                // conditionalRowStyles={conditionalRowStyles}
               />
             </>
           ) : (

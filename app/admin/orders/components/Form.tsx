@@ -46,7 +46,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
   };
 
   const availableProducts = products?.filter(
-    (product) => product.quantityPerCarton > 0
+    (product) => product.availableQuantity > 0
   );
 
   const submitAction: React.FormEventHandler<HTMLFormElement> = async (
@@ -349,7 +349,7 @@ const ProductForm = ({
           step="1"
           ariaLabel="Cantidad"
           placeholder="5"
-          defaultValue={currentProduct.quantityPerCarton?.toString() ?? ""}
+          defaultValue={currentProduct.availableQuantity?.toString() ?? ""}
           error={badResponse.errors?.products?.[index]?.quantity}
         />
       </GenericDiv>

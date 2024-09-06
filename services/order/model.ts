@@ -24,9 +24,15 @@ export async function create({
 
 interface ISearchParams {
   id?: string;
-  isPaid: boolean;
+  isPaid?: boolean;
   client?: string;
   deliveryStatus?: string;
+  discountFrom?: number;
+  discountTo?: number;
+  subtotalFrom?: number;
+  subtotalTo?: number;
+  totalFrom?: number;
+  totalTo?: number;
 }
 
 export async function read({
@@ -34,18 +40,44 @@ export async function read({
   isPaid,
   client,
   deliveryStatus,
+  discountFrom,
+  discountTo,
+  subtotalFrom,
+  subtotalTo,
+  totalFrom,
+  totalTo,
 }: ISearchParams) {
   if (id) {
-    return await prisma.order.findUnique({ where: { id } });
+    return await prisma.order.findUnique({
+      where: { id },
+      include: {
+        products: { include: { product: true } },
+      },
+    });
   }
 
   interface Where {
     isPaid?: object;
     client?: object;
     deliveryStatus?: object;
+    discount?: object;
+    subtotal?: object;
+    total?: object;
   }
 
   const where: Where = {};
+
+  if (discountFrom || discountTo) {
+    where.discount = { gte: discountFrom, lte: discountTo };
+  }
+
+  if (subtotalFrom || subtotalTo) {
+    where.subtotal = { gte: subtotalFrom, lte: subtotalTo };
+  }
+
+  if (totalFrom || totalTo) {
+    where.total = { gte: totalFrom, lte: totalTo };
+  }
 
   if (deliveryStatus) where.deliveryStatus = { equals: deliveryStatus };
 

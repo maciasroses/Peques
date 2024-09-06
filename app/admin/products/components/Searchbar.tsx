@@ -3,14 +3,16 @@
 import { ReactNode } from "react";
 import { useSearchFilter } from "@/hooks";
 import { GenericSearchInput } from "@/components";
+import { IProvider } from "@/interfaces";
 
-const Searchbar = () => {
+const Searchbar = ({ providers }: { providers: IProvider[] }) => {
   const defaultFilters = {
     q: "",
-    quantityPerCartonFrom: "",
-    quantityPerCartonTo: "",
-    orderDateFrom: "",
-    orderDateTo: "",
+    availableQuantityFrom: "",
+    availableQuantityTo: "",
+    salePriceMXNFrom: "",
+    salePriceMXNTo: "",
+    provider: "",
   };
 
   const { filters, handleSearch, clearFilters } =
@@ -23,22 +25,28 @@ const Searchbar = () => {
           <GenericDiv>
             <FlexComponent>
               <GenericSearchInput
-                type="date"
-                id="orderDateFrom"
-                ariaLabel="Fecha de orden desde"
-                value={filters.orderDateFrom}
+                type="number"
+                step="1"
+                id="availableQuantityFrom"
+                placeholder="5"
+                ariaLabel="Cantidad desde"
+                value={filters.availableQuantityFrom}
                 onChange={(value: string) =>
-                  handleSearch("orderDateFrom", value)
+                  handleSearch("availableQuantityFrom", value)
                 }
               />
             </FlexComponent>
             <FlexComponent>
               <GenericSearchInput
-                type="date"
-                id="orderDateTo"
-                ariaLabel="Fecha de orden hasta"
-                value={filters.orderDateTo}
-                onChange={(value: string) => handleSearch("orderDateTo", value)}
+                type="number"
+                step="1"
+                id="availableQuantityTo"
+                placeholder="20"
+                ariaLabel="Cantidad hasta"
+                value={filters.availableQuantityTo}
+                onChange={(value: string) =>
+                  handleSearch("availableQuantityTo", value)
+                }
               />
             </FlexComponent>
           </GenericDiv>
@@ -46,24 +54,24 @@ const Searchbar = () => {
             <FlexComponent>
               <GenericSearchInput
                 type="number"
-                placeholder="5"
-                id="quantityPerCartonFrom"
-                ariaLabel="Cantidad por caja desde"
-                value={filters.quantityPerCartonFrom}
+                placeholder="100"
+                id="salePriceMXNFrom"
+                ariaLabel="Precio desde"
+                value={filters.salePriceMXNFrom}
                 onChange={(value: string) =>
-                  handleSearch("quantityPerCartonFrom", value)
+                  handleSearch("salePriceMXNFrom", value)
                 }
               />
             </FlexComponent>
             <FlexComponent>
               <GenericSearchInput
                 type="number"
-                placeholder="20"
-                id="quantityPerCartonTo"
-                ariaLabel="Cantidad por caja hasta"
-                value={filters.quantityPerCartonTo}
+                placeholder="500"
+                id="salePriceMXNTo"
+                ariaLabel="Precio hasta"
+                value={filters.salePriceMXNTo}
                 onChange={(value: string) =>
-                  handleSearch("quantityPerCartonTo", value)
+                  handleSearch("salePriceMXNTo", value)
                 }
               />
             </FlexComponent>
@@ -71,8 +79,18 @@ const Searchbar = () => {
         </GenericParentDiv>
         <GenericDiv>
           <GenericSearchInput
+            type="select"
+            placeholder="Selecciona un proveedor"
+            value={filters.provider}
+            onChange={(value: string) => handleSearch("provider", value)}
+            options={providers?.map((provider) => ({
+              label: provider.name,
+              value: provider.alias,
+            }))}
+          />
+          <GenericSearchInput
             type="text"
-            placeholder="Buscar..."
+            placeholder="Busca por nombre o clave..."
             value={filters.q}
             onChange={(value: string) => handleSearch("q", value)}
           />
