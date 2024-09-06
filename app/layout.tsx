@@ -40,7 +40,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="bg-neutral-light dark:bg-neutral">
+      <body className="bg-neutral-light dark:bg-neutral dark:text-white">
         <ThemeComponent>
           <AuthComponent>
             <Header user={user} />

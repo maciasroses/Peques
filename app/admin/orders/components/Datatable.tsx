@@ -3,25 +3,24 @@
 import Form from "./Form";
 import { useRowSelection } from "@/hooks";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import formatCurrency from "@/utils/format-currency";
-import {
-  Action,
-  Card404,
-  DatatableSkeleton,
-  Datatable as CustomDatatable,
-} from "@/components";
-import type { IOrder, IProduct } from "@/interfaces";
 import {
   markAsPaid,
   markMassiveAsPaid,
   updateDeliveryStatus,
   updateMassiveDeliveryStatus,
 } from "@/services/order/controller";
-import { usePathname } from "next/navigation";
+import {
+  Action,
+  Card404,
+  DatatableSkeleton,
+  Datatable as CustomDatatable,
+} from "@/components";
+import type { IOrder } from "@/interfaces";
 
 interface IDatatable {
   orders: IOrder[];
-  products?: IProduct[];
 }
 
 interface IProductInOrder {
@@ -33,8 +32,10 @@ interface IProductInOrder {
   };
 }
 
-const Datatable = ({ orders, products }: IDatatable) => {
+const Datatable = ({ orders }: IDatatable) => {
   const pathname = usePathname();
+  // const [selectedValue, setSelectedValue] = useState<string | null>(null);
+  // const [previousSelect, setPreviousSelect] = useState<string | null>(null);
   const { selectedRows, showMultiActions, handleSelectRows } =
     useRowSelection<IOrder>();
 
@@ -43,6 +44,13 @@ const Datatable = ({ orders, products }: IDatatable) => {
     event: React.ChangeEvent<HTMLSelectElement>,
     isMassive?: boolean
   ) => {
+    // if (event.target.value === "CANCELLED") {
+    //   setPreviousSelect(selectedValue);
+    // } else {
+    //   setSelectedValue(event.target.value);
+    // }
+    // console.log("selectedValue", selectedValue);
+    // console.log("previousSelect", previousSelect);
     if (isMassive) {
       await updateMassiveDeliveryStatus(
         selectedRows.map((row) => row.id),
@@ -64,40 +72,48 @@ const Datatable = ({ orders, products }: IDatatable) => {
   };
 
   const columns = [
-    ...(pathname === "/admin/orders"
-      ? [
-          {
-            name: "Acciones",
-            width: "200px",
-            cell: (row: IOrder) => (
-              <div className="flex justify-center gap-2">
-                <button
-                  onClick={() => handleIsPaid(row.id)}
-                  className={"bg-accent text-white rounded-md p-2"}
-                >
-                  Marcar como Pagado
-                </button>
-              </div>
-            ),
-          },
-        ]
-      : []),
+    {
+      name: "Acciones",
+      width: pathname === "/admin/orders" ? "250px" : "80px",
+      cell: (row: IOrder) => (
+        <div className="flex justify-center gap-2">
+          <Action action="delete">
+            {/* @ts-ignore */}
+            <Form order={row} />
+          </Action>
+          {pathname === "/admin/orders" && (
+            <button
+              onClick={() => handleIsPaid(row.id)}
+              className={"bg-accent text-white rounded-md p-2"}
+            >
+              Marcar como Pagado
+            </button>
+          )}
+        </div>
+      ),
+    },
     {
       name: "Estado de Entrega",
       selector: (row: { deliveryStatus: string }) => row.deliveryStatus,
       sortable: true,
       width: "140px",
-      format: (row: { id: string; deliveryStatus: string }) => (
-        <select
-          defaultValue={row.deliveryStatus}
-          onChange={(event) => handleSelectDeliveryStatus(row.id, event)}
-          className="bg-accent text-white rounded-md p-2 w-full"
-        >
-          <option value="PENDING">Pendiente</option>
-          <option value="DELIVERED">Entregado</option>
-          <option value="CANCELLED">Cancelado</option>
-        </select>
-      ),
+      format: (row: { id: string; deliveryStatus: string }) => {
+        if (row.deliveryStatus === "CANCELLED") {
+          return <span className="text-red-500 font-semibold">Cancelado</span>;
+        } else {
+          return (
+            <select
+              defaultValue={row.deliveryStatus}
+              onChange={(event) => handleSelectDeliveryStatus(row.id, event)}
+              className="bg-accent text-white rounded-md p-2 w-full"
+            >
+              <option value="PENDING">Pendiente</option>
+              <option value="DELIVERED">Entregado</option>
+              <option value="CANCELLED">Cancelado</option>
+            </select>
+          );
+        }
+      },
     },
     {
       name: "Tipo de Envío",
@@ -159,6 +175,10 @@ const Datatable = ({ orders, products }: IDatatable) => {
             <>
               {showMultiActions && (
                 <div className="flex justify-end gap-2 mb-4">
+                  <Action action="massiveDelete">
+                    {/* @ts-ignore */}
+                    <Form order={selectedRows} />
+                  </Action>
                   {pathname === "/admin/orders" && (
                     <button
                       onClick={() => handleIsPaid(selectedRows[0].id, true)}
@@ -167,21 +187,25 @@ const Datatable = ({ orders, products }: IDatatable) => {
                       Marcar como Pagado
                     </button>
                   )}
-                  <select
-                    onChange={(event) =>
-                      handleSelectDeliveryStatus(
-                        selectedRows[0].id,
-                        event,
-                        true
-                      )
-                    }
-                    className="bg-accent text-white rounded-md p-2"
-                  >
-                    <option value="">Estado de Envio</option>
-                    <option value="PENDING">Pendiente</option>
-                    <option value="DELIVERED">Entregado</option>
-                    <option value="CANCELLED">Cancelado</option>
-                  </select>
+                  {!selectedRows.some(
+                    (row) => row.deliveryStatus === "CANCELLED"
+                  ) && (
+                    <select
+                      onChange={(event) =>
+                        handleSelectDeliveryStatus(
+                          selectedRows[0].id,
+                          event,
+                          true
+                        )
+                      }
+                      className="bg-accent text-white rounded-md p-2"
+                    >
+                      <option value="">Estado de Envio</option>
+                      <option value="PENDING">Pendiente</option>
+                      <option value="DELIVERED">Entregado</option>
+                      <option value="CANCELLED">Cancelado</option>
+                    </select>
+                  )}
                 </div>
               )}
               <CustomDatatable
