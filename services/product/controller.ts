@@ -11,7 +11,6 @@ import {
   update,
   create,
   deleteById,
-  createMassive,
   deleteMassive,
   createHistory,
   updateHistory,

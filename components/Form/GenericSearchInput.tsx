@@ -39,7 +39,7 @@ const GenericSearchInput: React.FC<IGenericSearchInputProps> = ({
     id,
     value,
     className: clsx(
-      "w-full p-2.5 bg-accent bg-opacity-10 border border-accent dark:bg-accent-dark dark:bg-opacity-10 dark:border-accent-dark dark:text-accent-dark dark:placeholder-accent-dark dark:focus:ring-accent dark:focus:border-accent",
+      "w-full p-2.5 bg-accent bg-opacity-10 border border-accent dark:bg-accent-dark dark:bg-opacity-40 dark:border-accent-dark dark:text-accent dark:placeholder-accent-dark dark:focus:ring-accent dark:focus:border-accent",
       inputClassName
     ),
   };

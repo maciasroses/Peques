@@ -66,10 +66,7 @@ const AdminOrdersPage = async ({ searchParams }: IAdminOrdersPage) => {
         }
         fallback={<DatatableSkeleton />}
       >
-        <DataFetch
-          products={products}
-          searchParams={searchParamsForDatatable}
-        />
+        <DataFetch searchParams={searchParamsForDatatable} />
       </Suspense>
     </>
   );

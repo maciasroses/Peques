@@ -8,9 +8,16 @@ import {
   read as readProduct,
   update as updateProduct,
 } from "@/services/product/model";
-import { read, create, update, updateMassive, deleteById } from "./model";
+import {
+  read,
+  create,
+  update,
+  updateMassive,
+  deleteById,
+  deleteMassive,
+} from "./model";
 import { getProducts } from "../product/controller";
-import { IOrder, IProduct } from "@/interfaces";
+import type { IProduct } from "@/interfaces";
 
 interface ISearchParams {
   client?: string;
@@ -434,15 +441,13 @@ export async function updateDeliveryStatus(
           },
         });
       });
-      await deleteById({ id });
-    } else {
-      await update({
-        id,
-        data: {
-          deliveryStatus,
-        },
-      });
     }
+    await update({
+      id,
+      data: {
+        deliveryStatus,
+      },
+    });
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");
@@ -470,16 +475,14 @@ export async function updateMassiveDeliveryStatus(
             },
           });
         }
-        await deleteById({ id });
-      });
-    } else {
-      await updateMassive({
-        ids,
-        data: {
-          deliveryStatus,
-        },
       });
     }
+    await updateMassive({
+      ids,
+      data: {
+        deliveryStatus,
+      },
+    });
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");
@@ -513,5 +516,55 @@ export async function markMassiveAsPaid(ids: string[]) {
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");
+  }
+}
+
+export async function deleteOrder(id: string, pathname: string) {
+  try {
+    const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
+    if (order.deliveryStatus !== "CANCELLED") {
+      order.products.forEach(async (product) => {
+        await updateProduct({
+          key: product.product.key,
+          data: {
+            availableQuantity:
+              product.product.availableQuantity + product.quantity,
+          },
+        });
+      });
+    }
+
+    await deleteById({ id });
+  } catch (error) {
+    console.error(error);
+    // throw new Error("An internal error occurred");
+    return { message: "An internal error occurred", success: false };
+  }
+  revalidatePath(pathname);
+  redirect(pathname);
+}
+
+export async function deleteMassiveOrder(ids: string[]) {
+  try {
+    for (const id of ids) {
+      const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
+      if (order.deliveryStatus !== "CANCELLED") {
+        order.products.forEach(async (product) => {
+          await updateProduct({
+            key: product.product.key,
+            data: {
+              availableQuantity:
+                product.product.availableQuantity + product.quantity,
+            },
+          });
+        });
+      }
+    }
+
+    await deleteMassive(ids);
+  } catch (error) {
+    console.error(error);
+    // throw new Error("An internal error occurred");
+    return { message: "An internal error occurred", success: false };
   }
 }

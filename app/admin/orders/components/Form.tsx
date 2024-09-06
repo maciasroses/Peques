@@ -2,11 +2,26 @@
 
 import { ReactNode, useState } from "react";
 import { INITIAL_STATE_RESPONSE } from "@/constants";
-import { createMassiveOrder, createOrder } from "@/services/order/controller";
+import {
+  createMassiveOrder,
+  createOrder,
+  deleteMassiveOrder,
+  deleteOrder,
+} from "@/services/order/controller";
 import { MinusCircle, PlusCircle, Upload } from "@/public/icons";
 import { GenericInput, SubmitButton } from "@/components";
 import type { ICreateOrder, IOrder, IProduct } from "@/interfaces";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
+
+interface IProductInOrder {
+  productId: string;
+  orderId: string;
+  quantity: number;
+  product: {
+    name: string;
+  };
+}
 
 interface IForm {
   onClose: () => void;
@@ -16,6 +31,7 @@ interface IForm {
 }
 
 const Form = ({ onClose, products, order, action }: IForm) => {
+  const pathname = usePathname();
   const [formView, setFormView] = useState(true);
   const [isPending, setIsPending] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -58,11 +74,16 @@ const Form = ({ onClose, products, order, action }: IForm) => {
     const res =
       action === "create" && formView
         ? await createOrder(formData)
-        : file && !formView && (await createMassiveOrder(formData));
+        : file && !formView
+        ? await createMassiveOrder(formData)
+        : action === "delete"
+        ? await deleteOrder((order as IOrder).id, pathname)
+        : await deleteMassiveOrder((order as IOrder[]).map((o) => o.id));
     if (res && !res.success) {
       setBadResponse(res);
     } else {
       onClose();
+      if (action === "massiveDelete") location.replace(pathname);
     }
     setIsPending(false);
   };
@@ -121,89 +142,154 @@ const Form = ({ onClose, products, order, action }: IForm) => {
       {formView ? (
         <form onSubmit={submitAction}>
           <fieldset disabled={isPending}>
-            <div className="flex flex-col gap-2">
-              <GenericInput
-                id="client"
-                type="text"
-                ariaLabel="Nombre del Cliente"
-                placeholder="Jorge Pérez"
-                defaultValue={(order as IOrder)?.client ?? ""}
-                error={badResponse.errors?.order?.client}
-              />
+            {action !== "delete" && action !== "massiveDelete" ? (
+              <div className="flex flex-col gap-2">
+                <GenericInput
+                  id="client"
+                  type="text"
+                  ariaLabel="Nombre del Cliente"
+                  placeholder="Jorge Pérez"
+                  defaultValue={(order as IOrder)?.client ?? ""}
+                  error={badResponse.errors?.order?.client}
+                />
 
-              <GenericPairDiv>
-                <GenericDiv>
-                  <GenericInput
-                    id="discount"
-                    type="number"
-                    min="0"
-                    max="100"
-                    ariaLabel="Descuento (Opcional)"
-                    placeholder="10"
-                    defaultValue={(order as IOrder)?.discount?.toString() ?? ""}
-                  />
-                </GenericDiv>
-                <GenericDiv>
-                  <GenericInput
-                    id="shipmentType"
-                    type="text"
-                    ariaLabel="Tipo de Envío"
-                    placeholder="Terrestre"
-                    defaultValue={(order as IOrder)?.shipmentType ?? ""}
-                    error={badResponse.errors?.order?.shipmentType}
-                  />
-                </GenericDiv>
-              </GenericPairDiv>
-              {Array.from({ length: productsCounter }).map((_, index) => {
-                const filteredProducts = availableProducts?.filter(
-                  (product) =>
-                    !selectedProducts.includes(product.key) ||
-                    product.key === selectedProducts[index]
-                );
+                <GenericPairDiv>
+                  <GenericDiv>
+                    <GenericInput
+                      id="discount"
+                      type="number"
+                      min="0"
+                      max="100"
+                      ariaLabel="Descuento (Opcional)"
+                      placeholder="10"
+                      defaultValue={
+                        (order as IOrder)?.discount?.toString() ?? ""
+                      }
+                    />
+                  </GenericDiv>
+                  <GenericDiv>
+                    <GenericInput
+                      id="shipmentType"
+                      type="text"
+                      ariaLabel="Tipo de Envío"
+                      placeholder="Terrestre"
+                      defaultValue={(order as IOrder)?.shipmentType ?? ""}
+                      error={badResponse.errors?.order?.shipmentType}
+                    />
+                  </GenericDiv>
+                </GenericPairDiv>
+                {Array.from({ length: productsCounter }).map((_, index) => {
+                  const filteredProducts = availableProducts?.filter(
+                    (product) =>
+                      !selectedProducts.includes(product.key) ||
+                      product.key === selectedProducts[index]
+                  );
 
-                return (
-                  <ProductForm
-                    key={index}
-                    index={index}
-                    products={filteredProducts ?? []}
-                    onProductSelect={handleProductSelect}
-                    currentProduct={(order as IOrder)?.products?.[index] ?? {}}
-                    badResponse={badResponse}
-                  />
-                );
-              })}
-              <div className="flex gap-2 items-center justify-end">
-                <button
-                  type="button"
-                  onClick={() => handleIncreaseNSubstract("increase")}
-                >
-                  <PlusCircle />
-                </button>
-                {productsCounter > 1 && (
+                  return (
+                    <ProductForm
+                      key={index}
+                      index={index}
+                      products={filteredProducts ?? []}
+                      onProductSelect={handleProductSelect}
+                      currentProduct={
+                        (order as IOrder)?.products?.[index] ?? {}
+                      }
+                      badResponse={badResponse}
+                    />
+                  );
+                })}
+                <div className="flex gap-2 items-center justify-end">
                   <button
                     type="button"
-                    onClick={() => handleIncreaseNSubstract("substract")}
+                    onClick={() => handleIncreaseNSubstract("increase")}
                   >
-                    <MinusCircle />
+                    <PlusCircle />
                   </button>
+                  {productsCounter > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleIncreaseNSubstract("substract")}
+                    >
+                      <MinusCircle />
+                    </button>
+                  )}
+                  <span>
+                    {productsCounter > 1 && `(${productsCounter} total)`}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <>
+                {action === "delete" ? (
+                  <div className="flex flex-col gap-2">
+                    <h1 className="text-center text-base md:text-xl">
+                      ¿Estás seguro de que deseas eliminar este pedido?
+                    </h1>
+                    <div className="flex justify-center gap-2">
+                      {(order as IOrder).client}
+                      {" | "}
+                      {(order as IOrder).shipmentType}
+                      {" | "}
+                      <ul>
+                        {(order as IOrder).products.map((product, index) => (
+                          <li key={index}>
+                            {
+                              (product as unknown as IProductInOrder).product
+                                .name
+                            }
+                            {" - "}
+                            {(product as unknown as IProductInOrder).quantity}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <h1 className="text-center text-base md:text-xl">
+                      ¿Estás seguro de que deseas eliminar estos pedidos?
+                    </h1>
+                    <ul className="flex flex-col items-center gap-2">
+                      {(order as IOrder[]).map((o, index) => (
+                        <li key={index} className="flex gap-2">
+                          {o.client}
+                          {" | "}
+                          {o.shipmentType}
+                          {" | "}
+                          <ul>
+                            {o.products.map((product, index) => (
+                              <li key={index}>
+                                {
+                                  (product as unknown as IProductInOrder)
+                                    .product.name
+                                }
+                                {" - "}
+                                {
+                                  (product as unknown as IProductInOrder)
+                                    .quantity
+                                }
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
-                <span>
-                  {productsCounter > 1 && `(${productsCounter} total)`}
-                </span>
-              </div>
-              <div className="text-center mt-4">
-                <SubmitButton
-                  title={
-                    action === "create"
-                      ? "Crear"
-                      : action === "update"
-                      ? "Actualizar"
-                      : "Eliminar"
-                  }
-                  color="accent"
-                  pending={isPending}
-                />
-              </div>
+              </>
+            )}
+            <div className="text-center mt-4">
+              <SubmitButton
+                title={
+                  action === "create"
+                    ? "Crear"
+                    : action === "update"
+                    ? "Actualizar"
+                    : "Eliminar"
+                }
+                color="accent"
+                pending={isPending}
+              />
             </div>
           </fieldset>
         </form>

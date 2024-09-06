@@ -32,7 +32,7 @@ const Searchbar = () => {
             options={[
               { value: "PENDING", label: "Pendiente" },
               { value: "DELIVERED", label: "Entregado" },
-              // { value: "CANCELLED", label: "Cancelado" },
+              { value: "CANCELLED", label: "Cancelado" },
             ]}
             onChange={(value: string) => handleSearch("deliveryStatus", value)}
           />
