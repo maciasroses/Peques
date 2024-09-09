@@ -87,7 +87,11 @@ export async function getSales({
       totalTo: totalTo ? Number(totalTo) : undefined,
       isForGraph,
       orderBy,
-      yearOfData: yearOfData ? Number(yearOfData) : new Date().getFullYear(),
+      yearOfData: yearOfData
+        ? Number(yearOfData)
+        : isForGraph
+        ? new Date().getFullYear()
+        : undefined,
     });
   } catch (error) {
     console.error(error);
