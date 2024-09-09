@@ -6,7 +6,7 @@ import Logo from "@/public/logo-color.webp";
 import TempForm from "./components/TempForm";
 
 export const metadata: Metadata = {
-  title: "Log in",
+  title: "Iniciar sesión",
 };
 
 const LoginPage = () => {

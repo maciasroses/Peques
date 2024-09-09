@@ -3,7 +3,7 @@
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 import { create, read } from "./model";
-import { validateUser } from "./schema";
+import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { JWTPayload, SignJWT, jwtVerify } from "jose";
 import type { IUser } from "@/interfaces";
@@ -39,7 +39,7 @@ export async function login(formData: FormData) {
     password: formData.get("password"),
   };
 
-  const errors = validateUser("login", dataToValidate);
+  const errors = validateSchema("login", dataToValidate);
 
   if (Object.keys(errors).length !== 0) {
     return {
@@ -68,8 +68,8 @@ export async function login(formData: FormData) {
     // return { message: "Successfully logged in", success: true };
   } catch (error) {
     console.error(error);
-    // throw new Error("An internal error occurred");
-    return { message: "An internal error occurred", success: false };
+    // throw new Error("Ocurrió un error interno.");
+    return { message: "Ocurrió un error interno.", success: false };
   }
   redirect("/admin/home");
 }
@@ -82,7 +82,7 @@ export async function register(formData: FormData) {
     confirmPassword: formData.get("confirmPassword"),
   };
 
-  const errors = validateUser("register", dataToValidate);
+  const errors = validateSchema("register", dataToValidate);
 
   if (Object.keys(errors).length !== 0) {
     return {

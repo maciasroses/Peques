@@ -27,7 +27,7 @@ const Action = ({ cannotDelete, children, action }: IAction) => {
       <button
         onClick={handleClick}
         className={clsx(
-          "bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg",
+          "bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg border border-white",
           cannotDelete && "opacity-50 cursor-not-allowed"
         )}
         title={`${

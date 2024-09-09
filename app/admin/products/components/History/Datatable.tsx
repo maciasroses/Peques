@@ -152,7 +152,7 @@ const Datatable = ({ orders, history }: IDatatable) => {
           {isClient ? (
             <>
               {showMultiActions && (
-                <div className="flex justify-end gap-2 my-4">
+                <div className="flex justify-start gap-2 my-4">
                   <Action action="massiveDelete" cannotDelete={orders > 0}>
                     {/* @ts-ignore */}
                     <Form

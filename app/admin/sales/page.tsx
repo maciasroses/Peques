@@ -1,7 +1,12 @@
-import { DatatableSkeleton } from "@/components";
 import { Suspense } from "react";
 import { DataFetch } from "./components";
 import { Searchbar } from "../orders/components";
+import { DatatableSkeleton } from "@/components";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Ventas",
+};
 
 interface IAdminSalesPage {
   searchParams?: {

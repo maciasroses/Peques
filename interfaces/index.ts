@@ -43,6 +43,7 @@ export interface IProduct {
   id: string;
   name: string;
   key: string;
+  minimumAcceptableQuantity: number;
   availableQuantity: number;
   salePriceMXN: number;
   provider: IProvider;
@@ -63,6 +64,7 @@ export interface IOrder {
   client: string;
   discount?: number;
   total: number;
+  subtotal: number;
   shipmentType: string;
   isPaid: boolean;
   deliveryStatus: "PENDING" | "CANCELLED" | "DELIVERED";
@@ -116,6 +118,7 @@ export interface ICreateNUpdateProductState extends ISharedState {
   errors?: {
     name?: string;
     key?: string;
+    minimumAcceptableQuantity?: string;
     providerId?: string;
     dollarExchangeRate?: string;
     quantityPerCarton?: string;

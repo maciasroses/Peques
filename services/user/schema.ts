@@ -26,7 +26,7 @@ const schemas: { [key: string]: z.ZodObject<ZodRawShape, UnknownKeysParam> } = {
   register: userRegisterSchema,
 };
 
-export function validateUser(action: string, data: unknown) {
+export function validateSchema(action: string, data: unknown) {
   const schema = schemas[action];
 
   if (!schema) {

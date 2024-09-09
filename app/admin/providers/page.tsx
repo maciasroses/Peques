@@ -1,6 +1,11 @@
 import { Suspense } from "react";
 import { Action, DatatableSkeleton } from "@/components";
 import { Form, DataFetch, Searchbar } from "./components";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Proveedores",
+};
 
 interface IAdminProvidersPage {
   searchParams?: {

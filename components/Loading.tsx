@@ -9,6 +9,9 @@ const fillColorMap: { [key: string]: string } = {
   red: "fill-red-500",
   blue: "fill-blue-500",
   green: "fill-green-500",
+
+  primary: "fill-primary",
+  accent: "fill-accent",
 };
 
 const Loading: React.FC<ILoading> = ({ color = "blue", size = "size-6" }) => {

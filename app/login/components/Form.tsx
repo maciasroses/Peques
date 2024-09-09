@@ -56,7 +56,11 @@ const Form = () => {
             </GenericDiv>
           </div>
           <div className="text-center mt-4">
-            <SubmitButton title="Log in" color="primary" pending={isPending} />
+            <SubmitButton
+              title="Iniciar sesión"
+              color="primary"
+              pending={isPending}
+            />
           </div>
         </fieldset>
       </form>

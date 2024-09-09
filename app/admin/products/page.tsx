@@ -3,6 +3,11 @@ import { Action, DatatableSkeleton } from "@/components";
 import { Form, DataFetch, Searchbar } from "./components";
 import { getProviders } from "@/services/provider/controller";
 import type { IProvider } from "@/interfaces";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Productos",
+};
 
 interface IAdminProductsPage {
   searchParams?: {

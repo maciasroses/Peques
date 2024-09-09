@@ -135,18 +135,37 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
                     />
                   </GenericDiv>
                 </GenericPairDiv>
-                <GenericInput
-                  id="providerId"
-                  type="select"
-                  ariaLabel="Proveedor"
-                  placeholder="Selecciona un proveedor"
-                  defaultValue={(product as IProduct)?.provider.id ?? ""}
-                  options={providers?.map((provider) => ({
-                    value: provider.id,
-                    label: provider.name,
-                  }))}
-                  error={badResponse.errors?.providerId}
-                />
+                <GenericPairDiv>
+                  <GenericDiv>
+                    <GenericInput
+                      step="1"
+                      type="number"
+                      placeholder="2"
+                      id="minimumAcceptableQuantity"
+                      defaultValue={
+                        (
+                          product as IProduct
+                        )?.minimumAcceptableQuantity.toString() ?? ""
+                      }
+                      ariaLabel="Cantidad mínima aceptable"
+                      error={badResponse.errors?.minimumAcceptableQuantity}
+                    />
+                  </GenericDiv>
+                  <GenericDiv>
+                    <GenericInput
+                      id="providerId"
+                      type="select"
+                      ariaLabel="Proveedor"
+                      placeholder="Selecciona un proveedor"
+                      defaultValue={(product as IProduct)?.provider.id ?? ""}
+                      options={providers?.map((provider) => ({
+                        value: provider.id,
+                        label: provider.name,
+                      }))}
+                      error={badResponse.errors?.providerId}
+                    />
+                  </GenericDiv>
+                </GenericPairDiv>
                 {action === "create" && (
                   <>
                     {/* AFTER CHANGE TO A SEPARATE FORM */}
@@ -245,13 +264,21 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
             ) : (
               <>
                 {action === "delete" ? (
-                  <h1 className="text-center text-base md:text-xl">
-                    ¿Estás seguro que deseas eliminar el producto{' "'}
-                    {(product as IProduct).name}
-                    {'"'}?
-                  </h1>
+                  <div className="text-center">
+                    <span className="text-2xl text-center text-red-500">
+                      ⚠️ Acción irreversible ⚠️
+                    </span>
+                    <h1 className="text-center text-base md:text-xl">
+                      ¿Estás seguro que deseas eliminar el producto{' "'}
+                      {(product as IProduct).name}
+                      {'"'}?
+                    </h1>
+                  </div>
                 ) : (
                   <div className="text-center flex flex-col gap-2">
+                    <span className="text-2xl text-center text-red-500">
+                      ⚠️ Acción irreversible ⚠️
+                    </span>
                     <h1 className="text-xl md:text-xl">
                       ¿Estás seguro que deseas eliminar los productos
                       seleccionados?:
@@ -301,17 +328,32 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
                   className={clsx(
                     "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer",
                     file
-                      ? "bg-green-50 dark:bg-green-700 dark:border-green-600 border-green-500"
+                      ? badResponse.errors &&
+                        Object.keys(badResponse.errors as object).length > 0
+                        ? "bg-red-50 dark:bg-red-700 dark:border-red-600 border-red-500"
+                        : "bg-green-50 dark:bg-green-700 dark:border-green-600 border-green-500"
                       : "bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500"
                   )}
                 >
                   <div className="flex flex-col items-center justify-center p-5">
-                    <Upload color={file ? "green" : ""} />
+                    <Upload
+                      color={
+                        file
+                          ? badResponse.errors &&
+                            Object.keys(badResponse.errors as object).length > 0
+                            ? "red"
+                            : "green"
+                          : ""
+                      }
+                    />
                     <p
                       className={clsx(
                         "mb-2 text-sm text-center",
                         file
-                          ? "text-green-500 dark:text-green-400"
+                          ? badResponse.errors &&
+                            Object.keys(badResponse.errors as object).length > 0
+                            ? "text-red-500 dark:text-red-400"
+                            : "text-green-500 dark:text-green-400"
                           : "text-gray-500 dark:text-gray-400"
                       )}
                     >

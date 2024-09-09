@@ -7,6 +7,9 @@ const baseSchema = z.object({
   key: z.string().min(2, {
     message: "La clave debe tener al menos 2 caracteres",
   }),
+  minimumAcceptableQuantity: z.number().int().positive({
+    message: "La cantidad mínima aceptable debe ser un número positivo",
+  }),
 });
 
 const createNUpdateProductSchema = z.object({

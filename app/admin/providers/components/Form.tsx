@@ -88,13 +88,21 @@ const Form = ({ provider, action, onClose }: IForm) => {
           ) : (
             <>
               {action === "delete" ? (
-                <h1 className="text-center text-base md:text-xl">
-                  ¿Estás seguro que deseas eliminar al proveedor{' "'}
-                  {(provider as IProvider).name}
-                  {'"'}?
-                </h1>
+                <div className="text-center">
+                  <span className="text-2xl text-center text-red-500">
+                    ⚠️ Acción irreversible ⚠️
+                  </span>
+                  <h1 className="text-center text-base md:text-xl">
+                    ¿Estás seguro que deseas eliminar al proveedor{' "'}
+                    {(provider as IProvider).name}
+                    {'"'}?
+                  </h1>
+                </div>
               ) : (
                 <div className="text-center flex flex-col gap-2">
+                  <span className="text-2xl text-center text-red-500">
+                    ⚠️ Acción irreversible ⚠️
+                  </span>
                   <h1 className="text-xl md:text-xl">
                     ¿Estás seguro que deseas eliminar a los proveedores
                     seleccionados?:

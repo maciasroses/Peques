@@ -14,7 +14,7 @@ import {
 } from "@/components";
 import type { IProduct, IProvider } from "@/interfaces";
 import type {
-  // ConditionalStyles,
+  ConditionalStyles,
   ExpanderComponentProps,
 } from "react-data-table-component";
 
@@ -22,41 +22,40 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IProduct>> = ({
   data,
 }) => {
   return (
-    <div className="pl-12 pb-4">
+    <div className="pl-12 py-4">
+      <h1 className="text-2xl">
+        Historial de pedidos del producto: {`"${data.name}"`}
+      </h1>
       <HistoryDatatable orders={data._count.orders} history={data.history} />
     </div>
   );
 };
 
-// const conditionalRowStyles = (theme: string): ConditionalStyles<IProduct>[] => {
-//   return [
-//     {
-//       when: (row: IProduct) => {
-//         const historyQuantity = row.history.reduce(
-//           (acc, history) => acc + history.quantityPerCarton,
-//           0
-//         );
-//         const orderQuantity = row.orders.reduce(
-//           (acc, order) => acc + order.quantity!,
-//           0
-//         );
-//         const currentAvailableQuantity = historyQuantity - orderQuantity;
-
-//         const productQuantity = row.availableQuantity;
-
-//         const percentageAvailable =
-//           (currentAvailableQuantity / productQuantity) * 100;
-
-//         console.log(percentageAvailable);
-
-//         return percentageAvailable >= 75;
-//       },
-//       style: {
-//         backgroundColor: theme === "dark" ? "#E3FCE3" : "#E3FCE3",
-//       },
-//     },
-//   ];
-// };
+const conditionalRowStyles = (theme: string): ConditionalStyles<IProduct>[] => {
+  return [
+    {
+      when: (row: IProduct) =>
+        row.availableQuantity > row.minimumAcceptableQuantity,
+      style: {
+        backgroundColor: theme === "dark" ? "#BCFBBF" : "#BCFBBF",
+      },
+    },
+    {
+      when: (row: IProduct) =>
+        row.availableQuantity <= row.minimumAcceptableQuantity &&
+        row.availableQuantity > 0,
+      style: {
+        backgroundColor: theme === "dark" ? "#FBF2BC" : "#FBF2BC",
+      },
+    },
+    {
+      when: (row: IProduct) => row.availableQuantity === 0,
+      style: {
+        backgroundColor: theme === "dark" ? "#FBBCC0" : "#FBBCC0",
+      },
+    },
+  ];
+};
 
 interface IDatatable {
   products: IProduct[];
@@ -101,6 +100,12 @@ const Datatable = ({ products, providers }: IDatatable) => {
     {
       name: "Cantidad Disponible",
       selector: (row: { availableQuantity: number }) => row.availableQuantity,
+      sortable: true,
+    },
+    {
+      name: "Cantidad mínima Aceptable",
+      selector: (row: { minimumAcceptableQuantity: number }) =>
+        row.minimumAcceptableQuantity,
       sortable: true,
     },
     {
@@ -169,7 +174,7 @@ const Datatable = ({ products, providers }: IDatatable) => {
                 expandableRowsComponent={(props) => (
                   <ExpandedComponent {...props} />
                 )}
-                // conditionalRowStyles={conditionalRowStyles}
+                conditionalRowStyles={conditionalRowStyles}
               />
             </>
           ) : (
