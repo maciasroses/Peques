@@ -28,7 +28,7 @@ const SubmitButton: React.FC<ISubmitButton> = ({
       type="submit"
       disabled={pending}
       className={clsx(
-        "px-4 py-2 text-white rounded-md w-auto transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
+        "px-4 py-2 text-white rounded-md w-auto transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 border borde-white",
         pending ? `${colorMap[color]}/50` : colorMap[color]
       )}
     >

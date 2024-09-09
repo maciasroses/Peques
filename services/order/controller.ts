@@ -28,6 +28,9 @@ interface ISearchParams {
   subtotalTo?: string;
   totalFrom?: string;
   totalTo?: string;
+  isForGraph?: boolean;
+  orderBy?: object;
+  yearOfData?: string;
 }
 
 export async function getOrders({
@@ -67,6 +70,9 @@ export async function getSales({
   subtotalTo,
   totalFrom,
   totalTo,
+  isForGraph = false,
+  orderBy = { createdAt: "desc" },
+  yearOfData,
 }: ISearchParams) {
   try {
     return await read({
@@ -79,6 +85,9 @@ export async function getSales({
       subtotalTo: subtotalTo ? Number(subtotalTo) : undefined,
       totalFrom: totalFrom ? Number(totalFrom) : undefined,
       totalTo: totalTo ? Number(totalTo) : undefined,
+      isForGraph,
+      orderBy,
+      yearOfData: yearOfData ? Number(yearOfData) : new Date().getFullYear(),
     });
   } catch (error) {
     console.error(error);
@@ -155,6 +164,7 @@ export async function createOrder(formData: FormData) {
         };
       };
       quantity: number;
+      costMXN: number;
     }[] = [];
 
     const productPromise = orderProducts.map(async (product) => {
@@ -182,6 +192,7 @@ export async function createOrder(formData: FormData) {
           },
         },
         quantity: product.quantity,
+        costMXN: Number(product.quantity) * salePriceMXN,
       });
     });
 
@@ -262,9 +273,7 @@ export async function createMassiveOrder(formData: FormData) {
 
         // Filtrar valores nulos o no válidos en productos y cantidades
         const validatedProducts = products.filter(Boolean);
-        // console.log(validatedProducts);
         const validatedQuantities = quantities.filter(Boolean);
-        // console.log(validatedQuantities);
 
         // Verificar si la cantidad de productos y cantidades es la misma
         if (validatedProducts.length !== validatedQuantities.length) {
@@ -284,6 +293,7 @@ export async function createMassiveOrder(formData: FormData) {
             };
           };
           quantity: number;
+          costMXN: number;
         }[] = [];
 
         for (let i = 0; i < validatedProducts.length; i++) {
@@ -351,6 +361,7 @@ export async function createMassiveOrder(formData: FormData) {
               },
             },
             quantity: validatedQuantities[i],
+            costMXN: validatedQuantities[i] * product.salePriceMXN,
           });
         }
 
@@ -462,20 +473,18 @@ export async function updateMassiveDeliveryStatus(
 ) {
   try {
     if (deliveryStatus === "CANCELLED") {
-      ids.forEach(async (id) => {
+      for (const id of ids) {
         const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
-        for (const product of order.products) {
-          const { availableQuantity } = (await readProduct({
-            key: product.product.key,
-          })) as unknown as IProduct;
+        order.products.forEach(async (product) => {
           await updateProduct({
             key: product.product.key,
             data: {
-              availableQuantity: availableQuantity + product.quantity,
+              availableQuantity:
+                product.product.availableQuantity + product.quantity,
             },
           });
-        }
-      });
+        });
+      }
     }
     await updateMassive({
       ids,

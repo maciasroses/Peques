@@ -60,6 +60,9 @@ export async function createProduct(formData: FormData) {
   const data = {
     name: formData.get("name"),
     key: formData.get("productKey"),
+    minimumAcceptableQuantity: Number(
+      formData.get("minimumAcceptableQuantity")
+    ),
     quantityPerCarton: Number(formData.get("quantityPerCarton")),
     chinesePriceUSD: Number(formData.get("chinesePriceUSD")),
     dollarExchangeRate: Number(formData.get("dollarExchangeRate")),
@@ -84,11 +87,12 @@ export async function createProduct(formData: FormData) {
   const margin = (data.salePriceMXN / totalCostMXN - 1) * 100;
   const salePerQuantity = data.salePriceMXN * data.quantityPerCarton;
 
-  const { name, key, providerId, ...rest } = data;
+  const { name, key, providerId, minimumAcceptableQuantity, ...rest } = data;
 
   const updatedData = {
     name,
     key,
+    minimumAcceptableQuantity,
     availableQuantity: data.quantityPerCarton,
     salePriceMXN: data.salePriceMXN,
     providerId,
@@ -146,6 +150,7 @@ export async function createMassiveProduct(formData: FormData) {
         const data = {
           name: row["Nombre Producto"],
           key: row["Clave Producto"],
+          minimumAcceptableQuantity: Number(row["Cantidad Mínima Aceptable"]),
           quantityPerCarton: Number(row["Cantidad"]),
           chinesePriceUSD: Number(row["Precio China (USD)"]),
           dollarExchangeRate: Number(row["Cambio Dolar"]),
@@ -188,11 +193,13 @@ export async function createMassiveProduct(formData: FormData) {
         const margin = (data.salePriceMXN / totalCostMXN - 1) * 100;
         const salePerQuantity = data.salePriceMXN * data.quantityPerCarton;
 
-        const { name, key, providerAlias, ...rest } = data;
+        const { name, key, providerAlias, minimumAcceptableQuantity, ...rest } =
+          data;
 
         const updatedData = {
           name,
           key,
+          minimumAcceptableQuantity,
           availableQuantity: data.quantityPerCarton,
           salePriceMXN: data.salePriceMXN,
           providerId: provider.id,
@@ -305,6 +312,9 @@ export async function updateProduct(formData: FormData, productId: string) {
   const data = {
     name: formData.get("name"),
     key: formData.get("productKey"),
+    minimumAcceptableQuantity: Number(
+      formData.get("minimumAcceptableQuantity")
+    ),
     providerId: formData.get("providerId"),
   };
 

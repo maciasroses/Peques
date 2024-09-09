@@ -14,6 +14,8 @@ import {
   updateHistoryProduct,
 } from "@/services/product/controller";
 import { GenericInput, SubmitButton } from "@/components";
+import formatCurrency from "@/utils/format-currency";
+import formatDateLatinAmerican from "@/utils/formatdate-latin";
 
 interface IForm {
   onClose: () => void;
@@ -167,29 +169,45 @@ const Form = ({ onClose, productId, history, action }: IForm) => {
           ) : (
             <>
               {action === "delete" ? (
-                <>
+                <div className="text-center">
+                  <span className="text-2xl text-center text-red-500">
+                    ⚠️ Acción irreversible ⚠️
+                  </span>
                   <h1 className="text-center text-base md:text-xl">
                     ¿Estás seguro que deseas eliminar el siguiente pedido de
                     producto?
                   </h1>
-                  <div className="flex mt-2">
-                    {(history as IProductHistory).quantityPerCarton} -{" "}
-                    {(history as IProductHistory).totalCostMXN}-{" "}
-                    {(history as IProductHistory).salePriceMXN}
+                  <div className="flex justify-center gap-2 mt-2">
+                    {(history as IProductHistory).quantityPerCarton}
+                    {"u/cartón | "}
+                    {formatCurrency(
+                      Number((history as IProductHistory).salePriceMXN),
+                      "MXN"
+                    )}
+                    {" | "}
+                    {(history as IProductHistory).margin.toFixed(2)}%{" | "}
+                    {formatDateLatinAmerican(
+                      (history as IProductHistory).orderDate.toString()
+                    )}
                   </div>
-                </>
+                </div>
               ) : (
                 <div className="text-center flex flex-col gap-2">
+                  <span className="text-2xl text-center text-red-500">
+                    ⚠️ Acción irreversible ⚠️
+                  </span>
                   <h1 className="text-xl md:text-xl">
-                    ¿Estás seguro que deseas eliminar los productos
-                    seleccionados?:
+                    ¿Estás seguro que deseas eliminar los siguientes pedidos de
+                    productos?
                   </h1>
                   <div className="max-h-[60px] overflow-y-auto">
-                    <ul className="list-disc list-inside text-left">
+                    <ul className="flex flex-col gap-2">
                       {(history as IProductHistory[]).map((h) => (
                         <li key={h.id}>
-                          {h.quantityPerCarton} - {h.totalCostMXN} -{" "}
-                          {h.salePriceMXN}
+                          {h.quantityPerCarton}u/cartón |{" "}
+                          {formatCurrency(Number(h.salePriceMXN), "MXN")} |{" "}
+                          {h.margin.toFixed(2)}% |{" "}
+                          {formatDateLatinAmerican(h.orderDate.toString())}
                         </li>
                       ))}
                     </ul>

@@ -1,6 +1,8 @@
 "use client";
 
+import clsx from "clsx";
 import Form from "./Form";
+import useModal from "@/hooks/useModal";
 import { useRowSelection } from "@/hooks";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -16,8 +18,10 @@ import {
   Card404,
   DatatableSkeleton,
   Datatable as CustomDatatable,
+  Modal,
 } from "@/components";
 import type { IOrder } from "@/interfaces";
+import formatDateLatinAmerican from "@/utils/formatdate-latin";
 
 interface IDatatable {
   orders: IOrder[];
@@ -27,6 +31,7 @@ interface IProductInOrder {
   productId: string;
   orderId: string;
   quantity: number;
+  costMXN: number;
   product: {
     name: string;
   };
@@ -34,32 +39,49 @@ interface IProductInOrder {
 
 const Datatable = ({ orders }: IDatatable) => {
   const pathname = usePathname();
-  // const [selectedValue, setSelectedValue] = useState<string | null>(null);
-  // const [previousSelect, setPreviousSelect] = useState<string | null>(null);
+  const { isOpen, onOpen, onClose } = useModal();
+  const [isMassiveForConfirm, setIsMassiveForConfirm] = useState(false);
+  const [selectedRowForConfirm, setSelectedRowForConfirm] = useState<
+    IOrder | undefined
+  >(undefined);
+  const [eventForConfirm, setEventForConfim] =
+    useState<React.ChangeEvent<HTMLSelectElement>>();
   const { selectedRows, showMultiActions, handleSelectRows } =
     useRowSelection<IOrder>();
+
+  const handleCancel = async () => {
+    location.replace(pathname);
+  };
 
   const handleSelectDeliveryStatus = async (
     id: string,
     event: React.ChangeEvent<HTMLSelectElement>,
-    isMassive?: boolean
+    isMassive?: boolean,
+    confirm?: boolean
   ) => {
-    // if (event.target.value === "CANCELLED") {
-    //   setPreviousSelect(selectedValue);
-    // } else {
-    //   setSelectedValue(event.target.value);
-    // }
-    // console.log("selectedValue", selectedValue);
-    // console.log("previousSelect", previousSelect);
-    if (isMassive) {
-      await updateMassiveDeliveryStatus(
-        selectedRows.map((row) => row.id),
-        event.target.value
-      );
-      location.replace(pathname);
+    const newValue = event.target.value;
+    const order = orders.find((order) => order.id === id);
+
+    if (newValue === "CANCELLED" && !confirm) {
+      if (isMassive) {
+        setIsMassiveForConfirm(true);
+      } else {
+        setSelectedRowForConfirm(order);
+      }
+      setEventForConfim(event);
+      onOpen();
     } else {
-      await updateDeliveryStatus(id, event.target.value, pathname);
+      if (isMassive) {
+        await updateMassiveDeliveryStatus(
+          selectedRows.map((row) => row.id),
+          newValue
+        );
+        location.replace(pathname);
+      } else {
+        await updateDeliveryStatus(id, newValue, pathname);
+      }
     }
+    if (confirm) onClose();
   };
 
   const handleIsPaid = async (id: string, isMassive?: boolean) => {
@@ -83,8 +105,16 @@ const Datatable = ({ orders }: IDatatable) => {
           </Action>
           {pathname === "/admin/orders" && (
             <button
-              onClick={() => handleIsPaid(row.id)}
-              className={"bg-accent text-white rounded-md p-2"}
+              onClick={
+                row.deliveryStatus !== "CANCELLED"
+                  ? () => handleIsPaid(row.id)
+                  : () => {}
+              }
+              className={clsx(
+                "bg-accent text-white rounded-md p-2 border borde-white",
+                row.deliveryStatus === "CANCELLED" &&
+                  "opacity-50 cursor-not-allowed"
+              )}
             >
               Marcar como Pagado
             </button>
@@ -105,7 +135,7 @@ const Datatable = ({ orders }: IDatatable) => {
             <select
               defaultValue={row.deliveryStatus}
               onChange={(event) => handleSelectDeliveryStatus(row.id, event)}
-              className="bg-accent text-white rounded-md p-2 w-full"
+              className="bg-accent text-white rounded-md p-2 w-full border border-white"
             >
               <option value="PENDING">Pendiente</option>
               <option value="DELIVERED">Entregado</option>
@@ -132,7 +162,8 @@ const Datatable = ({ orders }: IDatatable) => {
         <li className="list-none list-inside m-2 space-y-2">
           {row.products.map((product, index) => (
             <ul key={index}>
-              {product.product.name} - {product.quantity}
+              {product.product.name} - {product.quantity}u -{" "}
+              {formatCurrency(product.costMXN, "MXN")}
             </ul>
           ))}
         </li>
@@ -157,6 +188,20 @@ const Datatable = ({ orders }: IDatatable) => {
       sortable: true,
       format: (row: { total: number }) => formatCurrency(row.total, "MXN"),
     },
+    {
+      name: "Creado en",
+      selector: (row: { createdAt: string }) => row.createdAt,
+      sortable: true,
+      format: (row: { createdAt: Date }) =>
+        formatDateLatinAmerican(row.createdAt),
+    },
+    {
+      name: "Actualizado en",
+      selector: (row: { updatedAt: string }) => row.updatedAt,
+      sortable: true,
+      format: (row: { updatedAt: Date }) =>
+        formatDateLatinAmerican(row.updatedAt),
+    },
   ];
 
   // react-hydration-error SOLUTION
@@ -173,20 +218,123 @@ const Datatable = ({ orders }: IDatatable) => {
         <>
           {isClient ? (
             <>
+              <Modal isOpen={isOpen} onClose={handleCancel}>
+                <div className="flex flex-col gap-2">
+                  <span className="text-2xl text-center text-red-500">
+                    ⚠️ Acción irreversible ⚠️
+                  </span>
+                  <h1 className="text-center text-base md:text-xl">
+                    {isMassiveForConfirm
+                      ? `¿Estás seguro de cancelar ${
+                          pathname === "/admin/orders"
+                            ? "estos pedidos"
+                            : "estas ventas"
+                        }?`
+                      : `¿Estás seguro de cancelar ${
+                          pathname === "/admin/orders"
+                            ? "este pedido"
+                            : "esta venta"
+                        }?`}
+                  </h1>
+                  {isMassiveForConfirm ? (
+                    <ul className="flex flex-col gap-2 items-center">
+                      {selectedRows.map((row, index) => (
+                        <li key={index} className="flex gap-2">
+                          <span>{row.client}</span>
+                          {" | "}
+                          <span>{row.shipmentType}</span>
+                          {" | "}
+                          <ul>
+                            {row.products.map((product, index) => (
+                              <li key={index}>
+                                {
+                                  (product as unknown as IProductInOrder)
+                                    .product.name
+                                }{" "}
+                                -{" "}
+                                {
+                                  (product as unknown as IProductInOrder)
+                                    .quantity
+                                }{" "}
+                                -{" "}
+                                {formatCurrency(
+                                  (product as unknown as IProductInOrder)
+                                    .costMXN,
+                                  "MXN"
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="flex gap-2 justify-center">
+                      {selectedRowForConfirm?.client}
+                      {" | "}
+                      {selectedRowForConfirm?.shipmentType}
+                      {" | "}
+                      <ul>
+                        {selectedRowForConfirm?.products.map(
+                          (product, index) => (
+                            <li key={index}>
+                              {
+                                (product as unknown as IProductInOrder).product
+                                  .name
+                              }{" "}
+                              -{" "}
+                              {(product as unknown as IProductInOrder).quantity}{" "}
+                              -{" "}
+                              {formatCurrency(
+                                (product as unknown as IProductInOrder).costMXN,
+                                "MXN"
+                              )}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-center gap-2 mt-4">
+                  <button
+                    onClick={() =>
+                      handleSelectDeliveryStatus(
+                        selectedRowForConfirm?.id as string,
+                        eventForConfirm!,
+                        isMassiveForConfirm,
+                        true
+                      )
+                    }
+                    className="bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg"
+                  >
+                    Sí, cancelar
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg"
+                  >
+                    No, regresar
+                  </button>
+                </div>
+              </Modal>
               {showMultiActions && (
                 <div className="flex justify-end gap-2 mb-4">
                   <Action action="massiveDelete">
                     {/* @ts-ignore */}
                     <Form order={selectedRows} />
                   </Action>
-                  {pathname === "/admin/orders" && (
-                    <button
-                      onClick={() => handleIsPaid(selectedRows[0].id, true)}
-                      className={"bg-accent text-white rounded-md p-2"}
-                    >
-                      Marcar como Pagado
-                    </button>
-                  )}
+                  {pathname === "/admin/orders" &&
+                    !selectedRows.some(
+                      (row) => row.deliveryStatus === "CANCELLED"
+                    ) && (
+                      <button
+                        onClick={() => handleIsPaid(selectedRows[0].id, true)}
+                        className="bg-accent text-white rounded-md p-2 border border-white"
+                      >
+                        Marcar como Pagado
+                      </button>
+                    )}
                   {!selectedRows.some(
                     (row) => row.deliveryStatus === "CANCELLED"
                   ) && (
@@ -198,7 +346,7 @@ const Datatable = ({ orders }: IDatatable) => {
                           true
                         )
                       }
-                      className="bg-accent text-white rounded-md p-2"
+                      className="bg-accent text-white rounded-md p-2 border border-white"
                     >
                       <option value="">Estado de Envio</option>
                       <option value="PENDING">Pendiente</option>
@@ -220,8 +368,14 @@ const Datatable = ({ orders }: IDatatable) => {
         </>
       ) : (
         <Card404
-          title="No hay ordenes"
-          description="Agrega una orden para verla aquí"
+          title={
+            pathname === "/admin/orders" ? "No hay pedidos" : "No hay ventas"
+          }
+          description={
+            pathname === "/admin/orders"
+              ? "Agrega un pedido para verlo aquí"
+              : "Agrega una venta para verla aquí"
+          }
         />
       )}
     </>

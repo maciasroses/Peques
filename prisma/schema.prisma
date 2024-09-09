@@ -41,11 +41,12 @@ model Provider {
 }
 
 model Product {
-  id                String @id @default(uuid())
-  name              String
-  key               String @unique
-  availableQuantity Int    @default(0)
-  salePriceMXN      Float
+  id                        String @id @default(uuid())
+  name                      String
+  key                       String @unique
+  availableQuantity         Int    @default(0)
+  minimumAcceptableQuantity Int
+  salePriceMXN              Float
 
   provider   Provider @relation(fields: [providerId], references: [id])
   providerId String
@@ -84,6 +85,7 @@ model ProductOnOrder {
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
   quantity  Int
+  costMXN   Float
 
   @@id([productId, orderId])
 }

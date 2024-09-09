@@ -13,11 +13,13 @@ import { GenericInput, SubmitButton } from "@/components";
 import type { ICreateOrder, IOrder, IProduct } from "@/interfaces";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
+import formatCurrency from "@/utils/format-currency";
 
 interface IProductInOrder {
   productId: string;
   orderId: string;
   quantity: number;
+  costMXN: number;
   product: {
     name: string;
   };
@@ -104,7 +106,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
             : action === "update"
             ? "Actualizando"
             : "Eliminando"}{" "}
-          pedido
+          {pathname === "/admin/orders" ? "pedido" : "venta"}
         </h1>
       </div>
       {action === "create" && (
@@ -222,8 +224,17 @@ const Form = ({ onClose, products, order, action }: IForm) => {
               <>
                 {action === "delete" ? (
                   <div className="flex flex-col gap-2">
+                    <span className="text-2xl text-center text-red-500">
+                      ⚠️ Acción irreversible ⚠️
+                    </span>
                     <h1 className="text-center text-base md:text-xl">
-                      ¿Estás seguro de que deseas eliminar este pedido?
+                      ¿Estás seguro de que deseas eliminar{" "}
+                      <span>
+                        {pathname === "/admin/orders"
+                          ? "este pedido"
+                          : "esta venta"}
+                      </span>
+                      ?
                     </h1>
                     <div className="flex justify-center gap-2">
                       {(order as IOrder).client}
@@ -238,7 +249,12 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                                 .name
                             }
                             {" - "}
-                            {(product as unknown as IProductInOrder).quantity}
+                            {(product as unknown as IProductInOrder).quantity}u
+                            {" - "}
+                            {formatCurrency(
+                              (product as unknown as IProductInOrder).costMXN,
+                              "MXN"
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -246,8 +262,17 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-2">
+                    <span className="text-2xl text-center text-red-500">
+                      ⚠️ Acción irreversible ⚠️
+                    </span>
                     <h1 className="text-center text-base md:text-xl">
-                      ¿Estás seguro de que deseas eliminar estos pedidos?
+                      ¿Estás seguro de que deseas eliminar
+                      <span>
+                        {pathname === "/admin/orders"
+                          ? " estos pedidos"
+                          : " estas ventas"}
+                      </span>
+                      ?
                     </h1>
                     <ul className="flex flex-col items-center gap-2">
                       {(order as IOrder[]).map((o, index) => (
@@ -268,6 +293,12 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                                   (product as unknown as IProductInOrder)
                                     .quantity
                                 }
+                                {" - "}
+                                {formatCurrency(
+                                  (product as unknown as IProductInOrder)
+                                    .costMXN,
+                                  "MXN"
+                                )}
                               </li>
                             ))}
                           </ul>
@@ -312,8 +343,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                   className={clsx(
                     "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer",
                     file
-                      ? // ? "bg-green-50 dark:bg-green-700 dark:border-green-600 border-green-500"
-                        badResponse.errors &&
+                      ? badResponse.errors &&
                         Object.keys(badResponse.errors as object).length > 0
                         ? "bg-red-50 dark:bg-red-700 dark:border-red-600 border-red-500"
                         : "bg-green-50 dark:bg-green-700 dark:border-green-600 border-green-500"
@@ -324,8 +354,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                     <Upload
                       color={
                         file
-                          ? // ? "green"
-                            badResponse.errors &&
+                          ? badResponse.errors &&
                             Object.keys(badResponse.errors as object).length > 0
                             ? "red"
                             : "green"
@@ -336,8 +365,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                       className={clsx(
                         "mb-2 text-sm text-center",
                         file
-                          ? // ? "text-green-500 dark:text-green-400"
-                            badResponse.errors &&
+                          ? badResponse.errors &&
                             Object.keys(badResponse.errors as object).length > 0
                             ? "text-red-500 dark:text-red-400"
                             : "text-green-500 dark:text-green-400"

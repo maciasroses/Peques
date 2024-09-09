@@ -33,6 +33,9 @@ interface ISearchParams {
   subtotalTo?: number;
   totalFrom?: number;
   totalTo?: number;
+  isForGraph?: boolean;
+  orderBy?: object;
+  yearOfData?: number;
 }
 
 export async function read({
@@ -46,6 +49,9 @@ export async function read({
   subtotalTo,
   totalFrom,
   totalTo,
+  isForGraph,
+  orderBy,
+  yearOfData,
 }: ISearchParams) {
   if (id) {
     return await prisma.order.findUnique({
@@ -63,6 +69,7 @@ export async function read({
     discount?: object;
     subtotal?: object;
     total?: object;
+    createdAt?: object;
   }
 
   const where: Where = {};
@@ -81,6 +88,18 @@ export async function read({
 
   if (deliveryStatus) where.deliveryStatus = { equals: deliveryStatus };
 
+  if (isForGraph) where.deliveryStatus = { not: "CANCELLED" };
+
+  if (yearOfData) {
+    const startOfYear = new Date(yearOfData, 0, 1);
+    const endOfYear = new Date(yearOfData + 1, 0, 1);
+
+    where.createdAt = {
+      gte: startOfYear,
+      lt: endOfYear,
+    };
+  }
+
   if (client) where.client = { contains: client, mode: "insensitive" };
 
   where.isPaid = { equals: isPaid };
@@ -88,7 +107,7 @@ export async function read({
   return await prisma.order.findMany({
     where,
     include: { products: { include: { product: { select: { name: true } } } } },
-    orderBy: { updatedAt: "desc" },
+    orderBy,
   });
 }
 

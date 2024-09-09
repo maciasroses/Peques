@@ -1,5 +1,4 @@
 const formatdateTime = (date: string) => {
-  console.log(date);
   const auxDate = new Date(date);
   const timeNow = new Date();
   auxDate.setHours(
@@ -8,7 +7,6 @@ const formatdateTime = (date: string) => {
     timeNow.getSeconds(),
     timeNow.getMilliseconds()
   );
-  console.log(auxDate);
   return auxDate;
 };
 

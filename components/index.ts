@@ -7,9 +7,11 @@ import { Footer } from "./Footer";
 import ErrorCard from "./ErrorCard";
 import Datatable from "./Datatable";
 import { Sidebar } from "./Sidebar";
+import CardSkeleton from "./CardSkeleton";
 import AuthComponent from "./AuthComponent";
 import ThemeComponent from "./ThemeComponent";
 import DatatableSkeleton from "./DatatableSkeleton";
+import { PieSkeleton, BarSkeleton, LineSkeleton } from "./Chart";
 import { GenericInput, SubmitButton, GenericSearchInput } from "./Form";
 
 export {
@@ -22,6 +24,10 @@ export {
   Loading,
   ErrorCard,
   Datatable,
+  BarSkeleton,
+  PieSkeleton,
+  CardSkeleton,
+  LineSkeleton,
   GenericInput,
   SubmitButton,
   AuthComponent,

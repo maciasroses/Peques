@@ -17,6 +17,8 @@ interface IGenericSearchInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   step?: string;
+  min?: string;
+  max?: string;
   options?: { value: string; label: string }[];
   labelClassName?: string;
   inputClassName?: string;
@@ -31,6 +33,8 @@ const GenericSearchInput: React.FC<IGenericSearchInputProps> = ({
   onChange,
   placeholder,
   step,
+  min,
+  max,
   options = [],
   labelClassName = "",
   inputClassName = "",
@@ -75,6 +79,8 @@ const GenericSearchInput: React.FC<IGenericSearchInputProps> = ({
         <input
           type={type}
           step={step}
+          min={min}
+          max={max}
           checked={checked}
           onChange={(e) =>
             type === "checkbox"
