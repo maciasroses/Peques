@@ -23,8 +23,8 @@ const LoginPage = () => {
             />
           </Link>
         </div>
-        {/* <Form /> */}
-        <TempForm />
+        <Form />
+        {/* <TempForm /> */}
       </div>
     </div>
   );
