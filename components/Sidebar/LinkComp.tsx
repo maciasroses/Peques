@@ -40,7 +40,7 @@ const LinkComp = ({ to, span, icon }: ILinkComp) => {
       ) : (
         icon === "providers" && <UserIcon isActive={isActive} />
       )}
-      <span className="ms-3">{span}</span>
+      <span className="ms-3 font-black">{span}</span>
     </Link>
   );
 };

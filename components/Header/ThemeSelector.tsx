@@ -22,6 +22,7 @@ const ThemeButton = ({
 }: IThemeButton) => {
   return (
     <button
+      aria-label="Botón de cambio de tema"
       onClick={handleThemeChange}
       className={clsx(
         "w-full flex items-center gap-2 p-2 rounded-lg group text-primary-light hover:bg-accent",
@@ -80,7 +81,7 @@ const ThemeSelector = () => {
 
   return (
     <div className="relative inline-flex" ref={menuRef}>
-      <button type="button" onClick={toggleMenu}>
+      <button aria-label="Selector de tema" onClick={toggleMenu}>
         {theme === "light" ||
         (theme === "system" && systemTheme === "light") ? (
           <LightIcon theme={theme} />
