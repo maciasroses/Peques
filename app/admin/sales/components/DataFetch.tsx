@@ -6,6 +6,7 @@ interface IDataFetch {
   searchParams: {
     client?: string;
     deliveryStatus?: string;
+    paymentMethod?: string;
     discountFrom?: string;
     discountTo?: string;
     subtotalFrom?: string;

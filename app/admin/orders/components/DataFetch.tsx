@@ -1,11 +1,12 @@
 import Datatable from "./Datatable";
 import { getOrders } from "@/services/order/controller";
-import type { IOrder, IProduct } from "@/interfaces";
+import type { IOrder } from "@/interfaces";
 
 interface IDataFetch {
   searchParams: {
     client?: string;
     deliveryStatus?: string;
+    paymentMethod?: string;
     discountFrom?: string;
     discountTo?: string;
     subtotalFrom?: string;

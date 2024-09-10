@@ -176,6 +176,11 @@ const Datatable = ({ orders }: IDatatable) => {
       format: (row: { discount: number }) => `${row.discount}%`,
     },
     {
+      name: "Método de Pago",
+      selector: (row: { paymentMethod: string }) => row.paymentMethod,
+      sortable: true,
+    },
+    {
       name: "Subtotal",
       selector: (row: { subtotal: number }) => row.subtotal,
       sortable: true,

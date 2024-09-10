@@ -8,6 +8,7 @@ const Searchbar = () => {
   const defaultFilters = {
     client: "",
     deliveryStatus: "",
+    paymentMethod: "",
     discountFrom: "",
     discountTo: "",
     subtotalFrom: "",
@@ -22,21 +23,35 @@ const Searchbar = () => {
   return (
     <search className="min-w-full mx-auto mt-6 mb-4">
       <div className="flex flex-col gap-2">
-        <FlexComponent>
-          <GenericSearchInput
-            type="select"
-            id="deliveryStatus"
-            value={filters.deliveryStatus}
-            placeholder="Todos"
-            ariaLabel="Estado de entrega"
-            options={[
-              { value: "PENDING", label: "Pendiente" },
-              { value: "DELIVERED", label: "Entregado" },
-              { value: "CANCELLED", label: "Cancelado" },
-            ]}
-            onChange={(value: string) => handleSearch("deliveryStatus", value)}
-          />
-        </FlexComponent>
+        <GenericDiv>
+          <FlexComponent>
+            <GenericSearchInput
+              type="select"
+              id="deliveryStatus"
+              value={filters.deliveryStatus}
+              placeholder="Todos"
+              ariaLabel="Estado de entrega"
+              options={[
+                { value: "PENDING", label: "Pendiente" },
+                { value: "DELIVERED", label: "Entregado" },
+                { value: "CANCELLED", label: "Cancelado" },
+              ]}
+              onChange={(value: string) =>
+                handleSearch("deliveryStatus", value)
+              }
+            />
+          </FlexComponent>
+          <FlexComponent>
+            <GenericSearchInput
+              type="text"
+              ariaLabel="Método de pago"
+              id="paymentMethod"
+              value={filters.paymentMethod}
+              placeholder="Buscar por método de pago..."
+              onChange={(value: string) => handleSearch("paymentMethod", value)}
+            />
+          </FlexComponent>
+        </GenericDiv>
         <GenericDiv>
           <FlexComponent>
             <GenericSearchInput

@@ -103,6 +103,7 @@ model Order {
   subtotal       Float
   total          Float
   shipmentType   String
+  paymentMethod  String
   isPaid         Boolean        @default(false)
   deliveryStatus DeliveryStatus @default(PENDING)
   pendingPayment Float?

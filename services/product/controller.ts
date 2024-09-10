@@ -52,7 +52,8 @@ export async function getProducts({
     });
   } catch (error) {
     console.error(error);
-    throw new Error("An internal error occurred");
+    return [];
+    // throw new Error("An internal error occurred");
   }
 }
 

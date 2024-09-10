@@ -36,13 +36,24 @@ const TempForm = () => {
       <form onSubmit={submitAction} className="w-1/2 m-auto">
         <fieldset disabled={isPending}>
           <div className="flex flex-col gap-4 text-base md:text-xl">
-            <input name="username" type="text" placeholder="USERNAME" />
-            <input name="email" type="email" placeholder="EMAIL" />
-            <input name="password" type="password" placeholder="PASSWORD" />
+            <input
+              name="username"
+              type="text"
+              placeholder="USERNAME"
+              required
+            />
+            <input name="email" type="email" placeholder="EMAIL" required />
+            <input
+              name="password"
+              type="password"
+              placeholder="PASSWORD"
+              required
+            />
             <input
               name="confirmPassword"
               type="password"
               placeholder="CONFIRM PASSWORD"
+              required
             />
           </div>
           <div className="text-center mt-4">

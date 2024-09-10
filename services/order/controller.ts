@@ -22,6 +22,7 @@ import type { IProduct } from "@/interfaces";
 interface ISearchParams {
   client?: string;
   deliveryStatus?: string;
+  paymentMethod?: string;
   discountFrom?: string;
   discountTo?: string;
   subtotalFrom?: string;
@@ -36,6 +37,7 @@ interface ISearchParams {
 export async function getOrders({
   client,
   deliveryStatus,
+  paymentMethod,
   discountFrom,
   discountTo,
   subtotalFrom,
@@ -47,6 +49,7 @@ export async function getOrders({
     return await read({
       client,
       deliveryStatus,
+      paymentMethod: paymentMethod ? paymentMethod : undefined,
       isPaid: false,
       discountFrom: discountFrom ? Number(discountFrom) : undefined,
       discountTo: discountTo ? Number(discountTo) : undefined,
@@ -64,6 +67,7 @@ export async function getOrders({
 export async function getSales({
   client,
   deliveryStatus,
+  paymentMethod,
   discountFrom,
   discountTo,
   subtotalFrom,
@@ -78,6 +82,7 @@ export async function getSales({
     return await read({
       client,
       deliveryStatus,
+      paymentMethod: paymentMethod ? paymentMethod : undefined,
       isPaid: true,
       discountFrom: discountFrom ? Number(discountFrom) : undefined,
       discountTo: discountTo ? Number(discountTo) : undefined,
@@ -95,7 +100,8 @@ export async function getSales({
     });
   } catch (error) {
     console.error(error);
-    throw new Error("An internal error occurred");
+    return [];
+    // throw new Error("An internal error occurred");
   }
 }
 
@@ -117,6 +123,8 @@ export async function createOrder(formData: FormData) {
   const data = {
     client: formData.get("client") as string,
     shipmentType: formData.get("shipmentType") as string,
+    discount: Number(formData.get("discount")) ?? 0,
+    paymentMethod: formData.get("paymentMethod") as string,
   };
 
   const errors = validateSchema("create", data);
@@ -160,7 +168,6 @@ export async function createOrder(formData: FormData) {
     }
 
     let total = 0;
-    const discount = Number(formData.get("discount")) ?? 0;
     const finalProducts: {
       product: {
         connect: {
@@ -203,14 +210,13 @@ export async function createOrder(formData: FormData) {
     await Promise.all(productPromise);
 
     const subtotal = total;
-    total = total - (total * discount) / 100;
+    total = total - (total * data.discount) / 100;
 
     const finalData = {
       ...data,
       subtotal,
       total,
-      discount,
-      isPaid: discount === 100,
+      isPaid: data.discount === 100,
       products: {
         create: finalProducts,
       },
@@ -254,6 +260,7 @@ export async function createMassiveOrder(formData: FormData) {
           client: row["Nombre Cliente"],
           discount: row["Descuento"] ? Number(row["Descuento"]) : 0,
           shipmentType: row["Tipo de Envio"],
+          paymentMethod: row["Método de Pago"],
         };
 
         const rowErrors = validateSchema("create", data);
@@ -289,7 +296,6 @@ export async function createMassiveOrder(formData: FormData) {
         let total = 0;
         const processedProducts = new Set<string>();
         const orderProducts = [];
-        // const discount = row["Descuento"] ? Number(row["Descuento"]) : 0;
         const productsData: {
           product: {
             connect: {
