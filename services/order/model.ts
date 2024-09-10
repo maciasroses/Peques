@@ -91,8 +91,20 @@ export async function read({
   if (isForGraph) where.deliveryStatus = { not: "CANCELLED" };
 
   if (yearOfData) {
-    const startOfYear = new Date(yearOfData, 0, 1);
-    const endOfYear = new Date(yearOfData + 1, 0, 1);
+    const startOfYear = new Date(
+      yearOfData > 2000 && yearOfData < 3000
+        ? yearOfData
+        : new Date().getFullYear(),
+      0,
+      1
+    );
+    const endOfYear = new Date(
+      yearOfData > 2000 && yearOfData < 3000
+        ? yearOfData + 1
+        : new Date().getFullYear() + 1,
+      0,
+      1
+    );
 
     where.createdAt = {
       gte: startOfYear,
