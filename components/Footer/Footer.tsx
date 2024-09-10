@@ -7,7 +7,7 @@ const Footer = ({ user }: { user: IUser | null }) => {
     <footer className={clsx("w-full", user && "max-w-[1440px] mx-auto")}>
       <div
         className={clsx(
-          "max-w-[1440px] mx-auto bg-neutral text-primary-light text-center p-4",
+          "max-w-[1440px] mx-auto bg-black text-primary-light text-center p-4",
           user && "sm:ml-48"
         )}
       >
