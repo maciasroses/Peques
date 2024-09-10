@@ -146,15 +146,28 @@ const Form = ({ onClose, products, order, action }: IForm) => {
           <fieldset disabled={isPending}>
             {action !== "delete" && action !== "massiveDelete" ? (
               <div className="flex flex-col gap-2">
-                <GenericInput
-                  id="client"
-                  type="text"
-                  ariaLabel="Nombre del Cliente"
-                  placeholder="Jorge Pérez"
-                  defaultValue={(order as IOrder)?.client ?? ""}
-                  error={badResponse.errors?.order?.client}
-                />
-
+                <GenericPairDiv>
+                  <GenericDiv>
+                    <GenericInput
+                      id="client"
+                      type="text"
+                      ariaLabel="Nombre del Cliente"
+                      placeholder="Jorge Pérez"
+                      defaultValue={(order as IOrder)?.client ?? ""}
+                      error={badResponse.errors?.order?.client}
+                    />
+                  </GenericDiv>
+                  <GenericDiv>
+                    <GenericInput
+                      id="paymentMethod"
+                      type="text"
+                      ariaLabel="Método de Pago"
+                      placeholder="Efectivo"
+                      defaultValue={(order as IOrder)?.paymentMethod ?? ""}
+                      error={badResponse.errors?.order?.paymentMethod}
+                    />
+                  </GenericDiv>
+                </GenericPairDiv>
                 <GenericPairDiv>
                   <GenericDiv>
                     <GenericInput

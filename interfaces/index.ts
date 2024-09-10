@@ -66,6 +66,7 @@ export interface IOrder {
   total: number;
   subtotal: number;
   shipmentType: string;
+  paymentMethod: string;
   isPaid: boolean;
   deliveryStatus: "PENDING" | "CANCELLED" | "DELIVERED";
   pendingPayment?: number;
@@ -134,6 +135,7 @@ export interface ICreateOrder extends ISharedState {
     order?: {
       client?: string;
       shipmentType?: string;
+      paymentMethod?: string;
     };
     products?: {
       productKey?: string;

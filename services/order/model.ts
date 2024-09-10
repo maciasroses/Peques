@@ -27,6 +27,7 @@ interface ISearchParams {
   isPaid?: boolean;
   client?: string;
   deliveryStatus?: string;
+  paymentMethod?: string;
   discountFrom?: number;
   discountTo?: number;
   subtotalFrom?: number;
@@ -43,6 +44,7 @@ export async function read({
   isPaid,
   client,
   deliveryStatus,
+  paymentMethod,
   discountFrom,
   discountTo,
   subtotalFrom,
@@ -66,6 +68,7 @@ export async function read({
     isPaid?: object;
     client?: object;
     deliveryStatus?: object;
+    paymentMethod?: object;
     discount?: object;
     subtotal?: object;
     total?: object;
@@ -73,6 +76,9 @@ export async function read({
   }
 
   const where: Where = {};
+
+  if (paymentMethod)
+    where.paymentMethod = { contains: paymentMethod, mode: "insensitive" };
 
   if (discountFrom || discountTo) {
     where.discount = { gte: discountFrom, lte: discountTo };
@@ -91,20 +97,8 @@ export async function read({
   if (isForGraph) where.deliveryStatus = { not: "CANCELLED" };
 
   if (yearOfData) {
-    const startOfYear = new Date(
-      yearOfData > 2000 && yearOfData < 3000
-        ? yearOfData
-        : new Date().getFullYear(),
-      0,
-      1
-    );
-    const endOfYear = new Date(
-      yearOfData > 2000 && yearOfData < 3000
-        ? yearOfData + 1
-        : new Date().getFullYear() + 1,
-      0,
-      1
-    );
+    const startOfYear = new Date(yearOfData, 0, 1);
+    const endOfYear = new Date(yearOfData + 1, 0, 1);
 
     where.createdAt = {
       gte: startOfYear,

@@ -13,6 +13,7 @@ interface IAdminOrdersPage {
   searchParams?: {
     client?: string;
     deliveryStatus?: string;
+    paymentMethod?: string;
     discountFrom?: string;
     discountTo?: string;
     subtotalFrom?: string;
@@ -26,6 +27,7 @@ const AdminOrdersPage = async ({ searchParams }: IAdminOrdersPage) => {
   const {
     client = "",
     deliveryStatus = "",
+    paymentMethod = "",
     discountFrom = "",
     discountTo = "",
     subtotalFrom = "",
@@ -37,6 +39,7 @@ const AdminOrdersPage = async ({ searchParams }: IAdminOrdersPage) => {
   const searchParamsForDatatable = {
     client,
     deliveryStatus,
+    paymentMethod,
     discountFrom,
     discountTo,
     subtotalFrom,
@@ -61,6 +64,7 @@ const AdminOrdersPage = async ({ searchParams }: IAdminOrdersPage) => {
       <Suspense
         key={
           deliveryStatus +
+          paymentMethod +
           client +
           discountFrom +
           discountTo +

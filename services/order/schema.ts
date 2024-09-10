@@ -16,6 +16,9 @@ const baseSchema = z.object({
   shipmentType: z.string().min(2, {
     message: "El tipo de envío debe tener al menos 2 caracteres",
   }),
+  paymentMethod: z.string().min(2, {
+    message: "El método de pago debe tener al menos 2 caracteres",
+  }),
 });
 
 const productsSchema = z.object({
