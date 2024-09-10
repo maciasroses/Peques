@@ -20,6 +20,7 @@ const DataFetch = async () => {
       {productsAtRisk.length === 0 && productsToReorder.length === 0 ? (
         <div className="w-full">
           <Card404
+            good
             title="No hay productos en riesgo ni para reordenar"
             description="Todos los productos tienen suficiente cantidad en inventario."
           />

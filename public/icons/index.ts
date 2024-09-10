@@ -8,10 +8,12 @@ import Dollar from "./Dollar";
 import HomeIcon from "./Home";
 import DarkIcon from "./Dark";
 import UserIcon from "./User";
+import SadFace from "./SadFace";
 import TrashIcon from "./Trash";
 import LightIcon from "./Light";
 import SystemIcon from "./System";
 import PencilIcon from "./Pencil";
+import SmileFace from "./SmileFace";
 import PlusCircle from "./PlusCircle";
 import MinusCircle from "./MinusCircle";
 import ShoppingBag from "./ShoppingBag";
@@ -24,9 +26,11 @@ export {
   USFlag,
   Puzzle,
   Dollar,
+  SadFace,
   HomeIcon,
   DarkIcon,
   UserIcon,
+  SmileFace,
   TrashIcon,
   LightIcon,
   SystemIcon,
