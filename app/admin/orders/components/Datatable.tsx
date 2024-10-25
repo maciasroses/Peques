@@ -7,6 +7,7 @@ import { useRowSelection } from "@/hooks";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import formatCurrency from "@/utils/format-currency";
+import formatDateLatinAmerican from "@/utils/formatdate-latin";
 import {
   markAsPaid,
   markMassiveAsPaid,
@@ -21,30 +22,39 @@ import {
   Modal,
 } from "@/components";
 import type { IOrder } from "@/interfaces";
-import formatDateLatinAmerican from "@/utils/formatdate-latin";
+import OrderSummary from "./OrderSummary";
 
-interface IDatatable {
+interface IDataTable {
   orders: IOrder[];
 }
 
-interface IProductInOrder {
+export interface IProductInOrder {
   productId: string;
   orderId: string;
   quantity: number;
+  discount: number;
   costMXN: number;
   product: {
     name: string;
   };
 }
 
-const Datatable = ({ orders }: IDatatable) => {
+const Datatable = ({ orders }: IDataTable) => {
   const pathname = usePathname();
   const { isOpen, onOpen, onClose } = useModal();
+  const {
+    isOpen: isSummaryOpen,
+    onOpen: onSummaryOpen,
+    onClose: onSummaryClose,
+  } = useModal();
+  const [orderSelectedForSummary, setOrderSelectedForSummary] = useState(
+    [] as IProductInOrder[]
+  );
   const [isMassiveForConfirm, setIsMassiveForConfirm] = useState(false);
   const [selectedRowForConfirm, setSelectedRowForConfirm] = useState<
     IOrder | undefined
   >(undefined);
-  const [eventForConfirm, setEventForConfim] =
+  const [eventForConfirm, setEventForConfirm] =
     useState<React.ChangeEvent<HTMLSelectElement>>();
   const { selectedRows, showMultiActions, handleSelectRows } =
     useRowSelection<IOrder>();
@@ -68,7 +78,7 @@ const Datatable = ({ orders }: IDatatable) => {
       } else {
         setSelectedRowForConfirm(order);
       }
-      setEventForConfim(event);
+      setEventForConfirm(event);
       onOpen();
     } else {
       if (isMassive) {
@@ -91,6 +101,11 @@ const Datatable = ({ orders }: IDatatable) => {
     } else {
       await markAsPaid(id);
     }
+  };
+
+  const handleViewOrderSummary = (order: IProductInOrder[]) => {
+    setOrderSelectedForSummary(order);
+    onSummaryOpen();
   };
 
   const columns = [
@@ -156,32 +171,30 @@ const Datatable = ({ orders }: IDatatable) => {
       sortable: true,
     },
     {
-      name: "Producto(s)",
-      width: "300px",
-      cell: (row: { products: IProductInOrder[] }) => (
-        <li className="list-none list-inside m-2 space-y-2">
-          {row.products.map((product, index) => (
-            <ul key={index}>
-              {product.product.name} - {product.quantity}u -{" "}
-              {formatCurrency(product.costMXN, "MXN")}
-            </ul>
-          ))}
-        </li>
-      ),
-    },
-    {
-      name: "Descuento",
-      selector: (row: { discount: number }) => row.discount,
-      sortable: true,
-      format: (row: { discount: number }) => `${row.discount}%`,
-    },
-    {
       name: "Método de Pago",
       selector: (row: { paymentMethod: string }) => row.paymentMethod,
       sortable: true,
     },
     {
-      name: "Subtotal",
+      name: "Resumen de Pedido",
+      width: "150px",
+      cell: (row: { products: IProductInOrder[] }) => (
+        <button
+          onClick={() => handleViewOrderSummary(row.products)}
+          className="bg-accent text-white rounded-md p-2 border borde-white"
+        >
+          Ver Resumen
+        </button>
+      ),
+    },
+    {
+      name: "Descuento General",
+      selector: (row: { discount: number }) => row.discount,
+      sortable: true,
+      format: (row: { discount: number }) => `${row.discount}%`,
+    },
+    {
+      name: "Subtotal General",
       selector: (row: { subtotal: number }) => row.subtotal,
       sortable: true,
       format: (row: { subtotal: number }) =>
@@ -223,12 +236,16 @@ const Datatable = ({ orders }: IDatatable) => {
         <>
           {isClient ? (
             <>
+              <Modal isOpen={isSummaryOpen} onClose={onSummaryClose}>
+                <h1 className="text-center text-2xl">Resumen</h1>
+                <OrderSummary order={{ products: orderSelectedForSummary }} />
+              </Modal>
               <Modal isOpen={isOpen} onClose={handleCancel}>
                 <div className="flex flex-col gap-2">
-                  <span className="text-2xl text-center text-red-500">
+                  <p className="text-2xl text-center text-red-500">
                     ⚠️ Acción irreversible ⚠️
-                  </span>
-                  <h1 className="text-center text-base md:text-xl">
+                  </p>
+                  <p className="text-center text-base md:text-xl">
                     {isMassiveForConfirm
                       ? `¿Estás seguro de cancelar ${
                           pathname === "/admin/orders"
@@ -240,64 +257,50 @@ const Datatable = ({ orders }: IDatatable) => {
                             ? "este pedido"
                             : "esta venta"
                         }?`}
-                  </h1>
+                  </p>
                   {isMassiveForConfirm ? (
                     <ul className="flex flex-col gap-2 items-center">
                       {selectedRows.map((row, index) => (
-                        <li key={index} className="flex gap-2">
-                          <span>{row.client}</span>
-                          {" | "}
-                          <span>{row.shipmentType}</span>
-                          {" | "}
-                          <ul>
-                            {row.products.map((product, index) => (
-                              <li key={index}>
-                                {
-                                  (product as unknown as IProductInOrder)
-                                    .product.name
-                                }{" "}
-                                -{" "}
-                                {
-                                  (product as unknown as IProductInOrder)
-                                    .quantity
-                                }{" "}
-                                -{" "}
-                                {formatCurrency(
-                                  (product as unknown as IProductInOrder)
-                                    .costMXN,
-                                  "MXN"
-                                )}
-                              </li>
-                            ))}
-                          </ul>
+                        <li key={index} className="border-b border-b-black">
+                          <div className="text-center">
+                            <h2 className="text-lg">
+                              <strong>Cliente: </strong>
+                              {row.client}
+                            </h2>
+                            <p>
+                              <strong>Tipo de envío: </strong>
+                              {row.shipmentType}
+                            </p>
+                            <div className="w-[220px] sm:w-[300px] md:w-[200px] lg:w-[300px] xl:w-full mx-auto">
+                              <OrderSummary
+                                order={{
+                                  products:
+                                    row.products as unknown as IProductInOrder[],
+                                }}
+                              />
+                            </div>
+                          </div>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <div className="flex gap-2 justify-center">
-                      {selectedRowForConfirm?.client}
-                      {" | "}
-                      {selectedRowForConfirm?.shipmentType}
-                      {" | "}
-                      <ul>
-                        {selectedRowForConfirm?.products.map(
-                          (product, index) => (
-                            <li key={index}>
-                              {
-                                (product as unknown as IProductInOrder).product
-                                  .name
-                              }{" "}
-                              -{" "}
-                              {(product as unknown as IProductInOrder).quantity}{" "}
-                              -{" "}
-                              {formatCurrency(
-                                (product as unknown as IProductInOrder).costMXN,
-                                "MXN"
-                              )}
-                            </li>
-                          )
-                        )}
-                      </ul>
+                    <div className="text-center">
+                      <h2 className="text-lg">
+                        <strong>Cliente: </strong>
+                        {selectedRowForConfirm?.client}
+                      </h2>
+                      <p>
+                        <strong>Tipo de envío: </strong>
+                        {selectedRowForConfirm?.shipmentType}
+                      </p>
+                      <div className="w-[220px] sm:w-[300px] md:w-[200px] lg:w-[300px] xl:w-full mx-auto">
+                        <OrderSummary
+                          order={{
+                            products:
+                              selectedRowForConfirm?.products as unknown as IProductInOrder[],
+                          }}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -353,7 +356,7 @@ const Datatable = ({ orders }: IDatatable) => {
                       }
                       className="bg-accent text-white rounded-md p-2 border border-white"
                     >
-                      <option value="">Estado de Envio</option>
+                      <option value="">Estado de Envío</option>
                       <option value="PENDING">Pendiente</option>
                       <option value="DELIVERED">Entregado</option>
                       <option value="CANCELLED">Cancelado</option>
@@ -362,8 +365,8 @@ const Datatable = ({ orders }: IDatatable) => {
                 </div>
               )}
               <CustomDatatable
-                columns={columns}
                 data={orders}
+                columns={columns}
                 onSelectedRowsChange={handleSelectRows}
               />
             </>

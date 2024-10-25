@@ -28,6 +28,15 @@ const productsSchema = z.object({
   quantity: z.number().int().positive({
     message: "La cantidad debe ser un número positivo",
   }),
+  discount: z
+    .number()
+    .min(0, {
+      message: "El descuento debe ser mayor o igual a 0%",
+    })
+    .max(100, {
+      message: "El descuento no puede ser mayor al 100%",
+    })
+    .optional(),
 });
 
 const createSchema = baseSchema.extend({});

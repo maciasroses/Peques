@@ -140,6 +140,7 @@ export interface ICreateOrder extends ISharedState {
     products?: {
       productKey?: string;
       quantity?: string;
+      discount?: string;
     }[];
   };
 }
