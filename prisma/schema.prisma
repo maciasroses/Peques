@@ -87,6 +87,7 @@ model ProductOnOrder {
   orderId   String
   quantity  Int
   costMXN   Float
+  discount  Float?  @default(0)
 
   @@id([productId, orderId])
 }

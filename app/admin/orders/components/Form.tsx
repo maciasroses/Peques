@@ -1,24 +1,26 @@
 "use client";
 
-import { ReactNode, useState } from "react";
-import { INITIAL_STATE_RESPONSE } from "@/constants";
-import {
-  createMassiveOrder,
-  createOrder,
-  deleteMassiveOrder,
-  deleteOrder,
-} from "@/services/order/controller";
-import { MinusCircle, PlusCircle, Upload } from "@/public/icons";
-import { GenericInput, SubmitButton } from "@/components";
-import type { ICreateOrder, IOrder, IProduct } from "@/interfaces";
 import clsx from "clsx";
+import OrderSummary from "./OrderSummary";
+import { ReactNode, useState } from "react";
 import { usePathname } from "next/navigation";
-import formatCurrency from "@/utils/format-currency";
+import { INITIAL_STATE_RESPONSE } from "@/constants";
+import { AutocompleteInput } from "@/components/Form";
+import { GenericInput, SubmitButton } from "@/components";
+import { MinusCircle, PlusCircle, Upload } from "@/public/icons";
+import {
+  createOrder,
+  deleteOrder,
+  createMassiveOrder,
+  deleteMassiveOrder,
+} from "@/services/order/controller";
+import type { ICreateOrder, IOrder, IProduct } from "@/interfaces";
 
 interface IProductInOrder {
   productId: string;
   orderId: string;
   quantity: number;
+  discount: number;
   costMXN: number;
   product: {
     name: string;
@@ -43,11 +45,11 @@ const Form = ({ onClose, products, order, action }: IForm) => {
     INITIAL_STATE_RESPONSE
   );
 
-  const handleIncreaseNSubstract = (action: string) => {
+  const handleIncreaseNSubtract = (action: string) => {
     setProductsCounter((prev) => {
       if (action === "increase") {
         return prev + 1;
-      } else if (action === "substract" && prev > 1) {
+      } else if (action === "subtract" && prev > 1) {
         const updatedSelections = [...selectedProducts];
         updatedSelections.pop();
         setSelectedProducts(updatedSelections);
@@ -173,6 +175,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                     <GenericInput
                       id="discount"
                       type="number"
+                      step="0.01"
                       min="0"
                       max="100"
                       ariaLabel="Descuento (Opcional)"
@@ -199,16 +202,12 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                       !selectedProducts.includes(product.key) ||
                       product.key === selectedProducts[index]
                   );
-
                   return (
                     <ProductForm
                       key={index}
                       index={index}
                       products={filteredProducts ?? []}
                       onProductSelect={handleProductSelect}
-                      currentProduct={
-                        (order as IOrder)?.products?.[index] ?? {}
-                      }
                       badResponse={badResponse}
                     />
                   );
@@ -216,14 +215,14 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                 <div className="flex gap-2 items-center justify-end">
                   <button
                     type="button"
-                    onClick={() => handleIncreaseNSubstract("increase")}
+                    onClick={() => handleIncreaseNSubtract("increase")}
                   >
                     <PlusCircle />
                   </button>
                   {productsCounter > 1 && (
                     <button
                       type="button"
-                      onClick={() => handleIncreaseNSubstract("substract")}
+                      onClick={() => handleIncreaseNSubtract("subtract")}
                     >
                       <MinusCircle />
                     </button>
@@ -237,40 +236,33 @@ const Form = ({ onClose, products, order, action }: IForm) => {
               <>
                 {action === "delete" ? (
                   <div className="flex flex-col gap-2">
-                    <span className="text-2xl text-center text-red-500">
+                    <p className="text-2xl text-center text-red-500">
                       ⚠️ Acción irreversible ⚠️
-                    </span>
-                    <h1 className="text-center text-base md:text-xl">
-                      ¿Estás seguro de que deseas eliminar{" "}
-                      <span>
-                        {pathname === "/admin/orders"
-                          ? "este pedido"
-                          : "esta venta"}
-                      </span>
+                    </p>
+                    <p className="text-center text-base md:text-xl">
+                      ¿Estás seguro de que deseas eliminar
+                      {pathname === "/admin/orders"
+                        ? " este pedido"
+                        : " esta venta"}
                       ?
-                    </h1>
-                    <div className="flex justify-center gap-2">
-                      {(order as IOrder).client}
-                      {" | "}
-                      {(order as IOrder).shipmentType}
-                      {" | "}
-                      <ul>
-                        {(order as IOrder).products.map((product, index) => (
-                          <li key={index}>
-                            {
-                              (product as unknown as IProductInOrder).product
-                                .name
-                            }
-                            {" - "}
-                            {(product as unknown as IProductInOrder).quantity}u
-                            {" - "}
-                            {formatCurrency(
-                              (product as unknown as IProductInOrder).costMXN,
-                              "MXN"
-                            )}
-                          </li>
-                        ))}
-                      </ul>
+                    </p>
+                    <div className="text-center">
+                      <h2 className="text-lg">
+                        <strong>Cliente: </strong>
+                        {(order as IOrder).client}
+                      </h2>
+                      <p>
+                        <strong>Tipo de envío: </strong>
+                        {(order as IOrder).shipmentType}
+                      </p>
+                      <div className="w-[220px] sm:w-[300px] md:w-[200px] lg:w-[300px] xl:w-full mx-auto">
+                        <OrderSummary
+                          order={{
+                            products: (order as IOrder)
+                              .products as unknown as IProductInOrder[],
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -289,32 +281,25 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                     </h1>
                     <ul className="flex flex-col items-center gap-2">
                       {(order as IOrder[]).map((o, index) => (
-                        <li key={index} className="flex gap-2">
-                          {o.client}
-                          {" | "}
-                          {o.shipmentType}
-                          {" | "}
-                          <ul>
-                            {o.products.map((product, index) => (
-                              <li key={index}>
-                                {
-                                  (product as unknown as IProductInOrder)
-                                    .product.name
-                                }
-                                {" - "}
-                                {
-                                  (product as unknown as IProductInOrder)
-                                    .quantity
-                                }
-                                {" - "}
-                                {formatCurrency(
-                                  (product as unknown as IProductInOrder)
-                                    .costMXN,
-                                  "MXN"
-                                )}
-                              </li>
-                            ))}
-                          </ul>
+                        <li key={index} className="border-b border-b-black">
+                          <div className="text-center">
+                            <h2 className="text-lg">
+                              <strong>Cliente: </strong>
+                              {o.client}
+                            </h2>
+                            <p>
+                              <strong>Tipo de envío: </strong>
+                              {o.shipmentType}
+                            </p>
+                            <div className="w-[220px] sm:w-[300px] md:w-[200px] lg:w-[300px] xl:w-full mx-auto">
+                              <OrderSummary
+                                order={{
+                                  products:
+                                    o.products as unknown as IProductInOrder[],
+                                }}
+                              />
+                            </div>
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -433,7 +418,6 @@ const GenericDiv = ({ children }: { children: ReactNode }) => {
 interface IProductForm {
   index: number;
   products: IProduct[];
-  currentProduct: IProduct;
   onProductSelect: (index: number, productId: string) => void;
   badResponse: ICreateOrder;
 }
@@ -441,7 +425,6 @@ interface IProductForm {
 const ProductForm = ({
   index,
   products,
-  currentProduct,
   onProductSelect,
   badResponse,
 }: IProductForm) => {
@@ -455,18 +438,17 @@ const ProductForm = ({
   return (
     <GenericPairDiv>
       <GenericDiv>
-        <GenericInput
+        <AutocompleteInput
           id="product"
-          type="select"
           ariaLabel="Producto"
-          onChange={handleSelectChange}
-          placeholder="Selecciona un producto"
-          defaultValue={currentProduct.key ?? ""}
-          options={products.map((p) => ({
+          placeholder="Busca un producto..."
+          additionOnChange={handleSelectChange}
+          suggestions={products.map((p) => ({
             value: p.key,
             label: p.name,
           }))}
           error={badResponse.errors?.products?.[index]?.productKey}
+          customClassName="mt-2"
         />
       </GenericDiv>
       <GenericDiv>
@@ -476,8 +458,18 @@ const ProductForm = ({
           step="1"
           ariaLabel="Cantidad"
           placeholder="5"
-          defaultValue={currentProduct.availableQuantity?.toString() ?? ""}
           error={badResponse.errors?.products?.[index]?.quantity}
+        />
+      </GenericDiv>
+      <GenericDiv>
+        <GenericInput
+          id="productDiscount"
+          type="number"
+          step="0.01"
+          min="0"
+          max="100"
+          ariaLabel="Descuento (Opcional)"
+          placeholder="10"
         />
       </GenericDiv>
     </GenericPairDiv>

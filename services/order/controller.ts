@@ -111,6 +111,7 @@ export async function createOrder(formData: FormData) {
     products: {
       productKey?: string;
       quantity?: string;
+      discount?: string;
     }[];
   }
 
@@ -135,12 +136,14 @@ export async function createOrder(formData: FormData) {
 
   const products = formData.getAll("product");
   const productsQuantity = formData.getAll("productQuantity");
+  const productsDiscount = formData.getAll("productDiscount");
 
   try {
     for (let i = 0; i < products.length; i++) {
       orderProducts[i] = {
         productKey: products[i],
         quantity: Number(productsQuantity[i]),
+        discount: Number(productsDiscount[i]) ?? 0,
       };
 
       const { availableQuantity } = (await readProduct({
@@ -168,6 +171,7 @@ export async function createOrder(formData: FormData) {
     }
 
     let total = 0;
+    let productsTotal = 0;
     const finalProducts: {
       product: {
         connect: {
@@ -175,6 +179,7 @@ export async function createOrder(formData: FormData) {
         };
       };
       quantity: number;
+      discount: number;
       costMXN: number;
     }[] = [];
 
@@ -183,7 +188,9 @@ export async function createOrder(formData: FormData) {
         key: product.productKey as string,
       })) as unknown as IProduct;
 
-      total += Number(product.quantity) * salePriceMXN;
+      const preTotal = Number(product.quantity) * salePriceMXN;
+      total += preTotal;
+      productsTotal += preTotal - (preTotal * product.discount) / 100;
 
       const { availableQuantity } = (await readProduct({
         key: product.productKey as string,
@@ -203,20 +210,23 @@ export async function createOrder(formData: FormData) {
           },
         },
         quantity: product.quantity,
-        costMXN: Number(product.quantity) * salePriceMXN,
+        discount: product.discount,
+        costMXN: salePriceMXN,
       });
     });
 
     await Promise.all(productPromise);
 
-    const subtotal = total;
-    total = total - (total * data.discount) / 100;
+    const subtotal = productsTotal;
+    total = productsTotal - (productsTotal * data.discount) / 100;
 
     const finalData = {
       ...data,
       subtotal,
       total,
-      isPaid: data.discount === 100,
+      isPaid:
+        data.discount === 100 ||
+        finalProducts.every((product) => product.discount === 100),
       products: {
         create: finalProducts,
       },
@@ -281,19 +291,31 @@ export async function createMassiveOrder(formData: FormData) {
           typeof row["Cantidad"] === "string"
             ? row["Cantidad"].split(",").map(Number)
             : [Number(row["Cantidad"])];
+        const discounts =
+          typeof row["Descuento por Producto"] === "string"
+            ? row["Descuento por Producto"].split(",").map(Number)
+            : [Number(row["Descuento por Producto"]) || 0];
 
         // Filtrar valores nulos o no válidos en productos y cantidades
         const validatedProducts = products.filter(Boolean);
         const validatedQuantities = quantities.filter(Boolean);
+        const validatedDiscounts = discounts.filter(
+          (val) => val !== null && val !== undefined && !isNaN(val)
+        );
 
         // Verificar si la cantidad de productos y cantidades es la misma
-        if (validatedProducts.length !== validatedQuantities.length) {
+        if (
+          validatedProducts.length !== validatedQuantities.length ||
+          validatedProducts.length !== validatedDiscounts.length ||
+          validatedQuantities.length !== validatedDiscounts.length
+        ) {
           errors[`Fila ${index + 2}`] =
-            "La cantidad de productos y cantidades no coincide";
+            "La cantidad de productos, cantidades y descuentos por producto no coinciden";
           continue;
         }
 
         let total = 0;
+        let productsTotal = 0;
         const processedProducts = new Set<string>();
         const orderProducts = [];
         const productsData: {
@@ -303,6 +325,7 @@ export async function createMassiveOrder(formData: FormData) {
             };
           };
           quantity: number;
+          discount: number;
           costMXN: number;
         }[] = [];
 
@@ -310,6 +333,7 @@ export async function createMassiveOrder(formData: FormData) {
           orderProducts[i] = {
             productKey: validatedProducts[i],
             quantity: validatedQuantities[i],
+            discount: validatedDiscounts[i] ?? 0,
           };
 
           const orderProductErrors = validateSchema(
@@ -362,7 +386,10 @@ export async function createMassiveOrder(formData: FormData) {
           localQuantitiesPerProduct[validatedProducts[i]] -=
             validatedQuantities[i];
 
-          total += validatedQuantities[i] * product.salePriceMXN;
+          // total += validatedQuantities[i] * product.salePriceMXN;
+          const preTotal = validatedQuantities[i] * product.salePriceMXN;
+          total += preTotal;
+          productsTotal += preTotal - (preTotal * validatedDiscounts[i]) / 100;
 
           productsData.push({
             product: {
@@ -371,18 +398,21 @@ export async function createMassiveOrder(formData: FormData) {
               },
             },
             quantity: validatedQuantities[i],
+            discount: validatedDiscounts[i],
             costMXN: validatedQuantities[i] * product.salePriceMXN,
           });
         }
 
-        const subtotal = total;
-        total = total - (total * data.discount) / 100;
+        const subtotal = productsTotal;
+        total = productsTotal - (productsTotal * data.discount) / 100;
 
         const finalData = {
           ...data,
           subtotal,
           total,
-          isPaid: data.discount === 100,
+          isPaid:
+            data.discount === 100 ||
+            productsData.every((p) => p.discount === 100),
           products: {
             create: productsData,
           },
