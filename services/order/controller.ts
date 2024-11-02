@@ -1,9 +1,9 @@
 "use server";
 
-import * as XLSX from "xlsx";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { read as xlsxRead, utils as xlsxUtils } from "xlsx";
 import {
   read as readProduct,
   update as updateProduct,
@@ -106,6 +106,65 @@ export async function getSales({
   }
 }
 
+// const matchesSet = (setKeys: string[]) => {
+//   return setKeys.every((key) =>
+//     products.some((product) => product.startsWith(key))
+//   );
+// };
+
+// const matchesSet = (setKeys: string[]) => {
+//   if (productsQuantity.every((quantity) => Number(quantity) === 1)) {
+//     return setKeys.every((key) =>
+//       products.some((product) => product.startsWith(key))
+//     );
+//   }
+// };
+
+// const matchesSet = (setKeys: string[]) => {
+//   return setKeys.every((key) => {
+//     const index = products.findIndex((product) => product.startsWith(key));
+//     return index !== -1 && productsQuantity[index] === "1";
+//   });
+// };
+
+const matchesSet = (
+  setKeys: string[],
+  products: string[],
+  productsQuantity: string[]
+) => {
+  const productCounts: Record<string, number> = {};
+
+  setKeys.forEach((key) => {
+    products.forEach((product, index) => {
+      if (product.startsWith(key)) {
+        if (!productCounts[key]) {
+          productCounts[key] = 0;
+        }
+        productCounts[key] += Number(productsQuantity[index]);
+      }
+    });
+  });
+
+  const quantities = Object.values(productCounts);
+  return (
+    quantities.length === setKeys.length &&
+    quantities.every((qty) => qty === quantities[0])
+  );
+};
+
+const applyDiscounts = (
+  discount: number,
+  productKey: string,
+  set: { [key: string]: number }
+) => {
+  for (let key in set) {
+    if (productKey.startsWith(key)) {
+      return set[key];
+    }
+  }
+  return discount;
+};
+
 export async function createOrder(formData: FormData) {
   interface IOrderErrors {
     order: {};
@@ -136,52 +195,21 @@ export async function createOrder(formData: FormData) {
   }
 
   const products = formData.getAll("product") as string[];
-  console.log(products);
   const productsQuantity = formData.getAll("productQuantity") as string[];
   const productsDiscount = formData.getAll("productDiscount") as string[];
-  console.log(productsDiscount);
-
-  const matchesSet = (
-    products: string[],
-    setKeys: string[],
-    isSetIdeal: boolean
-  ) => {
-    if (isSetIdeal) {
-      return setKeys.some((key) =>
-        products.some((product) => product.startsWith(key))
-      );
-    } else {
-      return setKeys.every((key) =>
-        products.some((product) => product.startsWith(key))
-      );
-    }
-  };
-
-  const applyDiscounts = (
-    discount: number,
-    productKey: string,
-    set: { [key: string]: number }
-  ) => {
-    for (let key in set) {
-      if (productKey.startsWith(key)) {
-        return set[key];
-      }
-    }
-    return discount;
-  };
 
   try {
     for (let i = 0; i < products.length; i++) {
       let discount = Number(productsDiscount[i]) ?? 0;
 
-      if (matchesSet(products as string[], Object.keys(SET_IDEAL), true)) {
+      if (matchesSet(Object.keys(SET_IDEAL), products, productsQuantity)) {
         discount = applyDiscounts(discount, products[i], SET_IDEAL);
       } else if (
-        matchesSet(products as string[], Object.keys(SET_INTEGRAL), false)
+        matchesSet(Object.keys(SET_INTEGRAL), products, productsQuantity)
       ) {
         discount = applyDiscounts(discount, products[i], SET_INTEGRAL);
       } else if (
-        matchesSet(products as string[], Object.keys(COMFORT_SET), false)
+        matchesSet(Object.keys(COMFORT_SET), products, productsQuantity)
       ) {
         discount = applyDiscounts(discount, products[i], COMFORT_SET);
       }
@@ -191,8 +219,6 @@ export async function createOrder(formData: FormData) {
         productKey: products[i],
         quantity: Number(productsQuantity[i]),
       };
-
-      console.log(orderProducts[i]);
 
       const { availableQuantity } = (await readProduct({
         key: products[i] as string,
@@ -293,10 +319,10 @@ export async function createMassiveOrder(formData: FormData) {
 
     // Leer el archivo Excel
     const data = await file.arrayBuffer();
-    const workbook = XLSX.read(data, { type: "array" });
+    const workbook = xlsxRead(data, { type: "array" });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+    const jsonData: any[] = xlsxUtils.sheet_to_json(worksheet);
 
     // Variables para almacenar los datos válidos y los errores
     const validData = [];
@@ -338,16 +364,21 @@ export async function createMassiveOrder(formData: FormData) {
         const discounts =
           typeof row["Descuento por Producto"] === "string"
             ? row["Descuento por Producto"].split(",").map(Number)
-            : [Number(row["Descuento por Producto"]) || 0];
+            : Number(row["Descuento por Producto"]) ||
+              row["Productos"].split(",").map(() => 0);
 
-        // Filtrar valores nulos o no válidos en productos y cantidades
         const validatedProducts = products.filter(Boolean);
         const validatedQuantities = quantities.filter(Boolean);
-        const validatedDiscounts = discounts.filter(
-          (val) => val !== null && val !== undefined && !isNaN(val)
+        interface IValidatedDiscounts {
+          (val: number | null | undefined): boolean;
+        }
+        const validatedDiscounts: number[] = discounts.filter(
+          ((val: number | null | undefined) =>
+            val !== null &&
+            val !== undefined &&
+            !isNaN(val)) as IValidatedDiscounts
         );
 
-        // Verificar si la cantidad de productos y cantidades es la misma
         if (
           validatedProducts.length !== validatedQuantities.length ||
           validatedProducts.length !== validatedDiscounts.length ||
@@ -374,10 +405,50 @@ export async function createMassiveOrder(formData: FormData) {
         }[] = [];
 
         for (let i = 0; i < validatedProducts.length; i++) {
+          let discount = Number(validatedDiscounts[i]) ?? 0;
+
+          if (
+            matchesSet(
+              Object.keys(SET_IDEAL),
+              validatedProducts,
+              validatedQuantities as unknown as string[]
+            )
+          ) {
+            discount = applyDiscounts(
+              discount,
+              validatedProducts[i],
+              SET_IDEAL
+            );
+          } else if (
+            matchesSet(
+              Object.keys(SET_INTEGRAL),
+              validatedProducts,
+              validatedQuantities as unknown as string[]
+            )
+          ) {
+            discount = applyDiscounts(
+              discount,
+              validatedProducts[i],
+              SET_INTEGRAL
+            );
+          } else if (
+            matchesSet(
+              Object.keys(COMFORT_SET),
+              validatedProducts,
+              validatedQuantities as unknown as string[]
+            )
+          ) {
+            discount = applyDiscounts(
+              discount,
+              validatedProducts[i],
+              COMFORT_SET
+            );
+          }
+
           orderProducts[i] = {
+            discount,
             productKey: validatedProducts[i],
             quantity: validatedQuantities[i],
-            discount: validatedDiscounts[i] ?? 0,
           };
 
           const orderProductErrors = validateSchema(
@@ -391,9 +462,8 @@ export async function createMassiveOrder(formData: FormData) {
             continue;
           }
 
-          const currentProduct = validatedProducts[i] as string;
+          const currentProduct = orderProducts[i].productKey;
 
-          // Comprobar si el producto ya fue procesado
           if (processedProducts.has(currentProduct)) {
             errors[
               `Fila ${index + 2} - Producto ${i + 1}`
@@ -401,7 +471,6 @@ export async function createMassiveOrder(formData: FormData) {
             continue; // Saltar a la siguiente iteración
           }
 
-          // Agregar el producto al conjunto de productos procesados
           processedProducts.add(currentProduct);
 
           const product = (await readProduct({
@@ -416,8 +485,8 @@ export async function createMassiveOrder(formData: FormData) {
           }
 
           if (
-            validatedQuantities[i] >
-            localQuantitiesPerProduct[validatedProducts[i]]
+            orderProducts[i].quantity >
+            localQuantitiesPerProduct[orderProducts[i].productKey]
           ) {
             errors[
               `Fila ${index + 2} - Producto ${i + 1}`
@@ -427,23 +496,23 @@ export async function createMassiveOrder(formData: FormData) {
             continue;
           }
 
-          localQuantitiesPerProduct[validatedProducts[i]] -=
-            validatedQuantities[i];
+          localQuantitiesPerProduct[orderProducts[i].productKey] -=
+            orderProducts[i].quantity;
 
-          // total += validatedQuantities[i] * product.salePriceMXN;
-          const preTotal = validatedQuantities[i] * product.salePriceMXN;
+          const preTotal = orderProducts[i].quantity * product.salePriceMXN;
           total += preTotal;
-          productsTotal += preTotal - (preTotal * validatedDiscounts[i]) / 100;
+          productsTotal +=
+            preTotal - (preTotal * orderProducts[i].discount) / 100;
 
           productsData.push({
             product: {
               connect: {
-                key: validatedProducts[i] as string,
+                key: orderProducts[i].productKey,
               },
             },
-            quantity: validatedQuantities[i],
-            discount: validatedDiscounts[i],
-            costMXN: validatedQuantities[i] * product.salePriceMXN,
+            quantity: orderProducts[i].quantity,
+            discount: orderProducts[i].discount,
+            costMXN: orderProducts[i].quantity * product.salePriceMXN,
           });
         }
 

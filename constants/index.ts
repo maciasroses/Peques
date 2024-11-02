@@ -39,24 +39,22 @@ export const COLORS_FOR_CHARTS = [
   "#98B4D4", // Azul cielo
 ];
 
-// const commonProperties = ["tradicional", "mantel", "abierto"];
-// const mordedera = ["anticaida", "aro", "conejo", "mord", "pulpo"];
-// export const setIdeal = [...mordedera, ...commonProperties, "popote"];
-// export const setIntegral = [...commonProperties];
-// export const comfortSet = ["manta", "cobija"];
-
 const commonProperties = {
-  abierto: 25,
-  mantel: 18.18,
   tradicional: 0,
 };
-const mordedera = {
-  aro: 35.7142,
-  mord: 35.7142,
-  pulpo: 35.7142,
-  conejo: 35.7142,
-  anticaida: 35.7142,
+export const SET_INTEGRAL = {
+  abierto: 25,
+  mantel: 18.1818,
+  ...commonProperties,
 };
-export const SET_INTEGRAL = { ...commonProperties };
-export const COMFORT_SET = { manta: 12.8205128, cobija: 6.77966102 };
-export const SET_IDEAL = { popote: 25, ...mordedera, ...commonProperties };
+export const COMFORT_SET = {
+  manta: 12.8205128,
+  cobija: 6.77966102,
+};
+export const SET_IDEAL = {
+  popote: 25,
+  aro: 35.7142, // Mordedera
+  mantel: 18.18,
+  abierto: 12.5,
+  ...commonProperties,
+};
