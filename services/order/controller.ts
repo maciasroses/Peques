@@ -18,6 +18,7 @@ import {
 } from "./model";
 import { getProducts } from "../product/controller";
 import type { IProduct } from "@/interfaces";
+import { COMFORT_SET, SET_IDEAL, SET_INTEGRAL } from "@/constants";
 
 interface ISearchParams {
   client?: string;
@@ -134,17 +135,64 @@ export async function createOrder(formData: FormData) {
     orderErrors.order = errors;
   }
 
-  const products = formData.getAll("product");
-  const productsQuantity = formData.getAll("productQuantity");
-  const productsDiscount = formData.getAll("productDiscount");
+  const products = formData.getAll("product") as string[];
+  console.log(products);
+  const productsQuantity = formData.getAll("productQuantity") as string[];
+  const productsDiscount = formData.getAll("productDiscount") as string[];
+  console.log(productsDiscount);
+
+  const matchesSet = (
+    products: string[],
+    setKeys: string[],
+    isSetIdeal: boolean
+  ) => {
+    if (isSetIdeal) {
+      return setKeys.some((key) =>
+        products.some((product) => product.startsWith(key))
+      );
+    } else {
+      return setKeys.every((key) =>
+        products.some((product) => product.startsWith(key))
+      );
+    }
+  };
+
+  const applyDiscounts = (
+    discount: number,
+    productKey: string,
+    set: { [key: string]: number }
+  ) => {
+    for (let key in set) {
+      if (productKey.startsWith(key)) {
+        return set[key];
+      }
+    }
+    return discount;
+  };
 
   try {
     for (let i = 0; i < products.length; i++) {
+      let discount = Number(productsDiscount[i]) ?? 0;
+
+      if (matchesSet(products as string[], Object.keys(SET_IDEAL), true)) {
+        discount = applyDiscounts(discount, products[i], SET_IDEAL);
+      } else if (
+        matchesSet(products as string[], Object.keys(SET_INTEGRAL), false)
+      ) {
+        discount = applyDiscounts(discount, products[i], SET_INTEGRAL);
+      } else if (
+        matchesSet(products as string[], Object.keys(COMFORT_SET), false)
+      ) {
+        discount = applyDiscounts(discount, products[i], COMFORT_SET);
+      }
+
       orderProducts[i] = {
+        discount,
         productKey: products[i],
         quantity: Number(productsQuantity[i]),
-        discount: Number(productsDiscount[i]) ?? 0,
       };
+
+      console.log(orderProducts[i]);
 
       const { availableQuantity } = (await readProduct({
         key: products[i] as string,
@@ -184,17 +232,13 @@ export async function createOrder(formData: FormData) {
     }[] = [];
 
     const productPromise = orderProducts.map(async (product) => {
-      const { salePriceMXN } = (await readProduct({
+      const { salePriceMXN, availableQuantity } = (await readProduct({
         key: product.productKey as string,
       })) as unknown as IProduct;
 
       const preTotal = Number(product.quantity) * salePriceMXN;
       total += preTotal;
       productsTotal += preTotal - (preTotal * product.discount) / 100;
-
-      const { availableQuantity } = (await readProduct({
-        key: product.productKey as string,
-      })) as unknown as IProduct;
 
       await updateProduct({
         key: product.productKey as string,
