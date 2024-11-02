@@ -38,3 +38,23 @@ export const COLORS_FOR_CHARTS = [
   "#C3447A", // Rosa intenso
   "#98B4D4", // Azul cielo
 ];
+
+const commonProperties = {
+  tradicional: 0,
+};
+export const SET_INTEGRAL = {
+  abierto: 25,
+  mantel: 18.1818,
+  ...commonProperties,
+};
+export const COMFORT_SET = {
+  manta: 12.8205128,
+  cobija: 6.77966102,
+};
+export const SET_IDEAL = {
+  popote: 25,
+  aro: 35.7142, // Mordedera
+  mantel: 18.18,
+  abierto: 12.5,
+  ...commonProperties,
+};

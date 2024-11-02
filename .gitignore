@@ -38,3 +38,4 @@ next-env.d.ts
 
 docker-compose.yml
 .pgdata
+peques.sql
