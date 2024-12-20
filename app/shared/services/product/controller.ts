@@ -23,6 +23,7 @@ import type {
   IProductHistory,
   IProvider,
 } from "@/app/shared/interfaces";
+import { cookies } from "next/headers";
 
 interface SearchParams {
   q?: string;
@@ -129,8 +130,9 @@ export async function createProduct(formData: FormData) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/products`);
+  redirect(`${lng}/admin/products`);
 }
 
 export async function createMassiveProduct(formData: FormData) {
@@ -243,8 +245,9 @@ export async function createMassiveProduct(formData: FormData) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/products`);
+  redirect(`${lng}/admin/products`);
 }
 
 export async function createHistoryProduct(
@@ -309,8 +312,9 @@ export async function createHistoryProduct(
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/products`);
+  redirect(`${lng}/admin/products`);
 }
 
 export async function updateProduct(formData: FormData, productId: string) {
@@ -338,8 +342,9 @@ export async function updateProduct(formData: FormData, productId: string) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/products`);
+  redirect(`${lng}/admin/products`);
 }
 
 export async function updateHistoryProduct(
@@ -409,8 +414,9 @@ export async function updateHistoryProduct(
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/products`);
+  redirect(`${lng}/admin/products`);
 }
 
 export async function deleteProduct(productId: string) {
@@ -421,8 +427,9 @@ export async function deleteProduct(productId: string) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/products`);
+  redirect(`${lng}/admin/products`);
 }
 
 export async function deleteMassiveProducts(ids: string[]) {
@@ -461,8 +468,9 @@ export async function deleteHistoryProduct(
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/products`);
+  redirect(`${lng}/admin/products`);
 }
 
 export async function deleteMassiveProductsHistory(

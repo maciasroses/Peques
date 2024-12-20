@@ -4,6 +4,7 @@ import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { create, read, update, deleteById, deleteMassive } from "./model";
+import { cookies } from "next/headers";
 
 export async function getProviders({ q }: { q?: string }) {
   try {
@@ -44,8 +45,9 @@ export async function createProvider(formData: FormData) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/providers");
-  redirect("/admin/providers");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/providers`);
+  redirect(`${lng}/admin/providers`);
 }
 
 export async function updateProvider(formData: FormData, providerId: string) {
@@ -69,8 +71,9 @@ export async function updateProvider(formData: FormData, providerId: string) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/providers");
-  redirect("/admin/providers");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/providers`);
+  redirect(`${lng}/admin/providers`);
 }
 
 export async function deleteProvider(providerId: string) {
@@ -81,8 +84,9 @@ export async function deleteProvider(providerId: string) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/providers");
-  redirect("/admin/providers");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/providers`);
+  redirect(`${lng}/admin/providers`);
 }
 
 export async function deleteMassiveProviders(ids: string[]) {
@@ -90,9 +94,6 @@ export async function deleteMassiveProviders(ids: string[]) {
     await deleteMassive({ ids });
   } catch (error) {
     console.error(error);
-    // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  // revalidatePath("/admin/providers");
-  // redirect("/admin/providers");
 }

@@ -4,18 +4,21 @@ import Link from "next/link";
 import Image from "next/image";
 import ProfileMenu from "./ProfileMenu";
 import ThemeSelector from "./ThemeSelector";
-import { usePathname } from "next/navigation";
 import LogoMini from "@/public/assets/images/logo-mini.webp";
 import type { IUser } from "@/app/shared/interfaces";
 
-const Header = ({ user }: { user: IUser | null }) => {
-  const pathname = usePathname();
-  const isAdmin = pathname.startsWith("/admin");
+interface IHeader {
+  user: IUser | null;
+  lng: string;
+}
+
+const Header = ({ user, lng }: IHeader) => {
+  const isAdmin = user?.role === "ADMIN";
   return (
     <header className="fixed z-40 top-0 w-full h-20">
       <div className="h-full flex justify-between items-center p-4 mx-auto bg-primary dark:bg-neutral text-neutral dark:text-primary-light">
         <Link
-          href={isAdmin ? "/admin/home" : "/"}
+          href={isAdmin ? `/${lng}/admin/home` : `/${lng}`}
           className="rounded-full bg-white"
         >
           <Image

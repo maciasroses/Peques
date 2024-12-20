@@ -46,12 +46,12 @@ export default async function RootLayout({
         <ThemeComponent>
           <AuthComponent>
             <ToastContainer />
-            <Header user={user} />
+            <Header user={user} lng={lng} />
             {!user ? (
               <MainSection>{children}</MainSection>
             ) : (
               <MainSection>
-                <Sidebar user={user} />
+                <Sidebar user={user} lng={lng} />
                 <section className="sm:ml-48 pt-24 px-4 pb-4 min-h-screen">
                   {children}
                 </section>

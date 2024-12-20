@@ -19,6 +19,7 @@ import {
 import { getProducts } from "../product/controller";
 import type { IProduct } from "@/app/shared/interfaces";
 import { COMFORT_SET, SET_IDEAL, SET_INTEGRAL } from "@/app/shared/constants";
+import { cookies } from "next/headers";
 
 interface ISearchParams {
   client?: string;
@@ -96,8 +97,8 @@ export async function getSales({
       yearOfData: yearOfData
         ? Number(yearOfData)
         : isForGraph
-        ? new Date().getFullYear()
-        : undefined,
+          ? new Date().getFullYear()
+          : undefined,
     });
   } catch (error) {
     console.error(error);
@@ -308,8 +309,9 @@ export async function createOrder(formData: FormData) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/orders`);
+  redirect(`${lng}/admin/orders`);
 }
 
 export async function createMassiveOrder(formData: FormData) {
@@ -329,10 +331,13 @@ export async function createMassiveOrder(formData: FormData) {
     const errors: { [key: string]: string } = {};
     const localProductsStock = (await getProducts({})) as unknown as IProduct[];
     const localQuantitiesPerProduct: { [key: string]: number } =
-      localProductsStock.reduce((acc, product) => {
-        acc[product.key] = product.availableQuantity;
-        return acc;
-      }, {} as { [key: string]: number });
+      localProductsStock.reduce(
+        (acc, product) => {
+          acc[product.key] = product.availableQuantity;
+          return acc;
+        },
+        {} as { [key: string]: number }
+      );
 
     for (const [index, row] of jsonData.entries()) {
       try {
@@ -465,9 +470,8 @@ export async function createMassiveOrder(formData: FormData) {
           const currentProduct = orderProducts[i].productKey;
 
           if (processedProducts.has(currentProduct)) {
-            errors[
-              `Fila ${index + 2} - Producto ${i + 1}`
-            ] = `Este producto (${currentProduct}) ya se consideró en esta orden`;
+            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
+              `Este producto (${currentProduct}) ya se consideró en esta orden`;
             continue; // Saltar a la siguiente iteración
           }
 
@@ -478,9 +482,8 @@ export async function createMassiveOrder(formData: FormData) {
           })) as unknown as IProduct;
 
           if (!product) {
-            errors[
-              `Fila ${index + 2} - Producto ${i + 1}`
-            ] = `Producto no encontrado`;
+            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
+              `Producto no encontrado`;
             continue;
           }
 
@@ -488,11 +491,10 @@ export async function createMassiveOrder(formData: FormData) {
             orderProducts[i].quantity >
             localQuantitiesPerProduct[orderProducts[i].productKey]
           ) {
-            errors[
-              `Fila ${index + 2} - Producto ${i + 1}`
-            ] = `La cantidad máxima permitida para este producto (${
-              validatedProducts[i]
-            }) es ${localQuantitiesPerProduct[validatedProducts[i]]}`;
+            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
+              `La cantidad máxima permitida para este producto (${
+                validatedProducts[i]
+              }) es ${localQuantitiesPerProduct[validatedProducts[i]]}`;
             continue;
           }
 
@@ -555,8 +557,9 @@ export async function createMassiveOrder(formData: FormData) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/orders`);
+  redirect(`${lng}/admin/orders`);
 }
 
 interface IOrderForUpdateDeliveryStatus {
@@ -591,7 +594,7 @@ interface IOrderForUpdateDeliveryStatus {
 export async function updateDeliveryStatus(
   id: string,
   deliveryStatus: string,
-  pathname: string
+  _pathname: string
 ) {
   try {
     if (deliveryStatus === "CANCELLED") {
@@ -616,8 +619,9 @@ export async function updateDeliveryStatus(
     console.error(error);
     throw new Error("An internal error occurred");
   }
-  revalidatePath(pathname);
-  redirect(pathname);
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/orders`);
+  redirect(`${lng}/admin/orders`);
 }
 
 export async function updateMassiveDeliveryStatus(
@@ -663,8 +667,9 @@ export async function markAsPaid(id: string) {
     console.error(error);
     throw new Error("An internal error occurred");
   }
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/orders`);
+  redirect(`${lng}/admin/orders`);
 }
 
 export async function markMassiveAsPaid(ids: string[]) {
@@ -681,7 +686,7 @@ export async function markMassiveAsPaid(ids: string[]) {
   }
 }
 
-export async function deleteOrder(id: string, pathname: string) {
+export async function deleteOrder(id: string, _pathname: string) {
   try {
     const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
     if (order.deliveryStatus !== "CANCELLED") {
@@ -699,11 +704,11 @@ export async function deleteOrder(id: string, pathname: string) {
     await deleteById({ id });
   } catch (error) {
     console.error(error);
-    // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  revalidatePath(pathname);
-  redirect(pathname);
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`${lng}/admin/orders`);
+  redirect(`${lng}/admin/orders`);
 }
 
 export async function deleteMassiveOrder(ids: string[]) {
