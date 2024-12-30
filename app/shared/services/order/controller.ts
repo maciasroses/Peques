@@ -310,8 +310,8 @@ export async function createOrder(formData: FormData) {
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`${lng}/admin/orders`);
-  redirect(`${lng}/admin/orders`);
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 export async function createMassiveOrder(formData: FormData) {
@@ -558,8 +558,8 @@ export async function createMassiveOrder(formData: FormData) {
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`${lng}/admin/orders`);
-  redirect(`${lng}/admin/orders`);
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 interface IOrderForUpdateDeliveryStatus {
@@ -620,8 +620,8 @@ export async function updateDeliveryStatus(
     throw new Error("An internal error occurred");
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`${lng}/admin/orders`);
-  redirect(`${lng}/admin/orders`);
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 export async function updateMassiveDeliveryStatus(
@@ -668,8 +668,8 @@ export async function markAsPaid(id: string) {
     throw new Error("An internal error occurred");
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`${lng}/admin/orders`);
-  redirect(`${lng}/admin/orders`);
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 export async function markMassiveAsPaid(ids: string[]) {
@@ -707,8 +707,8 @@ export async function deleteOrder(id: string, _pathname: string) {
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`${lng}/admin/orders`);
-  redirect(`${lng}/admin/orders`);
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 export async function deleteMassiveOrder(ids: string[]) {

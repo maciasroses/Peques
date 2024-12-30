@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { ReactNode, useState } from "react";
 import { login } from "@/app/shared/services/user/controller";
 import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
 import { GenericInput, SubmitButton } from "@/app/shared/components";
 import type { ILoginState } from "@/app/shared/interfaces";
 
-const Form = () => {
+const Form = ({ lng }: { lng: string }) => {
   const [isPending, setIsPending] = useState(false);
   const [badResponse, setBadResponse] = useState<ILoginState>(
     INITIAL_STATE_RESPONSE
@@ -26,14 +27,14 @@ const Form = () => {
   };
 
   return (
-    <div className="w-full sm:w-1/2 flex flex-col justify-center dark:text-white">
+    <>
       <div className="text-center">
         <h1 className="text-3xl md:text-6xl">Inicio de sesión</h1>
         {badResponse.message && (
           <p className="text-red-600">{badResponse.message}</p>
         )}
       </div>
-      <form onSubmit={submitAction} className="w-1/2 m-auto">
+      <form onSubmit={submitAction} className="w-[80%] m-auto">
         <fieldset disabled={isPending}>
           <div className="flex flex-col gap-4 text-base md:text-xl">
             <GenericDiv>
@@ -64,7 +65,13 @@ const Form = () => {
           </div>
         </fieldset>
       </form>
-    </div>
+      <p className="text-center mt-4">
+        ¿No tienes una cuenta?{" "}
+        <Link href={`/${lng}/register`} className="hover:underline">
+          Regístrate
+        </Link>
+      </p>
+    </>
   );
 };
 

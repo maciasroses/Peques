@@ -46,8 +46,8 @@ export async function createProvider(formData: FormData) {
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`${lng}/admin/providers`);
-  redirect(`${lng}/admin/providers`);
+  revalidatePath(`/${lng}/admin/providers`);
+  redirect(`/${lng}/admin/providers`);
 }
 
 export async function updateProvider(formData: FormData, providerId: string) {
@@ -72,8 +72,8 @@ export async function updateProvider(formData: FormData, providerId: string) {
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`${lng}/admin/providers`);
-  redirect(`${lng}/admin/providers`);
+  revalidatePath(`/${lng}/admin/providers`);
+  redirect(`/${lng}/admin/providers`);
 }
 
 export async function deleteProvider(providerId: string) {
@@ -85,8 +85,8 @@ export async function deleteProvider(providerId: string) {
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`${lng}/admin/providers`);
-  redirect(`${lng}/admin/providers`);
+  revalidatePath(`/${lng}/admin/providers`);
+  redirect(`/${lng}/admin/providers`);
 }
 
 export async function deleteMassiveProviders(ids: string[]) {

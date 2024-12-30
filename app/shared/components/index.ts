@@ -9,6 +9,7 @@ import Datatable from "./Datatable";
 import { Sidebar } from "./Sidebar";
 import CardSkeleton from "./CardSkeleton";
 import AuthComponent from "./AuthComponent";
+import CartComponent from "./CartComponent";
 import ThemeComponent from "./ThemeComponent";
 import DatatableSkeleton from "./DatatableSkeleton";
 import { PieSkeleton, BarSkeleton, LineSkeleton } from "./Chart";
@@ -30,6 +31,7 @@ export {
   LineSkeleton,
   GenericInput,
   SubmitButton,
+  CartComponent,
   AuthComponent,
   ThemeComponent,
   DatatableSkeleton,

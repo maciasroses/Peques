@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (session) {
-    if (pathname === `/${lng}/login` || pathname === `/${lng}/signup`)
+    if (pathname === `/${lng}/login` || pathname === `/${lng}/register`)
       return NextResponse.redirect(new URL(`/${lng}`, request.url));
     if (pathname === `/${lng}/profile`) {
       return NextResponse.redirect(
@@ -63,7 +63,7 @@ export const config = {
   matcher: [
     "/",
     "/login",
-    "/signup",
+    "/register",
     "/search",
     "/checkout/:path*",
     "/admin/:path*",

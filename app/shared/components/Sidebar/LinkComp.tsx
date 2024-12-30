@@ -34,7 +34,7 @@ const LinkComp = ({ to, span, icon }: ILinkComp) => {
       ) : icon === "sales" ? (
         <Dollar isActive={isActive} />
       ) : icon === "orders" ? (
-        <ShoppingBag isActive={isActive} />
+        <ShoppingBag strokeWidth={2.5} isActive={isActive} />
       ) : icon === "products" ? (
         <Puzzle isActive={isActive} />
       ) : (

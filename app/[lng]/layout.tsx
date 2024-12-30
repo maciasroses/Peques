@@ -7,8 +7,8 @@ import { getMe } from "@/app/shared/services/user/controller";
 import {
   Footer,
   Header,
-  Sidebar,
   AuthComponent,
+  CartComponent,
   ThemeComponent,
 } from "@/app/shared/components";
 import type { Metadata } from "next";
@@ -31,44 +31,30 @@ interface IRootLayout extends IBaseLangPage {
 }
 
 export default async function RootLayout({
-  params,
   children,
+  params: { lng },
 }: Readonly<IRootLayout>) {
-  const { lng } = await params;
-  const user = (await getMe()) as IUser;
+  const me = (await getMe()) as IUser;
 
   return (
     <html lang={lng} dir={dir(lng)}>
       <body
         suppressHydrationWarning
-        className="bg-neutral-light dark:bg-neutral dark:text-white"
+        className="bg-neutral-light dark:bg-neutral dark:text-white transition-colors duration-300"
       >
         <ThemeComponent>
-          <AuthComponent>
-            <ToastContainer />
-            <Header user={user} lng={lng} />
-            {!user ? (
-              <MainSection>{children}</MainSection>
-            ) : (
-              <MainSection>
-                <Sidebar user={user} lng={lng} />
-                <section className="sm:ml-48 pt-24 px-4 pb-4 min-h-screen">
-                  {children}
-                </section>
-              </MainSection>
-            )}
-            <Footer user={user} />
-          </AuthComponent>
+          <CartComponent>
+            <AuthComponent>
+              <ToastContainer />
+              <Header user={me} lng={lng} />
+              <main className="bg-white dark:bg-gray-900 w-full min-h-screen mx-auto">
+                {children}
+              </main>
+              <Footer user={me} lng={lng} />
+            </AuthComponent>
+          </CartComponent>
         </ThemeComponent>
       </body>
     </html>
   );
 }
-
-const MainSection = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <main className="bg-white dark:bg-gray-900 w-full min-h-screen mx-auto">
-      {children}
-    </main>
-  );
-};

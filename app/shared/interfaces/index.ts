@@ -1,81 +1,143 @@
-export interface IUser {
-  id: string;
-  email: string;
-  password: string;
-  username: string;
-  role: "USER" | "ADMIN";
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type {
+  Hero,
+  User,
+  Cart,
+  Order,
+  Address,
+  Product,
+  Provider,
+  CartItem,
+  Promotion,
+  CustomList,
+  Collection,
+  ProductFile,
+  DiscountCode,
+  PaymentMethod,
+  ProductReview,
+  ProductHistory,
+  ProductOnOrder,
+  StockReservation,
+  CustomProductList,
+  ProductOnCollection,
+  InventoryTransaction,
+} from "@prisma/client";
 
-export interface IProvider {
-  id: string;
-  name: string;
-  alias: string;
-  products: IProduct[];
-  _count: {
-    products: number;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface IProductHistory {
-  id: string;
-  quantityPerCarton: number;
-  chinesePriceUSD: number;
-  dollarExchangeRate: number;
-  pricePerCartonOrProductUSD: number;
-  costMXN: number;
-  shippingCostMXN: number;
-  totalCostMXN: number;
-  salePriceMXN: number;
-  margin: number;
-  salePerQuantity: number;
-  orderDate: Date;
+export interface ICartItem extends CartItem {
+  cart: ICart;
   product: IProduct;
-  productId: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-export interface IProduct {
-  id: string;
-  name: string;
-  key: string;
-  minimumAcceptableQuantity: number;
-  availableQuantity: number;
-  salePriceMXN: number;
-  provider: IProvider;
-  history: IProductHistory[];
+export interface ICart extends Cart {
+  user: IUser;
+  items: ICartItem[];
+}
+
+export interface IUser extends User {
+  cart?: ICart;
   orders: IOrder[];
-  _count: {
-    orders: number;
-    history: number;
-  };
-  createdAt: Date;
-  updatedAt: Date;
+  addresses: IAddress[];
+  reviews: IProductReview[];
+  customLists: ICustomList[];
+  paymentMethods: IPaymentMethod[];
+  stockReservations: IStockReservation[];
 }
 
-export interface IOrder {
-  id: string;
-  orderId?: string;
-  quantity?: number;
-  client: string;
-  discount?: number;
-  total: number;
-  subtotal: number;
-  shipmentType: string;
-  paymentMethod: string;
-  isPaid: boolean;
-  deliveryStatus: "PENDING" | "CANCELLED" | "DELIVERED";
-  pendingPayment?: number;
+export interface ICustomList extends CustomList {
+  user: IUser;
+  products: ICustomProductList[];
+}
+
+export interface ICustomProductList extends CustomProductList {
+  product: IProduct;
+  customList: ICustomList;
+}
+
+export interface IProvider extends Provider {
   products: IProduct[];
-  productId: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
+export interface IProduct extends Product {
+  _count?: object;
+  provider: IProvider;
+  files: IProductFile[];
+  cartItems: ICartItem[];
+  reviews: IProductReview[];
+  orders: IProductOnOrder[];
+  history: IProductHistory[];
+  collections: ICollection[];
+  transactions: IInventoryTransaction[];
+  stockReservations: IStockReservation[];
+  customProductsList: ICustomProductList[];
+}
+
+export interface IProductHistory extends ProductHistory {
+  product: IProduct;
+}
+
+export interface IProductOnCollection extends ProductOnCollection {
+  product: IProduct;
+  collection: ICollection;
+}
+
+export interface ICollection extends Collection {
+  products: IProductOnCollection[];
+}
+
+export interface IProductFile extends ProductFile {
+  product: IProduct;
+}
+
+export interface IProductReview extends ProductReview {
+  user: IUser;
+  product: IProduct;
+}
+
+export interface IProductOnOrder extends ProductOnOrder {
+  order: IOrder;
+  product: IProduct;
+}
+
+export interface IStockReservation extends StockReservation {
+  user: IUser;
+  product: IProduct;
+}
+
+export interface IOrder extends Order {
+  user?: IUser;
+  address?: IAddress;
+  promotion?: IPromotion;
+  payment?: IPaymentMethod;
+  products: IProductOnOrder[];
+  discountCode?: IDiscountCode;
+}
+
+export interface IInventoryTransaction extends InventoryTransaction {
+  product: IProduct;
+}
+
+export interface IPromotion extends Promotion {
+  orders: IOrder[];
+  discountCodes: IDiscountCode[];
+}
+
+export interface IDiscountCode extends DiscountCode {
+  orders: IOrder[];
+  promotion: IPromotion;
+}
+
+export interface IPaymentMethod extends PaymentMethod {
+  user: IUser;
+  orders: IOrder[];
+}
+
+export interface IAddress extends Address {
+  user: IUser;
+  orders: IOrder[];
+}
+
+export interface IHero extends Hero {}
+
+// END OF MODELS FROM PRISMA
 export interface ISharedState {
   message?: string;
   success: boolean;
@@ -94,6 +156,9 @@ export interface IRegisterState extends ISharedState {
     email?: string;
     password?: string;
     confirmPassword?: string;
+    lastName?: string;
+    firstName?: string;
+    wantsNewsletter?: string;
   };
 }
 
@@ -153,7 +218,38 @@ export interface IGenericIcon {
 }
 
 export interface IBaseLangPage {
-  params: Promise<{
+  // React 19
+  // params: Promise<{
+  //   lng: string;
+  // }>;
+
+  params: {
     lng: string;
-  }>;
+  };
+}
+
+export interface IProductSearchParams {
+  q?: string;
+  id?: string;
+  key?: string;
+  page?: number;
+  limit?: number;
+  orderBy?: object;
+  allData?: boolean;
+  provider?: string;
+  category?: string;
+  collection?: string;
+  salePriceMXNTo?: number;
+  isAdminRequest?: boolean;
+  salePriceMXNFrom?: number;
+  availableQuantityTo?: number;
+  availableQuantityFrom?: number;
+}
+
+export interface ICartItemForFrontend {
+  id: string;
+  name: string;
+  file: string;
+  price: number;
+  quantity: number;
 }

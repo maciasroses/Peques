@@ -9,7 +9,7 @@ const colorMap: { [key: string]: string } = {
   green: "bg-green-500 hover:bg-green-600 focus:ring-green-500",
 
   primary:
-    "bg-primary hover:bg-primary-dark focus:ring-primary hover:text-white",
+    "text-gray-600 dark:text-white hover:text-white dark:hover:text-gray-600 bg-primary dark:bg-primary-dark hover:bg-primary-dark dark:hover:bg-primary border-gray-600 hover:border-white dark:border-white/70 dark:hover:border-gray-600",
   accent: "bg-accent hover:bg-accent-dark focus:ring-accent",
 };
 
@@ -29,7 +29,7 @@ const SubmitButton: React.FC<ISubmitButton> = ({
       type="submit"
       disabled={pending}
       className={clsx(
-        "px-4 py-2  rounded-md w-auto transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 border borde-white",
+        "px-4 py-2 rounded-md w-auto transition-colors duration-300 border",
         pending ? `${colorMap[color]}/50` : colorMap[color]
       )}
     >

@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/app/shared/services/prisma";
+import { IProductSearchParams } from "../../interfaces";
 
 export async function create({
   data,
@@ -32,48 +33,52 @@ export async function createMassive({
   });
 }
 
-interface SearchParams {
-  id?: string;
-  key?: string;
-  q?: string;
-  availableQuantityFrom?: number;
-  availableQuantityTo?: number;
-  salePriceMXNFrom?: number;
-  salePriceMXNTo?: number;
-  provider?: string;
-}
-
 export async function read({
+  q,
   id,
   key,
-  q,
-  availableQuantityFrom,
-  availableQuantityTo,
-  salePriceMXNFrom,
-  salePriceMXNTo,
+  page = 1,
+  limit = 12,
+  allData = false,
+  orderBy = { updatedAt: "desc" },
   provider,
-}: SearchParams) {
+  category,
+  collection,
+  salePriceMXNTo,
+  isAdminRequest = false,
+  salePriceMXNFrom,
+  availableQuantityTo,
+  availableQuantityFrom,
+}: IProductSearchParams) {
+  const globalInclude = {
+    files: true,
+    reviews: true,
+    provider: true,
+    orders: isAdminRequest ? true : false,
+    history: isAdminRequest ? true : false,
+    _count: isAdminRequest
+      ? { select: { orders: true, history: true } }
+      : undefined,
+  };
+
+  if (allData) {
+    return await prisma.product.findMany({
+      include: globalInclude,
+      orderBy: { updatedAt: "desc" },
+    });
+  }
+
   if (id) {
     return await prisma.product.findUnique({
       where: { id },
-      include: {
-        orders: true,
-        history: true,
-        provider: true,
-        _count: { select: { orders: true, history: true } },
-      },
+      include: globalInclude,
     });
   }
 
   if (key) {
     return await prisma.product.findUnique({
       where: { key },
-      include: {
-        orders: true,
-        history: true,
-        provider: true,
-        _count: { select: { orders: true, history: true } },
-      },
+      include: globalInclude,
     });
   }
 
@@ -81,19 +86,21 @@ export async function read({
     OR?: {
       [key: string]: { contains: string; mode: "insensitive" };
     }[];
-    availableQuantity?: object;
-    salePriceMXN?: object;
     provider?: object;
+    category?: object;
+    collections?: object;
+    salePriceMXN?: object;
+    availableQuantity?: object;
   }
 
   const where: Where = {};
 
-  if (q) {
-    where.OR = [
-      { name: { contains: q, mode: "insensitive" } },
-      { key: { contains: q, mode: "insensitive" } },
-    ];
-  }
+  if (provider) where.provider = { alias: provider };
+
+  if (category) where.category = { alias: category };
+
+  if (salePriceMXNFrom || salePriceMXNTo)
+    where.salePriceMXN = { gte: salePriceMXNFrom, lte: salePriceMXNTo };
 
   if (availableQuantityFrom || availableQuantityTo)
     where.availableQuantity = {
@@ -101,21 +108,47 @@ export async function read({
       lte: availableQuantityTo,
     };
 
-  if (salePriceMXNFrom || salePriceMXNTo)
-    where.salePriceMXN = { gte: salePriceMXNFrom, lte: salePriceMXNTo };
+  if (collection)
+    where.collections = {
+      some: {
+        collection: {
+          name: collection,
+        },
+      },
+    };
 
-  if (provider) where.provider = { alias: provider };
+  if (q) {
+    where.OR = [
+      { key: { contains: q, mode: "insensitive" } },
+      { name: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
+    ];
+  }
 
-  return await prisma.product.findMany({
-    where,
-    include: {
-      orders: true,
-      history: true,
-      provider: true,
-      _count: { select: { orders: true, history: true } },
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+  const take = Number(limit);
+  const skip = (Number(page) - 1) * Number(limit);
+  const totalCount = await prisma.product.count({ where });
+  const totalPages = Math.ceil(totalCount / Number(limit));
+
+  if (isAdminRequest) {
+    return await prisma.product.findMany({
+      where,
+      orderBy,
+      include: globalInclude,
+    });
+  } else {
+    const products = await prisma.product.findMany({
+      take,
+      skip,
+      where,
+      orderBy,
+      include: globalInclude,
+    });
+    return {
+      products,
+      totalPages,
+    };
+  }
 }
 
 export async function readHistory({

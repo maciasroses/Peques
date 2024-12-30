@@ -11,6 +11,13 @@ export default function Home() {
         priority
       />
       <h1 className="text-3xl">Próximamente...</h1>
+      {/* <div className="overflow-hidden whitespace-nowrap">
+        <div className="inline-block animate-marquee">
+          <span>
+            Este texto se mueve de derecha a izquierda con TailwindCSS.
+          </span>
+        </div>
+      </div> */}
     </div>
   );
 }

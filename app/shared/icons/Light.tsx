@@ -11,8 +11,8 @@ const LightIcon = ({ theme }: { theme: string }) => {
       className={clsx(
         "size-6 transition duration-75",
         theme === "light"
-          ? "text-accent group-hover:text-primary-light"
-          : "text-primary-light dark:text-accent group-hover:text-primary-light"
+          ? "text-gray-600 group-hover:text-primary-light"
+          : "text-gray-600 dark:text-accent group-hover:text-primary-light"
       )}
     >
       <path

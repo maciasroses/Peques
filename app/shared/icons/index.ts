@@ -13,8 +13,10 @@ import TrashIcon from "./Trash";
 import LightIcon from "./Light";
 import SystemIcon from "./System";
 import PencilIcon from "./Pencil";
+import Instagram from "./Instagram";
 import SmileFace from "./SmileFace";
 import PlusCircle from "./PlusCircle";
+import DownChevron from "./DownChevron";
 import MinusCircle from "./MinusCircle";
 import ShoppingBag from "./ShoppingBag";
 
@@ -33,9 +35,11 @@ export {
   SmileFace,
   TrashIcon,
   LightIcon,
+  Instagram,
   SystemIcon,
   PencilIcon,
   PlusCircle,
+  DownChevron,
   MinusCircle,
   ShoppingBag,
 };

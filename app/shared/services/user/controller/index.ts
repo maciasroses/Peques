@@ -52,15 +52,18 @@ export async function login(formData: FormData) {
   }
   const session = await getSession();
   const lng = cookies().get("i18next")?.value ?? "es";
-  redirect(session?.role === "ADMIN" ? `${lng}/admin/home` : `${lng}/`);
+  redirect(session?.role === "ADMIN" ? `/${lng}/admin/home` : `/${lng}`);
 }
 
 export async function register(formData: FormData) {
   const dataToValidate = {
+    lastName: formData.get("lastName") ?? "",
+    firstName: formData.get("firstName") ?? "",
     username: formData.get("username"),
     email: formData.get("email"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
+    wantsNewsletter: formData.get("wantsNewsletter") ? true : false,
   };
 
   const errors = validateSchema("register", dataToValidate);
@@ -94,7 +97,7 @@ export async function register(formData: FormData) {
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
-  redirect(`${lng}/`);
+  redirect(`/${lng}`);
 }
 
 export async function logout() {

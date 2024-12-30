@@ -12,6 +12,18 @@ const baseSchema = z.object({
 const userLoginSchema = baseSchema.extend({});
 
 const userRegisterSchema = baseSchema.extend({
+  lastName: z
+    .string()
+    .min(0, {
+      message: "El apellido debe tener al menos 2 caracteres",
+    })
+    .optional(),
+  firstName: z
+    .string()
+    .min(0, {
+      message: "El nombre debe tener al menos 2 caracteres",
+    })
+    .optional(),
   username: z.string().min(2, {
     message: "El nombre debe tener al menos 2 caracteres",
   }),
@@ -19,6 +31,7 @@ const userRegisterSchema = baseSchema.extend({
     message:
       "La contraseña de confirmación debe tener la misma longitud que la contraseña",
   }),
+  wantsNewsletter: z.boolean().optional(),
 });
 
 const schemas: { [key: string]: z.ZodObject<ZodRawShape, UnknownKeysParam> } = {

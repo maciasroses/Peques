@@ -1,18 +1,30 @@
-import clsx from "clsx";
+import { cn } from "@/app/shared/utils/cn";
+import type { IGenericIcon } from "@/app/shared/interfaces";
 
-const ShoppingBag = ({ isActive }: { isActive?: boolean }) => {
+interface IShoppingBag extends IGenericIcon {
+  isActive?: boolean;
+}
+
+const ShoppingBag = ({
+  isActive,
+  size = "size-6",
+  customClass = "",
+  strokeWidth = 1.5,
+}: IShoppingBag) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      strokeWidth="2.5"
       stroke="currentColor"
-      style={{ width: "1.5rem", height: "1.5rem" }}
-      className={clsx(
-        "transition duration-75 group-hover:text-primary-light",
-        isActive && "text-primary-light"
-      )}
+      strokeWidth={strokeWidth}
+      className={cn(size, customClass)}
+      // strokeWidth="2.5"
+      // style={{ width: "1.5rem", height: "1.5rem" }}
+      // className={clsx(
+      //   "transition duration-75 group-hover:text-primary-light",
+      //   isActive && "text-primary-light"
+      // )}
     >
       <path
         strokeLinecap="round"

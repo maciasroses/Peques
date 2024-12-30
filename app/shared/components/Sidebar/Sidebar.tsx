@@ -1,15 +1,12 @@
 import LinkComp from "./LinkComp";
-import type { IUser } from "@/app/shared/interfaces";
 
 interface ISidebar {
-  user: IUser;
   lng: string;
 }
 
-const Sidebar = ({ user, lng }: ISidebar) => {
-  console.log(lng);
+const Sidebar = ({ lng }: ISidebar) => {
   return (
-    <aside className="fixed z-30 top-0 w-48 h-screen transition-transform -translate-x-full sm:translate-x-0">
+    <aside className="fixed z-20 top-0 w-48 h-screen transition-transform -translate-x-full sm:translate-x-0">
       <div className="h-full px-4 pt-24 pb-4 overflow-y-auto bg-accent-light dark:bg-primary-dark text-primary-light">
         <ul className="space-y-2 font-medium">
           <li>
