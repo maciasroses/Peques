@@ -53,6 +53,7 @@ export interface ICustomProductList extends CustomProductList {
 }
 
 export interface IProvider extends Provider {
+  _count?: object;
   products: IProduct[];
 }
 
@@ -210,6 +211,16 @@ export interface ICreateOrder extends ISharedState {
   };
 }
 
+export interface IHeroState extends ISharedState {
+  errors?: {
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    link?: string;
+    imageUrl?: string;
+  };
+}
+
 export interface IGenericIcon {
   size?: string;
   customClass?: string;
@@ -239,11 +250,22 @@ export interface IProductSearchParams {
   provider?: string;
   category?: string;
   collection?: string;
-  salePriceMXNTo?: number;
+  salePriceMXNTo?: number | string;
   isAdminRequest?: boolean;
-  salePriceMXNFrom?: number;
-  availableQuantityTo?: number;
-  availableQuantityFrom?: number;
+  salePriceMXNFrom?: number | string;
+  availableQuantityTo?: number | string;
+  availableQuantityFrom?: number | string;
+}
+
+export interface IUserSearchParams {
+  q?: string;
+  id?: string;
+  email?: string;
+  orderBy?: object;
+  allData?: boolean;
+  username?: string;
+  isAdminRequest?: boolean;
+  wantsNewsletter?: boolean | string;
 }
 
 export interface ICartItemForFrontend {

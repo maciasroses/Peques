@@ -97,12 +97,12 @@ const Form = ({ lng }: { lng: string }) => {
                 />
               </GenericDiv>
             </GenericPairDiv>
-            <div className="inline-flex items-center gap-2">
+            <div className="inline-flex items-center justify-end gap-2">
               <GenericInput
                 type="checkbox"
                 id="wantsNewsletter"
                 ariaLabel="¿Quieres recibir nuestro boletín?"
-                className="h-5 w-5"
+                className="size-4"
               />
             </div>
           </div>

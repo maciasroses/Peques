@@ -119,6 +119,11 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
               <div className="sm:hidden pb-1">
                 {/* THE FOLLOWING IS THE ADMIN PANEL AND FOR MOBILE DEVICES */}
                 <ProfileLink
+                  to={`/${lng}/admin/hero`}
+                  onClick={closeMenu}
+                  text="Hero"
+                />
+                <ProfileLink
                   to={`/${lng}/admin/sales`}
                   onClick={closeMenu}
                   text="Ventas"
@@ -129,9 +134,19 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
                   text="Pedidos"
                 />
                 <ProfileLink
+                  to={`/${lng}/admin/users`}
+                  onClick={closeMenu}
+                  text="Usuarios"
+                />
+                <ProfileLink
                   to="/admin/products"
                   onClick={closeMenu}
                   text="Productos"
+                />
+                <ProfileLink
+                  to={`/${lng}/admin/collections`}
+                  onClick={closeMenu}
+                  text="Colecciones"
                 />
                 <ProfileLink
                   to="/admin/providers"

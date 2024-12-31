@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import CartMenu from "./CartMenu";
 import ProfileMenu from "./ProfileMenu";
 import { cn } from "@/app/shared/utils/cn";
 import ThemeSelector from "./ThemeSelector";
 import { usePathname } from "next/navigation";
 import LogoMini from "@/public/assets/images/logo-mini.webp";
 import type { IUser } from "@/app/shared/interfaces";
-import { ShoppingBag } from "../../icons";
-import CartMenu from "./CartMenu";
 
 interface IHeader {
   user: IUser | null;
@@ -71,7 +70,6 @@ const Header = ({ user, lng }: IHeader) => {
                       <li>
                         <Link
                           href={`/${lng}/login`}
-                          // className="bg-primary-dark dark:bg-primary hover:bg-primary-dark focus:ring-primary hover:text-white text-sm truncate px-4 py-2  rounded-md w-auto transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 border borde-white text-white"
                           className="link-button-primary"
                         >
                           {lng === "en" ? "Log in" : "Ingresa"}

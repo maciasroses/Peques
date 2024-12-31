@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import { useSearchFilter } from "@/app/shared/hooks";
 import { GenericSearchInput } from "@/app/shared/components";
-import { IProvider } from "@/app/shared/interfaces";
+import type { IProvider } from "@/app/shared/interfaces";
 
 const Searchbar = ({ providers }: { providers: IProvider[] }) => {
   const defaultFilters = {

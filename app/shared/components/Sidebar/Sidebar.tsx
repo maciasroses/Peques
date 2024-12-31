@@ -13,6 +13,9 @@ const Sidebar = ({ lng }: ISidebar) => {
             <LinkComp icon="home" span="Inicio" to={`/${lng}/admin/home`} />
           </li>
           <li>
+            <LinkComp icon="hero" span="Hero" to={`/${lng}/admin/hero`} />
+          </li>
+          <li>
             <LinkComp icon="sales" span="Ventas" to={`/${lng}/admin/sales`} />
           </li>
           <li>
@@ -22,22 +25,30 @@ const Sidebar = ({ lng }: ISidebar) => {
               to={`/${lng}/admin/orders`}
             />
           </li>
-          <>
-            <li>
-              <LinkComp
-                icon="products"
-                span="Productos"
-                to={`/${lng}/admin/products`}
-              />
-            </li>
-            <li>
-              <LinkComp
-                icon="providers"
-                span="Proveedores"
-                to={`/${lng}/admin/providers`}
-              />
-            </li>
-          </>
+          <li>
+            <LinkComp icon="users" span="Usuarios" to={`/${lng}/admin/users`} />
+          </li>
+          <li>
+            <LinkComp
+              icon="products"
+              span="Productos"
+              to={`/${lng}/admin/products`}
+            />
+          </li>
+          <li>
+            <LinkComp
+              icon="collections"
+              span="Colecciones"
+              to={`/${lng}/admin/collections`}
+            />
+          </li>
+          <li>
+            <LinkComp
+              icon="providers"
+              span="Proveedores"
+              to={`/${lng}/admin/providers`}
+            />
+          </li>
         </ul>
       </div>
     </aside>

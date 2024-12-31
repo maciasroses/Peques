@@ -1,16 +1,16 @@
 "use client";
 
 import Form from "./Form";
-import { useRowSelection } from "@/app/shared/hooks";
 import { useEffect, useState } from "react";
+import { useRowSelection } from "@/app/shared/hooks";
 import formatCurrency from "@/app/shared/utils/format-currency";
-import { Form as HistoryForm, Datatable as HistoryDatatable } from "./History";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
+import { Form as HistoryForm, Datatable as HistoryDatatable } from "./History";
 import {
   Action,
   Card404,
-  Datatable as CustomDatatable,
   DatatableSkeleton,
+  Datatable as CustomDatatable,
 } from "@/app/shared/components";
 import type { IProduct, IProvider } from "@/app/shared/interfaces";
 import type {
@@ -26,7 +26,10 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IProduct>> = ({
       <h1 className="text-2xl">
         Historial de pedidos del producto: {`"${data.name}"`}
       </h1>
-      <HistoryDatatable orders={data._count.orders} history={data.history} />
+      <HistoryDatatable
+        orders={(data._count as { orders: number })?.orders}
+        history={data.history}
+      />
     </div>
   );
 };
@@ -77,7 +80,10 @@ const Datatable = ({ products, providers }: IDatatable) => {
             {/* @ts-ignore */}
             <Form product={row} providers={providers} />
           </Action>
-          <Action action="delete" cannotDelete={row._count.orders > 0}>
+          <Action
+            action="delete"
+            cannotDelete={(row._count as { orders: number })?.orders > 0}
+          >
             {/* @ts-ignore */}
             <Form product={row} />
           </Action>
@@ -158,7 +164,7 @@ const Datatable = ({ products, providers }: IDatatable) => {
                   <Action
                     action="massiveDelete"
                     cannotDelete={selectedRows.some(
-                      (row) => row._count.orders > 0
+                      (row) => (row._count as { orders: number })?.orders > 0
                     )}
                   >
                     {/* @ts-ignore */}

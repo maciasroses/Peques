@@ -1,5 +1,6 @@
 import XBox from "./XBox";
 import XMark from "./XMark";
+import TagIcon from "./Tag";
 import MXFlag from "./MXFlag";
 import Upload from "./Upload";
 import USFlag from "./USFlag";
@@ -11,9 +12,11 @@ import UserIcon from "./User";
 import SadFace from "./SadFace";
 import TrashIcon from "./Trash";
 import LightIcon from "./Light";
+import PhotoIcon from "./Photo";
 import SystemIcon from "./System";
 import PencilIcon from "./Pencil";
 import Instagram from "./Instagram";
+import UserGroup from "./UserGroup";
 import SmileFace from "./SmileFace";
 import PlusCircle from "./PlusCircle";
 import DownChevron from "./DownChevron";
@@ -28,6 +31,7 @@ export {
   USFlag,
   Puzzle,
   Dollar,
+  TagIcon,
   SadFace,
   HomeIcon,
   DarkIcon,
@@ -35,7 +39,9 @@ export {
   SmileFace,
   TrashIcon,
   LightIcon,
+  PhotoIcon,
   Instagram,
+  UserGroup,
   SystemIcon,
   PencilIcon,
   PlusCircle,

@@ -1,15 +1,14 @@
 "use client";
 
-// import Action from "./Action";
 import Form from "./Form";
-import { useRowSelection } from "@/app/shared/hooks";
 import { useEffect, useState } from "react";
+import { useRowSelection } from "@/app/shared/hooks";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
 import {
   Action,
   Card404,
-  Datatable as CustomDatatable,
   DatatableSkeleton,
+  Datatable as CustomDatatable,
 } from "@/app/shared/components";
 import type { IProvider } from "@/app/shared/interfaces";
 
@@ -19,17 +18,14 @@ const columns = [
     wdith: "100px",
     cell: (row: IProvider) => (
       <div className="flex justify-center gap-2">
-        {/* <Action action="update" provider={row} /> */}
         <Action action="update">
           {/* @ts-ignore */}
           <Form provider={row} />
         </Action>
-        {/* <Action
+        <Action
           action="delete"
-          provider={row}
-          canDelete={row._count.products > 0}
-        /> */}
-        <Action action="delete" cannotDelete={row._count.products > 0}>
+          cannotDelete={(row._count as { products: number })?.products > 0}
+        >
           {/* @ts-ignore */}
           <Form provider={row} />
         </Action>
@@ -92,16 +88,11 @@ const Datatable = ({ providers }: { providers: IProvider[] }) => {
             <>
               {showMultiActions && (
                 <div className="flex justify-end gap-2 mb-4">
-                  {/* <Action
-                    action="massiveDelete"
-                    provider={selectedRows}
-                    canDelete={selectedRows.some(
-                      (row) => row._count.products > 0
-                    )} */}
                   <Action
                     action="massiveDelete"
                     cannotDelete={selectedRows.some(
-                      (row) => row._count.products > 0
+                      (row) =>
+                        (row._count as { products: number })?.products > 0
                     )}
                   >
                     {/* @ts-ignore */}

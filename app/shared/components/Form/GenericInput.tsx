@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/app/shared/utils/cn";
 
 interface IGenericInput {
   id: string;
@@ -45,7 +45,7 @@ const GenericInput: React.FC<IGenericInput> = ({
     onChange,
     defaultValue,
     "aria-label": ariaLabel,
-    className: clsx(
+    className: cn(
       "border w-full p-2.5 text-sm rounded-lg",
       className,
       error

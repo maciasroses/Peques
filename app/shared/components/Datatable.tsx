@@ -50,7 +50,7 @@ const Datatable = <T extends object>({
   columns: object[];
   isExapandable?: boolean;
   expandableRowsComponent?: React.FC<ExpanderComponentProps<T>>;
-  onSelectedRowsChange: (selected: { selectedRows: T[] }) => void;
+  onSelectedRowsChange?: (selected: { selectedRows: T[] }) => void;
   conditionalRowStyles?: (theme: string) => ConditionalStyles<T>[];
 }) => {
   const [scrollHeight, setScrollHeight] = useState("75vh");
@@ -90,7 +90,7 @@ const Datatable = <T extends object>({
       paginationComponentOptions={paginationComponentOptions}
       fixedHeader
       fixedHeaderScrollHeight={scrollHeight}
-      selectableRows
+      selectableRows={onSelectedRowsChange ? true : false}
       onSelectedRowsChange={onSelectedRowsChange}
       expandableRows={isExapandable}
       expandableRowsComponent={expandableRowsComponent}

@@ -17,10 +17,12 @@
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^17.0.0",
     "@prisma/client": "^6.1.0",
     "@react-email/components": "^0.0.31",
     "@stripe/react-stripe-js": "^3.1.1",
     "@stripe/stripe-js": "^5.4.0",
+    "@vercel/blob": "^0.27.0",
     "accept-language": "3.0.20",
     "bcrypt": "5.1.1",
     "chart.js": "^4.4.7",
@@ -32,6 +34,7 @@
     "next": "14.2.21",
     "node-cron": "^3.0.3",
     "react": "^18.3.1",
+    "react-beautiful-dnd": "^13.1.1",
     "react-chartjs-2": "^5.2.0",
     "react-cookie": "^7.2.2",
     "react-data-table-component": "^7.6.2",
@@ -52,6 +55,7 @@
     "@types/node": "^22.10.2",
     "@types/node-cron": "^3.0.11",
     "@types/react": "^18.3.4",
+    "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "^18.3.0",
     "eslint": "^8.0.0",
     "eslint-config-next": "14.2.7",

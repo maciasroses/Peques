@@ -3,11 +3,14 @@
 import clsx from "clsx";
 import Link from "next/link";
 import {
-  HomeIcon,
   Dollar,
-  ShoppingBag,
   Puzzle,
+  HomeIcon,
   UserIcon,
+  UserGroup,
+  ShoppingBag,
+  PhotoIcon,
+  TagIcon,
 } from "@/app/shared/icons";
 import { usePathname } from "next/navigation";
 
@@ -37,8 +40,14 @@ const LinkComp = ({ to, span, icon }: ILinkComp) => {
         <ShoppingBag strokeWidth={2.5} isActive={isActive} />
       ) : icon === "products" ? (
         <Puzzle isActive={isActive} />
+      ) : icon === "providers" ? (
+        <UserIcon strokeWidth={2.5} />
+      ) : icon === "users" ? (
+        <UserGroup strokeWidth={2} />
+      ) : icon === "hero" ? (
+        <PhotoIcon strokeWidth={2.5} />
       ) : (
-        icon === "providers" && <UserIcon isActive={isActive} />
+        icon === "collections" && <TagIcon strokeWidth={2.5} />
       )}
       <span className="ms-3 font-black">{span}</span>
     </Link>

@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import { Action, DatatableSkeleton } from "@/app/shared/components";
 import { Form, DataFetch, Searchbar } from "./components";
+import { Action, DatatableSkeleton } from "@/app/shared/components";
 import { getProviders } from "@/app/shared/services/provider/controller";
+import type { Metadata } from "next";
 import type { IProvider } from "@/app/shared/interfaces";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Productos",
