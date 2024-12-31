@@ -1,9 +1,11 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { read as xlsxRead, utils as xlsxUtils } from "xlsx";
+import { COMFORT_SET, SET_IDEAL, SET_INTEGRAL } from "@/app/shared/constants";
 import {
   read as readProduct,
   update as updateProduct,
@@ -18,8 +20,6 @@ import {
 } from "./model";
 import { getProducts } from "../product/controller";
 import type { IProduct } from "@/app/shared/interfaces";
-import { COMFORT_SET, SET_IDEAL, SET_INTEGRAL } from "@/app/shared/constants";
-import { cookies } from "next/headers";
 
 interface ISearchParams {
   client?: string;
@@ -107,27 +107,6 @@ export async function getSales({
   }
 }
 
-// const matchesSet = (setKeys: string[]) => {
-//   return setKeys.every((key) =>
-//     products.some((product) => product.startsWith(key))
-//   );
-// };
-
-// const matchesSet = (setKeys: string[]) => {
-//   if (productsQuantity.every((quantity) => Number(quantity) === 1)) {
-//     return setKeys.every((key) =>
-//       products.some((product) => product.startsWith(key))
-//     );
-//   }
-// };
-
-// const matchesSet = (setKeys: string[]) => {
-//   return setKeys.every((key) => {
-//     const index = products.findIndex((product) => product.startsWith(key));
-//     return index !== -1 && productsQuantity[index] === "1";
-//   });
-// };
-
 const matchesSet = (
   setKeys: string[],
   products: string[],
@@ -167,6 +146,7 @@ const applyDiscounts = (
 };
 
 export async function createOrder(formData: FormData) {
+  const lng = cookies().get("i18next")?.value ?? "es";
   interface IOrderErrors {
     order: {};
     products: {
@@ -309,12 +289,12 @@ export async function createOrder(formData: FormData) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/orders`);
   redirect(`/${lng}/admin/orders`);
 }
 
 export async function createMassiveOrder(formData: FormData) {
+  const lng = cookies().get("i18next")?.value ?? "es";
   try {
     // Obtener el archivo Excel
     const file = formData.get("products") as File;
@@ -557,7 +537,6 @@ export async function createMassiveOrder(formData: FormData) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/orders`);
   redirect(`/${lng}/admin/orders`);
 }
@@ -596,6 +575,7 @@ export async function updateDeliveryStatus(
   deliveryStatus: string,
   _pathname: string
 ) {
+  const lng = cookies().get("i18next")?.value ?? "es";
   try {
     if (deliveryStatus === "CANCELLED") {
       const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
@@ -619,7 +599,6 @@ export async function updateDeliveryStatus(
     console.error(error);
     throw new Error("An internal error occurred");
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/orders`);
   redirect(`/${lng}/admin/orders`);
 }
@@ -656,6 +635,7 @@ export async function updateMassiveDeliveryStatus(
 }
 
 export async function markAsPaid(id: string) {
+  const lng = cookies().get("i18next")?.value ?? "es";
   try {
     await update({
       id,
@@ -667,7 +647,6 @@ export async function markAsPaid(id: string) {
     console.error(error);
     throw new Error("An internal error occurred");
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/orders`);
   redirect(`/${lng}/admin/orders`);
 }
@@ -687,6 +666,7 @@ export async function markMassiveAsPaid(ids: string[]) {
 }
 
 export async function deleteOrder(id: string, _pathname: string) {
+  const lng = cookies().get("i18next")?.value ?? "es";
   try {
     const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
     if (order.deliveryStatus !== "CANCELLED") {
@@ -706,7 +686,6 @@ export async function deleteOrder(id: string, _pathname: string) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/orders`);
   redirect(`/${lng}/admin/orders`);
 }
