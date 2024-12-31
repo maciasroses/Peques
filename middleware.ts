@@ -63,11 +63,11 @@ export const config = {
   matcher: [
     "/",
     "/login",
-    "/register",
     "/search",
-    "/checkout/:path*",
+    "/register",
     "/admin/:path*",
     "/profile/:path*",
+    "/checkout/:path*",
     "/((?!api|_next/static|_next/image|favicon.ico|profilepic.webp|robots.txt|sitemap.xml|sw.js|site.webmanifest|fonts|images|assets|invoices|products|icons|webhooks/stripe).*)",
   ],
 };

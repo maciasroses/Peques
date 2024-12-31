@@ -14,6 +14,8 @@ import {
 import type { Metadata } from "next";
 import type { IBaseLangPage, IUser } from "@/app/shared/interfaces";
 
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
   return languages.map((lng) => ({ lng }));
 }

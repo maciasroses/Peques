@@ -1,6 +1,8 @@
 import { Sidebar } from "@/app/shared/components";
-import { IBaseLangPage } from "@/app/shared/interfaces";
 import type { Metadata } from "next";
+import type { IBaseLangPage } from "@/app/shared/interfaces";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {
