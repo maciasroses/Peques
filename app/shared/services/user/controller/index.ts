@@ -3,12 +3,12 @@
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 import { create, read } from "../model";
-import { validateSchema } from "../schema";
 import { redirect } from "next/navigation";
+import { validateSchema } from "../schema";
 import {
-  createUserSession,
   getSession,
   isAuthenticated,
+  createUserSession,
 } from "@/app/shared/services/auth";
 import type { IUser } from "@/app/shared/interfaces";
 
@@ -51,8 +51,9 @@ export async function login(formData: FormData) {
     return { message: "Ocurrió un error interno.", success: false };
   }
   const session = await getSession();
-  const lng = cookies().get("i18next")?.value ?? "es";
-  redirect(session?.role === "ADMIN" ? `/${lng}/admin/home` : `/${lng}`);
+  // const lng = cookies().get("i18next")?.value ?? "es";
+  // redirect(session?.role === "ADMIN" ? `/${lng}/admin/home` : `/${lng}`);
+  redirect(session?.role === "ADMIN" ? "/admin/home" : "/");
 }
 
 export async function register(formData: FormData) {
@@ -96,14 +97,16 @@ export async function register(formData: FormData) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
-  redirect(`/${lng}`);
+  // const lng = cookies().get("i18next")?.value ?? "es";
+  // redirect(`/${lng}`);
+  redirect("/");
 }
 
 export async function logout() {
   cookies().set("session", "", { expires: new Date(0) });
-  const lng = cookies().get("i18next")?.value ?? "es";
-  redirect(`/${lng}`);
+  // const lng = cookies().get("i18next")?.value ?? "es";
+  // redirect(`/${lng}`);
+  redirect("/");
 }
 
 export async function getMe() {
