@@ -51,9 +51,8 @@ export async function login(formData: FormData) {
     return { message: "Ocurrió un error interno.", success: false };
   }
   const session = await getSession();
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // redirect(session?.role === "ADMIN" ? `/${lng}/admin/home` : `/${lng}`);
-  redirect(session?.role === "ADMIN" ? "/admin/home" : "/");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  redirect(session?.role === "ADMIN" ? `/${lng}/admin/home` : `/${lng}`);
 }
 
 export async function register(formData: FormData) {
@@ -97,16 +96,14 @@ export async function register(formData: FormData) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // redirect(`/${lng}`);
-  redirect("/");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  redirect(`/${lng}`);
 }
 
 export async function logout() {
   cookies().set("session", "", { expires: new Date(0) });
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // redirect(`/${lng}`);
-  redirect("/");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  redirect(`/${lng}`);
 }
 
 export async function getMe() {

@@ -1,6 +1,6 @@
 "use server";
 
-// import { cookies } from "next/headers";
+import { cookies } from "next/headers";
 import { del, put } from "@vercel/blob";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
@@ -78,11 +78,9 @@ export async function createHero(formData: FormData) {
     console.error(error);
     throw new Error("Failed to create hero");
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/hero`);
-  // redirect(`/${lng}/admin/hero`);
-  revalidatePath("/admin/hero");
-  redirect("/admin/hero");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/hero`);
+  redirect(`/${lng}/admin/hero`);
 }
 
 export async function updateHeroById({
@@ -140,11 +138,9 @@ export async function updateHeroById({
     console.error(error);
     throw new Error("Failed to update hero");
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/hero`);
-  // redirect(`/${lng}/admin/hero`);
-  revalidatePath("/admin/hero");
-  redirect("/admin/hero");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/hero`);
+  redirect(`/${lng}/admin/hero`);
 }
 
 export async function updateHeroesOrder({ heroes }: { heroes: IHero[] }) {
@@ -160,11 +156,9 @@ export async function updateHeroesOrder({ heroes }: { heroes: IHero[] }) {
     console.error(error);
     throw new Error("Failed to update heroes order");
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/hero`);
-  // redirect(`/${lng}/admin/hero`);
-  revalidatePath("/admin/hero");
-  redirect("/admin/hero");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/hero`);
+  redirect(`/${lng}/admin/hero`);
 }
 
 export async function switchHeroVisibility({ id }: { id: string }) {
@@ -182,11 +176,9 @@ export async function switchHeroVisibility({ id }: { id: string }) {
     console.error(error);
     throw new Error("Failed to switch hero visibility");
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/hero`);
-  // redirect(`/${lng}/admin/hero`);
-  revalidatePath("/admin/hero");
-  redirect("/admin/hero");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/hero`);
+  redirect(`/${lng}/admin/hero`);
 }
 
 export async function deleteHero({ id }: { id: string }) {
@@ -202,9 +194,7 @@ export async function deleteHero({ id }: { id: string }) {
     console.error(error);
     throw new Error("Failed to delete hero");
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/hero`);
-  // redirect(`/${lng}/admin/hero`);
-  revalidatePath("/admin/hero");
-  redirect("/admin/hero");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/hero`);
+  redirect(`/${lng}/admin/hero`);
 }

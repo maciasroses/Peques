@@ -1,6 +1,6 @@
 "use server";
 
-// import { cookies } from "next/headers";
+import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -288,11 +288,9 @@ export async function createOrder(formData: FormData) {
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/orders`);
-  // redirect(`/${lng}/admin/orders`);
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 export async function createMassiveOrder(formData: FormData) {
@@ -538,11 +536,9 @@ export async function createMassiveOrder(formData: FormData) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/orders`);
-  // redirect(`/${lng}/admin/orders`);
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 interface IOrderForUpdateDeliveryStatus {
@@ -602,11 +598,9 @@ export async function updateDeliveryStatus(
     console.error(error);
     throw new Error("An internal error occurred");
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/orders`);
-  // redirect(`/${lng}/admin/orders`);
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 export async function updateMassiveDeliveryStatus(
@@ -652,11 +646,9 @@ export async function markAsPaid(id: string) {
     console.error(error);
     throw new Error("An internal error occurred");
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/orders`);
-  // redirect(`/${lng}/admin/orders`);
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 export async function markMassiveAsPaid(ids: string[]) {
@@ -693,11 +685,9 @@ export async function deleteOrder(id: string, _pathname: string) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
-  // const lng = cookies().get("i18next")?.value ?? "es";
-  // revalidatePath(`/${lng}/admin/orders`);
-  // redirect(`/${lng}/admin/orders`);
-  revalidatePath("/admin/orders");
-  redirect("/admin/orders");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/orders`);
+  redirect(`/${lng}/admin/orders`);
 }
 
 export async function deleteMassiveOrder(ids: string[]) {

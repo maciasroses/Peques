@@ -1,6 +1,7 @@
 import XBox from "./XBox";
 import XMark from "./XMark";
 import TagIcon from "./Tag";
+import EyeIcon from "./Eye";
 import MXFlag from "./MXFlag";
 import Upload from "./Upload";
 import USFlag from "./USFlag";
@@ -19,6 +20,7 @@ import Instagram from "./Instagram";
 import UserGroup from "./UserGroup";
 import SmileFace from "./SmileFace";
 import PlusCircle from "./PlusCircle";
+import EyeSlashIcon from "./EyeSlash";
 import DownChevron from "./DownChevron";
 import MinusCircle from "./MinusCircle";
 import ShoppingBag from "./ShoppingBag";
@@ -31,6 +33,7 @@ export {
   USFlag,
   Puzzle,
   Dollar,
+  EyeIcon,
   TagIcon,
   SadFace,
   HomeIcon,
@@ -48,4 +51,5 @@ export {
   DownChevron,
   MinusCircle,
   ShoppingBag,
+  EyeSlashIcon,
 };
