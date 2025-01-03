@@ -34,7 +34,7 @@ const Form = ({ lng }: { lng: string }) => {
           <p className="text-red-600">{badResponse.message}</p>
         )}
       </div>
-      <form onSubmit={submitAction} className="w-[80%] m-auto">
+      <form onSubmit={submitAction} className="w-[80%] xl:w-1/2 m-auto">
         <fieldset disabled={isPending}>
           <div className="flex flex-col gap-4 text-base md:text-xl">
             <GenericPairDiv>
@@ -97,12 +97,11 @@ const Form = ({ lng }: { lng: string }) => {
                 />
               </GenericDiv>
             </GenericPairDiv>
-            <div className="inline-flex items-center justify-end gap-2">
+            <div className="inline-flex items-center justify-end gap-2 text-sm">
               <GenericInput
                 type="checkbox"
                 id="wantsNewsletter"
                 ariaLabel="¿Quieres recibir nuestro boletín?"
-                className="size-4"
               />
             </div>
           </div>

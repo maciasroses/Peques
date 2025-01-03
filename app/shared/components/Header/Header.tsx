@@ -37,6 +37,8 @@ const Header = ({ user, lng }: IHeader) => {
           </li>
           {pathname !== `/${lng}/login` &&
             pathname !== `/${lng}/register` &&
+            pathname !== `/${lng}/reset-password` &&
+            pathname !== `/${lng}/password-recovery` &&
             !pathname.startsWith(`/${lng}/admin`) &&
             !pathname.startsWith(`/${lng}/checkout`) && (
               <li className="w-full max-w-2xl hidden md:block">
@@ -52,6 +54,8 @@ const Header = ({ user, lng }: IHeader) => {
               {!isAdmin &&
                 pathname !== `/${lng}/login` &&
                 pathname !== `/${lng}/register` &&
+                pathname !== `/${lng}/reset-password` &&
+                pathname !== `/${lng}/password-recovery` &&
                 !pathname.startsWith(`/${lng}/admin`) &&
                 !pathname.startsWith(`/${lng}/checkout`) && (
                   <li className="flex items-center text-gray-600 dark:text-white">
@@ -66,6 +70,8 @@ const Header = ({ user, lng }: IHeader) => {
                 <>
                   {pathname !== `/${lng}/login` &&
                     pathname !== `/${lng}/register` &&
+                    pathname !== `/${lng}/reset-password` &&
+                    pathname !== `/${lng}/password-recovery` &&
                     !pathname.startsWith(`/${lng}/checkout`) && (
                       <li>
                         <Link
@@ -84,6 +90,8 @@ const Header = ({ user, lng }: IHeader) => {
         {!isAdmin &&
           pathname !== `/${lng}/login` &&
           pathname !== `/${lng}/register` &&
+          pathname !== `/${lng}/reset-password` &&
+          pathname !== `/${lng}/password-recovery` &&
           !pathname.startsWith(`/${lng}/admin`) &&
           !pathname.startsWith(`/${lng}/checkout`) && (
             <ul

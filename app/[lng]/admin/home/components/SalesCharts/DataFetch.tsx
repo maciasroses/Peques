@@ -1,8 +1,8 @@
-import { IOrder } from "@/app/shared/interfaces";
-import { getSales } from "@/app/shared/services/order/controller";
 import PieChart from "./PieChart";
-import { Card404 } from "@/app/shared/components";
 import LineChart from "./LineChart";
+import { Card404 } from "@/app/shared/components";
+import { getSales } from "@/app/shared/services/order/controller";
+import type { IOrder } from "@/app/shared/interfaces";
 
 interface IDataFetch {
   searchParams: {

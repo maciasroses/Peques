@@ -11,7 +11,6 @@ import type { IHero } from "@/app/shared/interfaces";
 
 export async function getHeroes() {
   try {
-    await isAdmin();
     return await read({});
   } catch (error) {
     console.error(error);
@@ -21,7 +20,6 @@ export async function getHeroes() {
 
 export async function getHeroById({ id }: { id: string }) {
   try {
-    await isAdmin();
     const hero = await read({ id });
     if (!hero) {
       return null;
@@ -39,7 +37,7 @@ export async function createHero(formData: FormData) {
     subtitle: formData.get("subtitle"),
     description: formData.get("description"),
     imageUrl: formData.get("imageUrl"),
-    link: formData.get("link"),
+    collectionId: formData.get("collectionId"),
   };
 
   const errors = validateSchema("create", dataToValidate);
@@ -95,7 +93,7 @@ export async function updateHeroById({
     subtitle: formData.get("subtitle"),
     description: formData.get("description"),
     imageUrl: formData.get("imageUrl"),
-    link: formData.get("link"),
+    collectionId: formData.get("collectionId"),
   };
 
   const errors = validateSchema("update", dataToValidate);

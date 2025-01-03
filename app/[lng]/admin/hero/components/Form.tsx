@@ -1,22 +1,23 @@
+import Image from "next/image";
 import { ReactNode, useState } from "react";
 import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
 import {
   createHero,
   deleteHero,
-  switchHeroVisibility,
   updateHeroById,
+  switchHeroVisibility,
 } from "@/app/shared/services/hero/controller";
 import { GenericInput, SubmitButton } from "@/app/shared/components";
-import type { IHero, IHeroState } from "@/app/shared/interfaces";
-import Image from "next/image";
+import type { ICollection, IHero, IHeroState } from "@/app/shared/interfaces";
 
 interface IForm {
   hero?: IHero | null;
   onClose: () => void;
+  collections: ICollection[];
   action: "create" | "update" | "delete" | "activate" | "deactivate";
 }
 
-const Form = ({ hero, onClose, action }: IForm) => {
+const Form = ({ hero, onClose, collections, action }: IForm) => {
   const [isPending, setIsPending] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [badResponse, setBadResponse] = useState<IHeroState>(
@@ -64,7 +65,7 @@ const Form = ({ hero, onClose, action }: IForm) => {
         </h1>
       </div>
       <form onSubmit={submitAction}>
-        <fieldset disabled={isPending} className="flex flex-col gap-4">
+        <fieldset disabled={isPending} className="flex flex-col gap-4 text-xl">
           {action === "create" || action === "update" ? (
             <>
               <GenericPairDiv>
@@ -102,17 +103,21 @@ const Form = ({ hero, onClose, action }: IForm) => {
                 </GenericDiv>
                 <GenericDiv>
                   <GenericInput
-                    id="link"
-                    type="text"
-                    defaultValue={hero?.link ?? ""}
-                    error={badResponse.errors?.link}
-                    ariaLabel="Nombre de la colección"
-                    placeholder="alimentacion-complementaria"
+                    type="select"
+                    id="collectionId"
+                    ariaLabel="Colección"
+                    placeholder="Selecciona una colección"
+                    defaultValue={hero?.collectionId ?? ""}
+                    error={badResponse.errors?.collectionId}
+                    options={collections.map((collection) => ({
+                      value: collection.id,
+                      label: collection.name,
+                    }))}
                   />
                 </GenericDiv>
               </GenericPairDiv>
               <div>
-                <p className="">Imagen del Hero</p>
+                <p>Imagen del Hero</p>
                 <GenericInput
                   type="file"
                   file={file}
@@ -140,6 +145,7 @@ const Form = ({ hero, onClose, action }: IForm) => {
               <div className="w-full h-[200px] relative rounded-md text-center">
                 <Image
                   fill
+                  sizes="200px"
                   alt={hero?.title ?? ""}
                   src={hero?.imageUrl ?? ""}
                   className="object-contain size-full"
@@ -179,5 +185,9 @@ const GenericPairDiv = ({ children }: { children: ReactNode }) => {
 };
 
 const GenericDiv = ({ children }: { children: ReactNode }) => {
-  return <div className="flex flex-col gap-2 w-full sm:w-1/2">{children}</div>;
+  return (
+    <div className="flex flex-col gap-2 w-full sm:w-1/2 justify-end">
+      {children}
+    </div>
+  );
 };

@@ -1,11 +1,12 @@
 import z, { UnknownKeysParam, ZodRawShape } from "zod";
 
 const baseSchema = z.object({
-  title: z.string().optional(),
-  subtitle: z.string().optional(),
-  description: z.string().optional(),
-  collectionId: z.string().uuid({
-    message: "La colección es requerida",
+  name: z.string().min(1, {
+    message: "El nombre de la colección es requerido",
+  }),
+  link: z.string().regex(/^[a-z-]+$/, {
+    message:
+      "El link de la colección debe ser en minúsculas y guiones, sin caracteres especiales ni espacios",
   }),
   imageUrl: z
     .instanceof(File)

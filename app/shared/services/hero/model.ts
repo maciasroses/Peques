@@ -18,14 +18,20 @@ interface IHeroRead {
 }
 
 export async function read({ id, orderBy = { order: "asc" } }: IHeroRead) {
+  const globalInclude = {
+    collection: true,
+  };
+
   if (id) {
     return await prisma.hero.findUnique({
       where: { id },
+      include: globalInclude,
     });
   }
 
   return await prisma.hero.findMany({
     orderBy,
+    include: globalInclude,
   });
 }
 

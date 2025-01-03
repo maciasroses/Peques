@@ -81,6 +81,7 @@ export interface IProductOnCollection extends ProductOnCollection {
 }
 
 export interface ICollection extends Collection {
+  hero?: IHero;
   products: IProductOnCollection[];
 }
 
@@ -136,7 +137,9 @@ export interface IAddress extends Address {
   orders: IOrder[];
 }
 
-export interface IHero extends Hero {}
+export interface IHero extends Hero {
+  collection: ICollection;
+}
 
 // END OF MODELS FROM PRISMA
 export interface ISharedState {
@@ -160,6 +163,19 @@ export interface IRegisterState extends ISharedState {
     lastName?: string;
     firstName?: string;
     wantsNewsletter?: string;
+  };
+}
+
+export interface IRecoverPasswordState extends ISharedState {
+  errors?: {
+    email?: string;
+  };
+}
+
+export interface IResetPasswordState extends ISharedState {
+  errors?: {
+    password?: string;
+    confirmPassword?: string;
   };
 }
 
@@ -215,11 +231,21 @@ export interface IHeroState extends ISharedState {
   errors?: {
     title?: string;
     subtitle?: string;
+    imageUrl?: string;
     description?: string;
+    collectionId?: string;
+  };
+}
+
+export interface ICollectionState extends ISharedState {
+  errors?: {
+    name?: string;
     link?: string;
     imageUrl?: string;
   };
 }
+
+export interface IAddNDeleteProductToFromCollectionState extends ISharedState {}
 
 export interface IGenericIcon {
   size?: string;
@@ -266,6 +292,17 @@ export interface IUserSearchParams {
   username?: string;
   isAdminRequest?: boolean;
   wantsNewsletter?: boolean | string;
+  resetPasswordToken?: string;
+}
+
+export interface ICollectionSearchParams {
+  q?: string;
+  id?: string;
+  name?: string;
+  link?: string;
+  orderBy?: object;
+  allData?: boolean;
+  isAdminRequest?: boolean;
 }
 
 export interface ICartItemForFrontend {

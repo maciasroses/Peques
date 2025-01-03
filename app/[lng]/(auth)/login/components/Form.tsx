@@ -34,7 +34,7 @@ const Form = ({ lng }: { lng: string }) => {
           <p className="text-red-600">{badResponse.message}</p>
         )}
       </div>
-      <form onSubmit={submitAction} className="w-[80%] m-auto">
+      <form onSubmit={submitAction} className="w-[80%] xl:w-1/2 m-auto">
         <fieldset disabled={isPending}>
           <div className="flex flex-col gap-4 text-base md:text-xl">
             <GenericDiv>
@@ -55,6 +55,14 @@ const Form = ({ lng }: { lng: string }) => {
                 error={badResponse.errors?.password}
               />
             </GenericDiv>
+            <p className="text-right text-sm">
+              <Link
+                className="hover:underline"
+                href={`/${lng}/password-recovery`}
+              >
+                ¿Olvidaste tu contraseña?{" "}
+              </Link>
+            </p>
           </div>
           <div className="text-center mt-4">
             <SubmitButton

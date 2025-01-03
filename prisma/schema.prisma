@@ -30,12 +30,10 @@ model Cart {
   items CartItem[]
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  userId String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([userId])
 }
 
 enum Role {
@@ -168,11 +166,12 @@ model ProductOnCollection {
 }
 
 model Collection {
-  id          String  @id @default(uuid())
-  name        String  @unique
-  imageUrl    String?
-  description String?
+  id       String @id @default(uuid())
+  name     String @unique
+  link     String @unique
+  imageUrl String
 
+  hero     Hero?
   products ProductOnCollection[]
 
   createdAt DateTime @default(now())
@@ -370,13 +369,15 @@ model Address {
 
 model Hero {
   id          String  @id @default(uuid())
+  order       Int     @default(0)
   title       String?
   subtitle    String?
+  isActive    Boolean @default(true)
   description String?
   imageUrl    String
-  link        String
-  isActive    Boolean @default(true)
-  order       Int     @default(0)
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String     @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

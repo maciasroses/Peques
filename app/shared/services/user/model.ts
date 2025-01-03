@@ -25,6 +25,7 @@ export async function read({
   username,
   isAdminRequest = false,
   wantsNewsletter,
+  resetPasswordToken,
 }: IUserSearchParams) {
   const globalInclude = {
     orders: true,
@@ -60,6 +61,12 @@ export async function read({
     return await prisma.user.findUnique({
       where: { username },
       include: globalInclude,
+    });
+  }
+
+  if (resetPasswordToken) {
+    return await prisma.user.findFirst({
+      where: { resetPasswordToken, resetPasswordExpires: { gte: new Date() } },
     });
   }
 

@@ -34,9 +34,27 @@ const userRegisterSchema = baseSchema.extend({
   wantsNewsletter: z.boolean().optional(),
 });
 
+const userRecoverPasswordSchema = z.object({
+  email: z.string().email({
+    message: "Introduce una dirección de correo electrónico válida",
+  }),
+});
+
+const resetPasswordSchema = z.object({
+  password: z.string().min(8, {
+    message: "La contraseña debe tener al menos 8 caracteres",
+  }),
+  confirmPassword: z.string().min(8, {
+    message:
+      "La contraseña de confirmación debe tener la misma longitud que la contraseña",
+  }),
+});
+
 const schemas: { [key: string]: z.ZodObject<ZodRawShape, UnknownKeysParam> } = {
   login: userLoginSchema,
   register: userRegisterSchema,
+  resetPassword: resetPasswordSchema,
+  recoverPassword: userRecoverPasswordSchema,
 };
 
 export function validateSchema(action: string, data: unknown) {
