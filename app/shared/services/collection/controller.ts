@@ -69,8 +69,44 @@ export async function createCollection(formData: FormData) {
     };
   }
 
+  const products = formData.getAll("product") as string[];
+
+  if (!products.length) {
+    return {
+      success: false,
+      message: "No hay productos para agregar",
+    };
+  }
+
+  if (products.some((productId) => productId === "")) {
+    return {
+      success: false,
+      message: "Seleccione los productos válidos",
+    };
+  }
+
   try {
     await isAdmin();
+
+    const collectionExistsByName = await read({
+      name: dataToValidate.name as string,
+    });
+    if (collectionExistsByName) {
+      return {
+        success: false,
+        message: "La colección con ese nombre ya existe",
+      };
+    }
+
+    const collectionExistsByLink = await read({
+      link: dataToValidate.link as string,
+    });
+    if (collectionExistsByLink) {
+      return {
+        success: false,
+        message: "La colección con ese link ya existe",
+      };
+    }
 
     const { imageUrl, ...rest } = dataToValidate;
 
@@ -83,15 +119,40 @@ export async function createCollection(formData: FormData) {
       }
     );
 
+    const productIds = await prisma.product.findMany({
+      where: {
+        key: {
+          in: products,
+        },
+      },
+      select: { id: true },
+    });
+
+    if (productIds.length !== products.length) {
+      return {
+        success: false,
+        message: "Algunos productos no se encontraron",
+      };
+    }
+
     const finalData = {
       ...rest,
       imageUrl: url,
+      products: {
+        create: productIds.map((product) => ({
+          productId: product.id,
+        })),
+      },
     };
 
     await create({ data: finalData });
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to create collection");
+    // throw new Error("Failed to create collection");
+    return {
+      success: false,
+      message: "Ha ocurrido un error al crear la colección",
+    };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/collections`);
@@ -128,6 +189,30 @@ export async function updateCollection({
       throw new Error("Collection not found");
     }
 
+    const collections = (await read({})) as ICollection[];
+
+    const collectionsWithoutCurrent = collections.filter((c) => c.id !== id);
+
+    const collectionExistsByName = collectionsWithoutCurrent.find(
+      (c) => c.name === dataToValidate.name
+    );
+    if (collectionExistsByName) {
+      return {
+        success: false,
+        message: "La colección con ese nombre ya existe",
+      };
+    }
+
+    const collectionExistsByLink = collectionsWithoutCurrent.find(
+      (c) => c.link === dataToValidate.link
+    );
+    if (collectionExistsByLink) {
+      return {
+        success: false,
+        message: "La colección con ese link ya existe",
+      };
+    }
+
     const { imageUrl, ...rest } = dataToValidate;
 
     const { url } = await put(
@@ -144,11 +229,15 @@ export async function updateCollection({
       imageUrl: url,
     };
 
-    await update({ id, data: rest });
+    await update({ id, data: finalData });
     await del(collection.imageUrl);
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to update collection");
+    // throw new Error("Failed to update collection");
+    return {
+      success: false,
+      message: "Ha ocurrido un error al actualizar la colección",
+    };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/collections`);
@@ -168,7 +257,7 @@ export async function addProductsToCollection({
     if (!products.length) {
       return {
         success: false,
-        message: "No products to add",
+        message: "No hay productos para agregar",
       };
     }
 
@@ -181,7 +270,7 @@ export async function addProductsToCollection({
 
     const collection = (await read({ id })) as ICollection;
     if (!collection) {
-      throw new Error("Collection not found");
+      throw new Error("Colección no encontrada");
     }
 
     const productsIds = await prisma.product.findMany({
@@ -196,7 +285,7 @@ export async function addProductsToCollection({
     if (productsIds.length !== products.length) {
       return {
         success: false,
-        message: "Some products not found",
+        message: "Algunos productos no se encontraron",
       };
     }
 
@@ -215,7 +304,7 @@ export async function addProductsToCollection({
     // throw new Error("Failed to add products to collection");
     return {
       success: false,
-      message: "Failed to add products to collection",
+      message: "Ha ocurrido un error al agregar productos a la colección",
     };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
@@ -236,7 +325,7 @@ export async function removeProductsFromCollection({
     if (!products.length) {
       return {
         success: false,
-        message: "No products to remove",
+        message: "No hay productos para remover",
       };
     }
 
@@ -249,7 +338,7 @@ export async function removeProductsFromCollection({
 
     const collection = (await read({ id })) as ICollection;
     if (!collection) {
-      throw new Error("Collection not found");
+      throw new Error("Colección no encontrada");
     }
 
     const productsIds = await prisma.product.findMany({
@@ -264,7 +353,7 @@ export async function removeProductsFromCollection({
     if (productsIds.length !== products.length) {
       return {
         success: false,
-        message: "Some products not found",
+        message: "Algunos productos no se encontraron",
       };
     }
 
@@ -283,7 +372,7 @@ export async function removeProductsFromCollection({
     // throw new Error("Failed to remove products from collection");
     return {
       success: false,
-      message: "Failed to remove products from collection",
+      message: "Ha ocurrido un error al remover productos de la colección",
     };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
@@ -304,7 +393,11 @@ export async function deleteCollection({ id }: { id: string }) {
     await del(collection.imageUrl);
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to delete collection");
+    // throw new Error("Failed to delete collection");
+    return {
+      success: false,
+      message: "Ha ocurrido un error al eliminar la colección",
+    };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/collections`);
@@ -314,10 +407,27 @@ export async function deleteCollection({ id }: { id: string }) {
 export async function deleteMassiveCollections({ ids }: { ids: string[] }) {
   try {
     await isAdmin();
+
+    const collections = await prisma.collection.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      select: { imageUrl: true },
+    });
+
     await deleteMassive({ ids });
+    await Promise.all(
+      collections.map((collection) => del(collection.imageUrl))
+    );
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to delete massive collections");
+    // throw new Error("Failed to delete massive collections");
+    return {
+      success: false,
+      message: "Ha ocurrido un error al eliminar las colecciones",
+    };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/collections`);

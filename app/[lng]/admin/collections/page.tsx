@@ -29,7 +29,7 @@ const AdminCollectionsPage = async ({
       <div className="w-full text-right">
         <Action action="create">
           {/* @ts-ignore */}
-          <Form />
+          <Form products={products} />
         </Action>
       </div>
       <Searchbar />

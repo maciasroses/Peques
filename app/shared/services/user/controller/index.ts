@@ -1,13 +1,13 @@
 "use server";
 
 import bcrypt from "bcrypt";
-import { Resend } from "resend";
+// import { Resend } from "resend";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
 import { create, read, update } from "../model";
 import { redirect } from "next/navigation";
 import { validateSchema } from "../schema";
-import { PasswordRecovery as PasswordRecoveryTemplate } from "@/app/email/PasswordRecovery";
+// import { PasswordRecovery as PasswordRecoveryTemplate } from "@/app/email/PasswordRecovery";
 import {
   getSession,
   isAuthenticated,
@@ -15,7 +15,7 @@ import {
 } from "@/app/shared/services/auth";
 import type { IUser } from "@/app/shared/interfaces";
 
-const resend = new Resend(process.env.RESEND_API_KEY as string);
+// const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 export async function login(formData: FormData) {
   const dataToValidate = {
@@ -146,22 +146,22 @@ export async function passwordRecovery(formData: FormData) {
       },
     });
 
-    const { data, error } = await resend.emails.send({
-      from: "Peques <onboarding@resend.dev>",
-      to: (user as IUser).email,
-      subject: "Recuperación de contraseña",
-      react: PasswordRecoveryTemplate({ resetPasswordToken }),
-    });
+    // const { data, error } = await resend.emails.send({
+    //   from: "Peques <onboarding@resend.dev>",
+    //   to: (user as IUser).email,
+    //   subject: "Recuperación de contraseña",
+    //   react: PasswordRecoveryTemplate({ resetPasswordToken }),
+    // });
 
-    console.log(data, error);
+    // console.log(data, error);
 
-    if (error) {
-      console.error(error);
-      return {
-        message: "Error al enviar el correo de recuperación",
-        success: false,
-      };
-    }
+    // if (error) {
+    //   console.error(error);
+    //   return {
+    //     message: "Error al enviar el correo de recuperación",
+    //     success: false,
+    //   };
+    // }
 
     return {
       message:

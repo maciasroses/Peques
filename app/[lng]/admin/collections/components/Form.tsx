@@ -4,6 +4,10 @@ import { ReactNode, useState } from "react";
 import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
 import { GenericInput, SubmitButton } from "@/app/shared/components";
 import {
+  AutocompleteInput,
+  DynamicItemManager,
+} from "@/app/shared/components/Form";
+import {
   createCollection,
   deleteCollection,
   updateCollection,
@@ -14,6 +18,7 @@ import type {
   ICollection,
   ICollectionState,
 } from "@/app/shared/interfaces";
+// import { MinusCircle, PlusCircle } from "@/app/shared/icons";
 
 interface IForm {
   onClose: () => void;
@@ -25,9 +30,31 @@ interface IForm {
 const Form = ({ onClose, products, collection, action }: IForm) => {
   const [isPending, setIsPending] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  // const [productsCounter, setProductsCounter] = useState(1);
+  // const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [badResponse, setBadResponse] = useState<ICollectionState>(
     INITIAL_STATE_RESPONSE
   );
+
+  // const handleIncreaseNSubtract = (action: string) => {
+  //   setProductsCounter((prev) => {
+  //     if (action === "increase") {
+  //       return prev + 1;
+  //     } else if (action === "subtract" && prev > 1) {
+  //       const updatedSelections = [...selectedProducts];
+  //       updatedSelections.pop();
+  //       setSelectedProducts(updatedSelections);
+  //       return prev - 1;
+  //     }
+  //     return prev;
+  //   });
+  // };
+
+  // const handleProductSelect = (index: number, productKey: string) => {
+  //   const updatedSelections = [...selectedProducts];
+  //   updatedSelections[index] = productKey;
+  //   setSelectedProducts(updatedSelections);
+  // };
 
   const submitAction: React.FormEventHandler<HTMLFormElement> = async (
     event
@@ -68,6 +95,9 @@ const Form = ({ onClose, products, collection, action }: IForm) => {
               : "Eliminando"}{" "}
           colección
         </h1>
+        {badResponse.message && (
+          <p className="text-center text-red-500">{badResponse.message}</p>
+        )}
       </div>
       <form onSubmit={submitAction}>
         <fieldset disabled={isPending} className="flex flex-col gap-4 text-xl">
@@ -111,6 +141,63 @@ const Form = ({ onClose, products, collection, action }: IForm) => {
                   }}
                 />
               </div>
+              {action === "create" && (
+                // <>
+                //   <div className="flex flex-col gap-2 w-full">
+                //     {Array.from({ length: productsCounter }).map((_, index) => {
+                //       const filteredProducts = products?.filter(
+                //         (product) =>
+                //           !selectedProducts.includes(product.key) ||
+                //           product.key === selectedProducts[index]
+                //       );
+                //       return (
+                //         <ProductForm
+                //           key={index}
+                //           index={index}
+                //           products={filteredProducts ?? []}
+                //           onProductSelect={handleProductSelect}
+                //         />
+                //       );
+                //     })}
+                //   </div>
+                //   <div className="flex gap-2 items-center justify-end mt-4">
+                //     <button
+                //       type="button"
+                //       onClick={() => handleIncreaseNSubtract("increase")}
+                //     >
+                //       <PlusCircle />
+                //     </button>
+                //     {productsCounter > 1 && (
+                //       <button
+                //         type="button"
+                //         onClick={() => handleIncreaseNSubtract("subtract")}
+                //       >
+                //         <MinusCircle />
+                //       </button>
+                //     )}
+                //     <span>
+                //       {productsCounter > 1 && `(${productsCounter} total)`}
+                //     </span>
+                //   </div>
+                // </>
+                <DynamicItemManager
+                  items={products ?? []}
+                  renderForm={(index, items, onSelect) => (
+                    <AutocompleteInput
+                      key={index}
+                      id="product"
+                      ariaLabel="Producto"
+                      customClassName="mt-2"
+                      placeholder="Busca un producto..."
+                      additionOnChange={(e) => onSelect(index, e.target.value)}
+                      suggestions={items.map((i) => ({
+                        value: i.key,
+                        label: i.name,
+                      }))}
+                    />
+                  )}
+                />
+              )}
             </>
           ) : (
             <>
@@ -176,3 +263,32 @@ const GenericDiv = ({ children }: { children: ReactNode }) => {
     </div>
   );
 };
+
+// interface IProductForm {
+//   index: number;
+//   products: IProduct[];
+//   onProductSelect: (index: number, productId: string) => void;
+// }
+
+// const ProductForm = ({ index, products, onProductSelect }: IProductForm) => {
+//   const handleSelectChange = (
+//     e: React.ChangeEvent<
+//       HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
+//     >
+//   ) => {
+//     onProductSelect(index, e.target.value);
+//   };
+//   return (
+//     <AutocompleteInput
+//       id="product"
+//       ariaLabel="Producto"
+//       placeholder="Busca un producto..."
+//       additionOnChange={handleSelectChange}
+//       suggestions={products.map((p) => ({
+//         value: p.key,
+//         label: p.name,
+//       }))}
+//       customClassName="mt-2"
+//     />
+//   );
+// };

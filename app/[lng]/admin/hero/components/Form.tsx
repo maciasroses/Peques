@@ -11,7 +11,7 @@ import { GenericInput, SubmitButton } from "@/app/shared/components";
 import type { ICollection, IHero, IHeroState } from "@/app/shared/interfaces";
 
 interface IForm {
-  hero?: IHero | null;
+  hero: IHero | null;
   onClose: () => void;
   collections: ICollection[];
   action: "create" | "update" | "delete" | "activate" | "deactivate";
@@ -47,6 +47,14 @@ const Form = ({ hero, onClose, collections, action }: IForm) => {
     }
     setIsPending(false);
   };
+
+  const filteredCollections = collections.filter(
+    (collection) => collection.hero === null
+  );
+
+  if (action === "update" && hero) {
+    filteredCollections.push(hero.collection);
+  }
 
   return (
     <div className="flex flex-col items-center gap-4 text-left dark:text-white">
@@ -109,7 +117,7 @@ const Form = ({ hero, onClose, collections, action }: IForm) => {
                     placeholder="Selecciona una colección"
                     defaultValue={hero?.collectionId ?? ""}
                     error={badResponse.errors?.collectionId}
-                    options={collections.map((collection) => ({
+                    options={filteredCollections.map((collection) => ({
                       value: collection.id,
                       label: collection.name,
                     }))}

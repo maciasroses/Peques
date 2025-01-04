@@ -166,7 +166,6 @@ const Form = ({ onClose, collectionId, product, action }: IForm) => {
               )}
             </>
           )}
-
           <div className="text-center mt-4">
             <SubmitButton
               title={action === "create" ? "Agregar" : "Eliminar"}
