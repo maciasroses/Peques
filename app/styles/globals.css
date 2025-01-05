@@ -53,3 +53,74 @@ body {
 .link-button-green {
   @apply text-white dark:text-green-300 bg-green-600 dark:bg-green-950 hover:bg-green-700 dark:hover:bg-green-900 border border-green-600 hover:border-green-700 dark:border-green-300 px-4 py-2 rounded-md transition-colors duration-300;
 }
+
+.custom-prev,
+.custom-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  font-size: 24px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.custom-prev {
+  left: 10px;
+}
+
+.custom-next {
+  right: 10px;
+}
+
+.custom-prev:hover,
+.custom-next:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.custom-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  position: absolute;
+  bottom: 10px;
+  z-index: 10;
+}
+
+.custom-pagination-bullet {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Tamaño por defecto (pantallas medianas) */
+.custom-pagination-bullet {
+  width: 12px;
+  height: 12px;
+}
+
+.custom-pagination-bullet-active {
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Pantallas pequeñas */
+@media (max-width: 768px) {
+  .custom-pagination-bullet {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Pantallas grandes */
+@media (min-width: 1024px) {
+  .custom-pagination-bullet {
+    width: 16px;
+    height: 16px;
+  }
+
+}

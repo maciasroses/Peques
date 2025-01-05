@@ -7,6 +7,7 @@ import { Footer } from "./Footer";
 import ErrorCard from "./ErrorCard";
 import Datatable from "./Datatable";
 import { Sidebar } from "./Sidebar";
+import HeroSlider from "./HeroSlider";
 import CardSkeleton from "./CardSkeleton";
 import AuthComponent from "./AuthComponent";
 import CartComponent from "./CartComponent";
@@ -25,6 +26,7 @@ export {
   Loading,
   ErrorCard,
   Datatable,
+  HeroSlider,
   BarSkeleton,
   PieSkeleton,
   CardSkeleton,

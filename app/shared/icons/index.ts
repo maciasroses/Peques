@@ -19,11 +19,15 @@ import PencilIcon from "./Pencil";
 import Instagram from "./Instagram";
 import UserGroup from "./UserGroup";
 import SmileFace from "./SmileFace";
+import LeftArrow from "./LeftArrow";
+import RightArrow from "./RightArrow";
 import PlusCircle from "./PlusCircle";
 import EyeSlashIcon from "./EyeSlash";
+import LeftChevron from "./LeftChevron";
 import DownChevron from "./DownChevron";
 import MinusCircle from "./MinusCircle";
 import ShoppingBag from "./ShoppingBag";
+import RightChevron from "./RightChevron";
 
 export {
   XBox,
@@ -45,11 +49,15 @@ export {
   PhotoIcon,
   Instagram,
   UserGroup,
+  LeftArrow,
+  RightArrow,
   SystemIcon,
   PencilIcon,
   PlusCircle,
+  LeftChevron,
   DownChevron,
   MinusCircle,
   ShoppingBag,
+  RightChevron,
   EyeSlashIcon,
 };
