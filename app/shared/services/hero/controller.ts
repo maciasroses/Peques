@@ -9,9 +9,13 @@ import { isAdmin } from "@/app/shared/services/auth";
 import { create, deleteById, read, update } from "./model";
 import type { IHero } from "@/app/shared/interfaces";
 
-export async function getHeroes() {
+export async function getHeroes({
+  isAdminRequest,
+}: {
+  isAdminRequest?: boolean;
+}) {
   try {
-    return await read({});
+    return await read({ isAdminRequest });
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get heroes");

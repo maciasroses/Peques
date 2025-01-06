@@ -22,6 +22,7 @@ import type {
   InventoryTransaction,
 } from "@prisma/client";
 
+// MODELS
 export interface ICartItem extends CartItem {
   cart: ICart;
   product: IProduct;
@@ -141,7 +142,7 @@ export interface IHero extends Hero {
   collection: ICollection;
 }
 
-// END OF MODELS FROM PRISMA
+// STATES
 export interface ISharedState {
   message?: string;
   success: boolean;
@@ -212,7 +213,7 @@ export interface ICreateNUpdateProductState extends ISharedState {
   };
 }
 
-export interface ICreateOrder extends ISharedState {
+export interface ICreateOrderState extends ISharedState {
   errors?: {
     order?: {
       client?: string;
@@ -247,24 +248,20 @@ export interface ICollectionState extends ISharedState {
 
 export interface IAddNDeleteProductToFromCollectionState extends ISharedState {}
 
-export interface IGenericIcon {
-  size?: string;
-  customClass?: string;
-  strokeWidth?: number;
-  isFilled?: boolean;
-}
-
-export interface IBaseLangPage {
-  // React 19
-  // params: Promise<{
-  //   lng: string;
-  // }>;
-
-  params: {
-    lng: string;
+export interface ICustomListState extends ISharedState {
+  errors?: {
+    name?: string;
   };
 }
 
+export interface IAddProductToCustomList extends ISharedState {
+  errors?: {
+    productId?: string;
+    customListId?: string;
+  }[];
+}
+
+// SEARCH PARAMS
 export interface IProductSearchParams {
   q?: string;
   id?: string;
@@ -303,6 +300,32 @@ export interface ICollectionSearchParams {
   orderBy?: object;
   allData?: boolean;
   isAdminRequest?: boolean;
+}
+
+export interface ICustomListSearchParams {
+  id?: string;
+  name?: string;
+  userId?: string;
+  page?: string | number;
+  limit?: string | number;
+  allData?: boolean;
+  isForFav?: boolean;
+}
+
+// OTHERS
+export type LanguageTypeForSchemas = "en" | "es";
+
+export interface IBaseLangPage {
+  params: {
+    lng: string;
+  };
+}
+
+export interface IGenericIcon {
+  size?: string;
+  customClass?: string;
+  strokeWidth?: number;
+  isFilled?: boolean;
 }
 
 export interface ICartItemForFrontend {

@@ -28,7 +28,7 @@ export async function read({
       include: {
         product: {
           include: {
-            provider: true,
+            provider: isAdminRequest ? true : false,
           },
         },
       },

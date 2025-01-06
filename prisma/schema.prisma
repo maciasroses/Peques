@@ -110,7 +110,7 @@ model Product {
   key                       String  @unique
   name                      String
   category                  String?
-  description               String?
+  description               String? @db.Text
   salePriceMXN              Float
   availableQuantity         Int     @default(0)
   minimumAcceptableQuantity Int
@@ -246,15 +246,15 @@ enum DeliveryStatus {
 
 model Order {
   id             String         @id @default(uuid())
-  client         String // CONSIDER CHANGE TO USER IN A FUTURE
+  client         String // This is functional when the user is not logged in
   discount       Float?
   subtotal       Float
   total          Float
   shipmentType   String
   paymentMethod  String
-  isPaid         Boolean        @default(false)
+  isPaid         Boolean        @default(false) // This is functional when the user is not logged in
   deliveryStatus DeliveryStatus @default(PENDING)
-  pendingPayment Float?
+  pendingPayment Float? // This is functional when the user is not logged in
 
   products ProductOnOrder[]
 

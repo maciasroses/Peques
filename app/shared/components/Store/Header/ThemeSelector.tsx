@@ -80,8 +80,12 @@ const ThemeSelector = () => {
   }, []);
 
   return (
-    <div className="relative inline-flex" ref={menuRef}>
-      <button aria-label="Selector de tema" onClick={toggleMenu}>
+    <div className="relative inline-block" ref={menuRef}>
+      <button
+        aria-label="Selector de tema"
+        className="flex items-center"
+        onClick={toggleMenu}
+      >
         {theme === "light" ||
         (theme === "system" && systemTheme === "light") ? (
           <LightIcon theme={theme} />
@@ -91,7 +95,7 @@ const ThemeSelector = () => {
       </button>
       {menuOpen && (
         <div
-          className="origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow list-none bg-neutral-light dark:bg-primary-dark text-primary-light focus:outline-none"
+          className="origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow list-none bg-neutral-light dark:bg-primary-dark text-primary-light focus:outline-none z-10"
           aria-roledescription="menu"
         >
           <div className="py-1" aria-roledescription="none">

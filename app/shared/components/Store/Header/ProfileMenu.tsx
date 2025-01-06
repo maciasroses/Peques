@@ -79,7 +79,7 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
   }, [user, setUser]);
 
   return (
-    <div className="relative inline-flex text-left" ref={menuRef}>
+    <div className="relative inline-block text-left" ref={menuRef}>
       <button
         type="button"
         onClick={toggleMenu}
@@ -95,7 +95,7 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
       </button>
       {menuOpen && (
         <div
-          className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow list-none bg-gray-50 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none"
+          className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow list-none bg-gray-50 dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
           aria-roledescription="menu"
         >
           <div className="py-1" aria-roledescription="none">

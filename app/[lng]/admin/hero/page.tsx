@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 };
 
 const AdminHeroPage = async () => {
-  const heroes = (await getHeroes()) as IHero[];
   const collections = (await getCollections({})) as ICollection[];
+  const heroes = (await getHeroes({ isAdminRequest: true })) as IHero[];
 
   return <ListDnd heroes={heroes} collections={collections} />;
 };

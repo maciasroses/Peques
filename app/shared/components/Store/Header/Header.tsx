@@ -9,10 +9,12 @@ import ThemeSelector from "./ThemeSelector";
 import { usePathname } from "next/navigation";
 import LogoMini from "@/public/assets/images/logo-mini.webp";
 import type { IUser } from "@/app/shared/interfaces";
+import MainSearch from "./MainSearch";
+import FiltersMenu from "./FiltersMenu";
 
 interface IHeader {
-  user: IUser | null;
   lng: string;
+  user: IUser | null;
 }
 
 const Header = ({ user, lng }: IHeader) => {
@@ -42,8 +44,7 @@ const Header = ({ user, lng }: IHeader) => {
             !pathname.startsWith(`/${lng}/admin`) &&
             !pathname.startsWith(`/${lng}/checkout`) && (
               <li className="w-full max-w-2xl hidden md:block">
-                {/* <MainSearch id="search-bar" lng={lng} /> */}
-                SEARCHBAR
+                <MainSearch id="search-bar" lng={lng} />
               </li>
             )}
           <li>
@@ -101,13 +102,11 @@ const Header = ({ user, lng }: IHeader) => {
               )}
             >
               <li className="w-full">
-                {/* <MainSearch id="mobile-search-bar" lng={lng} /> */}
-                SEARCHBAR
+                <MainSearch id="mobile-search-bar" lng={lng} />
               </li>
               {pathname === `/${lng}/search` && (
                 <li>
-                  {/* <FiltersMenu lng={lng} /> */}
-                  FILTERS
+                  <FiltersMenu lng={lng} />
                 </li>
               )}
             </ul>

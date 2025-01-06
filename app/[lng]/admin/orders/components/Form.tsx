@@ -14,7 +14,11 @@ import {
   createMassiveOrder,
   deleteMassiveOrder,
 } from "@/app/shared/services/order/controller";
-import type { ICreateOrder, IOrder, IProduct } from "@/app/shared/interfaces";
+import type {
+  ICreateOrderState,
+  IOrder,
+  IProduct,
+} from "@/app/shared/interfaces";
 
 interface IProductInOrder {
   productId: string;
@@ -41,7 +45,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
   const [file, setFile] = useState<File | null>(null);
   const [productsCounter, setProductsCounter] = useState(1);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [badResponse, setBadResponse] = useState<ICreateOrder>(
+  const [badResponse, setBadResponse] = useState<ICreateOrderState>(
     INITIAL_STATE_RESPONSE
   );
 
@@ -419,7 +423,7 @@ interface IProductForm {
   index: number;
   products: IProduct[];
   onProductSelect: (index: number, productId: string) => void;
-  badResponse: ICreateOrder;
+  badResponse: ICreateOrderState;
 }
 
 const ProductForm = ({

@@ -55,6 +55,26 @@ export async function getProducts({
   }
 }
 
+export async function getAllProducts() {
+  try {
+    return await read({
+      allData: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getProductById({ id }: { id: string }) {
+  try {
+    return await read({ id });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 export async function getProductByKey({ key }: { key: string }) {
   try {
     return await read({ key });

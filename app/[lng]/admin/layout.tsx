@@ -1,4 +1,4 @@
-import { Sidebar } from "@/app/shared/components";
+import { Sidebar } from "./components";
 import type { Metadata } from "next";
 import type { IBaseLangPage } from "@/app/shared/interfaces";
 

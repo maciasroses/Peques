@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import {
-  BarSkeleton,
-  PieSkeleton,
+  BarChartSkeleton,
+  PieChartSkeleton,
   CardSkeleton,
 } from "@/app/shared/components";
 import {
@@ -45,8 +45,8 @@ const AdminHomePage = async ({ searchParams }: IAdminHomePage) => {
         key={yearOfData}
         fallback={
           <div className="flex flex-col md:flex-row gap-4 h-48">
-            <BarSkeleton />
-            <PieSkeleton />
+            <BarChartSkeleton />
+            <PieChartSkeleton />
           </div>
         }
       >

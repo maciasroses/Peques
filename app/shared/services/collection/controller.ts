@@ -26,6 +26,15 @@ export async function getCollections({ q }: ICollectionSearchParams) {
   }
 }
 
+export async function getAllCollections() {
+  try {
+    return await read({ allData: true });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get all collections");
+  }
+}
+
 export async function getCollectionById({ id }: { id: string }) {
   try {
     return await read({ id });

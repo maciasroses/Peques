@@ -57,9 +57,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             myCart.items.map((item) => ({
               id: item.product.key,
               name: item.product.name,
-              file: item.product.files[0]?.url || "",
-              price: item.priceInCents,
               quantity: item.quantity,
+              price: item.priceInCents,
+              file: item.product.files[0]?.url || "",
             }))
           );
         } else {

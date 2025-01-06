@@ -1,10 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { cn } from "../../utils/cn";
 import { useState } from "react";
-import { ShoppingBag, XMark } from "../../icons";
-import { useCart } from "../../hooks";
+import { cn } from "@/app/shared/utils/cn";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/app/shared/hooks";
+import { ShoppingBag, XMark } from "@/app/shared/icons";
 
 interface ICartMenu {
   lng: string;

@@ -1,6 +1,6 @@
 import React from "react";
 
-const LineSkeleton = () => {
+const LineChartSkeleton = () => {
   return (
     <div className="w-full h-full flex justify-center items-center">
       <div className="w-full h-1/2 bg-gray-300 animate-pulse"></div>
@@ -8,4 +8,4 @@ const LineSkeleton = () => {
   );
 };
 
-export default LineSkeleton;
+export default LineChartSkeleton;

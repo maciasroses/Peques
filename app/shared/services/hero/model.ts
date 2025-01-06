@@ -15,9 +15,14 @@ export async function create({
 interface IHeroRead {
   id?: string;
   orderBy?: object;
+  isAdminRequest?: boolean;
 }
 
-export async function read({ id, orderBy = { order: "asc" } }: IHeroRead) {
+export async function read({
+  id,
+  orderBy = { order: "asc" },
+  isAdminRequest = false,
+}: IHeroRead) {
   const globalInclude = {
     collection: true,
   };
@@ -31,6 +36,9 @@ export async function read({ id, orderBy = { order: "asc" } }: IHeroRead) {
 
   return await prisma.hero.findMany({
     orderBy,
+    where: {
+      isActive: isAdminRequest ? undefined : true,
+    },
     include: globalInclude,
   });
 }
