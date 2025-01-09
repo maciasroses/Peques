@@ -3,11 +3,13 @@ import { getHeroes } from "@/app/shared/services/hero/controller";
 import { getMyLists } from "@/app/shared/services/customList/controller";
 import { getAllCollections } from "@/app/shared/services/collection/controller";
 import {
+  getTheBestReviews,
   getTheNewestProducts,
   getTheFavoritesProducts,
 } from "@/app/shared/services/product/controller";
 import {
   HeroSlider,
+  ReviewList,
   ProductList,
   FullCollection,
   CollectionsList,
@@ -24,6 +26,7 @@ import type {
 export default async function Home({ params: { lng } }: IBaseLangPage) {
   const me = (await getMe()) as IUser;
   const heroes = (await getHeroes({})) as IHero[];
+  const bestReviews = (await getTheBestReviews({})) as IProduct[];
   const collections = (await getAllCollections()) as ICollection[];
   const { selected, part1, part2 } = splitCollections(collections);
   const newestProducts = (await getTheNewestProducts({})) as IProduct[];
@@ -52,6 +55,7 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
         />
       )}
       <CollectionsList lng={lng} collections={part2} />
+      <ReviewList lng={lng} title="Testimonios" products={bestReviews} />
       <FullCollection lng={lng} collection={selected[1]} imageSide="right" />
     </article>
   );

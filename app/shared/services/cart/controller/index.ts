@@ -1,6 +1,6 @@
 "use server";
 
-import { isAuthenticated } from "@/app/shared/services/auth";
+import { getSession } from "@/app/shared/services/auth";
 import { getProductByKey } from "@/app/shared/services/product/controller";
 import {
   readCart,
@@ -14,7 +14,8 @@ import type { ICartItemForFrontend, IProduct } from "@/app/shared/interfaces";
 
 export async function getMyCart() {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
+    if (!session) throw new Error("Usuario no autenticado");
     return await readCart({
       userId: session.userId as string,
     });
@@ -26,7 +27,8 @@ export async function getMyCart() {
 
 export async function createMyNewCart() {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
+    if (!session) throw new Error("Usuario no autenticado");
     return await createCart({
       data: {
         userId: session.userId as string,
@@ -40,7 +42,7 @@ export async function createMyNewCart() {
 
 export async function addToMyCart(item: ICartItemForFrontend) {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
     if (!session) throw new Error("Usuario no autenticado");
 
     const cart = await getMyCart();
@@ -79,7 +81,7 @@ export async function addToMyCart(item: ICartItemForFrontend) {
 
 export async function deleteFromMyCart(itemId: string) {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
     if (!session) throw new Error("Usuario no autenticado");
 
     const cart = await getMyCart();
@@ -104,7 +106,7 @@ export async function deleteFromMyCart(itemId: string) {
 
 export async function clearMyCart() {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
     if (!session) throw new Error("Usuario no autenticado");
 
     await deleteCart({
@@ -118,7 +120,7 @@ export async function clearMyCart() {
 
 export async function mergeCarts(localCart: ICartItemForFrontend[]) {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
     if (!session) throw new Error("Usuario no autenticado");
 
     const remoteCart = await getMyCart();

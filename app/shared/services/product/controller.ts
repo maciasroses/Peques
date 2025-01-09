@@ -94,6 +94,20 @@ export async function getTheFavoritesProducts({
   }
 }
 
+export async function getTheBestReviews({
+  takeFromRequest = 6,
+}: IProductSearchParams) {
+  try {
+    return await read({
+      takeFromRequest,
+      isForBestReviews: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 export async function getProductById({ id }: { id: string }) {
   try {
     return await read({ id });

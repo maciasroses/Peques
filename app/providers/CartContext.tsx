@@ -30,13 +30,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const checkAuth = useCallback(async () => {
-    try {
-      const session = await IsAuth();
-      setIsAuthenticated(session ? true : false);
-    } catch (error) {
-      console.error(error);
-      setIsAuthenticated(false);
-    }
+    const authenticated = await IsAuth();
+    setIsAuthenticated(authenticated);
   }, []);
 
   useEffect(() => {

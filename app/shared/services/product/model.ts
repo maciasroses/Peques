@@ -48,13 +48,26 @@ export async function read({
   isAdminRequest = false,
   isForFavorites = false,
   takeFromRequest = undefined,
+  isForBestReviews = false,
   salePriceMXNFrom,
   availableQuantityTo,
   availableQuantityFrom,
 }: IProductSearchParams) {
+  const whereIsForBestReviews = isForBestReviews
+    ? {
+        content: { not: null },
+      }
+    : {};
+
   const globalInclude = {
     files: true,
-    reviews: true,
+    reviews: {
+      where: whereIsForBestReviews,
+      take: isForBestReviews ? 1 : undefined,
+      include: {
+        user: true,
+      },
+    },
     provider: true,
     orders: isAdminRequest ? true : false,
     history: isAdminRequest ? true : false,
@@ -71,7 +84,7 @@ export async function read({
     });
   }
 
-  if (isForFavorites) {
+  if (isForFavorites || isForBestReviews) {
     const productsWithBestRatings = await prisma.productReview.groupBy({
       by: ["productId"],
       _avg: { rating: true },
@@ -90,9 +103,30 @@ export async function read({
       include: globalInclude,
     });
 
-    const orderedProducts = productIds.map((id) =>
-      products.find((product) => product.id === id)
+    if (isForFavorites) {
+      const orderedProducts = productIds.map((id) =>
+        products.find((product) => product.id === id)
+      );
+
+      return orderedProducts;
+    }
+
+    // For best reviews
+    const productsWithReviews = products.filter(
+      (product) => product.reviews.length > 0
     );
+
+    const orderedProducts = productsWithReviews
+      .map((product) => ({
+        ...product,
+        avgRating:
+          product.reviews.reduce(
+            (sum, review) => sum + (review.rating || 0),
+            0
+          ) / product.reviews.length,
+      }))
+      .sort((a, b) => b.avgRating - a.avgRating)
+      .slice(0, takeFromRequest);
 
     return orderedProducts;
   }

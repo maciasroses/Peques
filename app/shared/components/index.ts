@@ -4,7 +4,7 @@ import Action from "./Action";
 import Loading from "./Loading";
 import Datatable from "./Datatable";
 import Pagination from "./Pagination";
-import { Card404, ErrorCard, ProductCard } from "./Cards";
+import { Card404, ErrorCard, ReviewCard, ProductCard } from "./Cards";
 import { GenericInput, SubmitButton, GenericSearchInput } from "./Form";
 import { AuthComponent, CartComponent, ThemeComponent } from "./Providers";
 import {
@@ -12,6 +12,8 @@ import {
   Footer,
   Filters,
   AddToCart,
+  ReviewList,
+  StarRating,
   HeroSlider,
   ProductList,
   AddCustomList,
@@ -36,8 +38,10 @@ export {
   Modal,
   Action,
   Pagination,
+  ReviewCard,
   CollectionsList,
   ProductList,
+  ReviewList,
   Header,
   Footer,
   Filters,
@@ -49,6 +53,7 @@ export {
   Datatable,
   HeroSlider,
   BarChartSkeleton,
+  StarRating,
   PieChartSkeleton,
   ProductCard,
   CardSkeleton,

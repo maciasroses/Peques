@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/app/shared//utils/cn";
-import { useAuth } from "@/app/shared/hooks";
+import { useAuth, useDisableScroll } from "@/app/shared/hooks";
 import { DownChevron } from "@/app/shared/icons";
 import { useEffect, useRef, useState } from "react";
 import { logout } from "@/app/shared/services/user/controller";
@@ -42,6 +42,8 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
   const { setUser } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenu, setProfileMenu] = useState(false);
+
+  useDisableScroll(menuOpen);
 
   const handleProfileMenu = () => {
     setProfileMenu(!profileMenu);

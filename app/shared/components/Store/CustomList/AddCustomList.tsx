@@ -54,7 +54,7 @@ const AddCustomList = ({
           <Heart size="size-10" />
         )}
       </button>
-      <Modal isOpen={isOpen} onClose={onClose} isAdminView={false}>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <Form
           lng={lng}
           myLists={myLists}

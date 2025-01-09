@@ -3,10 +3,13 @@
 import Filters from "./Filters";
 import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
+import { useDisableScroll } from "@/app/shared/hooks";
 import { Filters as FiltersIcon, XMark } from "@/app/shared/icons";
 
 const FiltersMenu = ({ lng }: { lng: string }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  useDisableScroll(isOpen);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -22,7 +25,7 @@ const FiltersMenu = ({ lng }: { lng: string }) => {
       </button>
       <div
         className={cn(
-          "bg-white dark:bg-gray-800 fixed top-0 right-0 h-full w-64 shadow-lg transform transition-transform z-40",
+          "bg-white dark:bg-gray-800 fixed top-0 right-0 h-screen w-64 shadow-lg transform transition-transform z-40",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -39,7 +42,7 @@ const FiltersMenu = ({ lng }: { lng: string }) => {
       </div>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black opacity-50 z-30"
+          className="fixed inset-0 bg-black opacity-50 z-30 h-screen"
           onClick={toggleMenu}
         ></div>
       )}

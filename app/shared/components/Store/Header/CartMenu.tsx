@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/app/shared/hooks";
+import { useCart, useDisableScroll } from "@/app/shared/hooks";
 import { ShoppingBag, XMark } from "@/app/shared/icons";
 
 interface ICartMenu {
@@ -15,6 +15,8 @@ const CartMenu = ({ lng }: ICartMenu) => {
   const { push } = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { cart, addToCart, clearCart, removeFromCart } = useCart();
+
+  useDisableScroll(isOpen);
 
   const toggleCart = () => {
     setIsOpen(!isOpen);
@@ -36,7 +38,7 @@ const CartMenu = ({ lng }: ICartMenu) => {
       </button>
       <div
         className={cn(
-          "bg-white dark:bg-gray-800 fixed top-0 right-0 h-full w-64 shadow-lg transform transition-transform z-40",
+          "bg-white dark:bg-gray-800 fixed top-0 right-0 h-screen w-64 shadow-lg transform transition-transform z-40",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -50,7 +52,7 @@ const CartMenu = ({ lng }: ICartMenu) => {
       </div>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black opacity-50 z-30"
+          className="fixed inset-0 bg-black opacity-50 z-30 h-screen"
           onClick={toggleCart}
         ></div>
       )}

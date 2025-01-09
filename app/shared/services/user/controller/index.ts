@@ -241,12 +241,13 @@ export async function resetPassword(formData: FormData, token: string) {
 
 export async function getMe() {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
+    if (!session || !session.userId) return null;
     return await read({
       id: session.userId as string,
     });
   } catch (error) {
-    console.error(error);
-    return null;
+    console.error("Error getting user session:", error);
+    return null; // Retornar null si ocurre un error
   }
 }

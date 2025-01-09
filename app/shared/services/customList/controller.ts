@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { revalidatePath } from "next/cache";
-import { isAuthenticated } from "@/app/shared/services/auth";
+import { getSession } from "@/app/shared/services/auth";
 import {
   readCustomList,
   createCustomList,
@@ -24,7 +24,8 @@ export async function getMyLists({
   isForFav,
 }: ICustomListSearchParams) {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
+    if (!session) throw new Error("Usuario no autenticado");
     return await readCustomList({
       page,
       limit,
@@ -39,7 +40,8 @@ export async function getMyLists({
 
 export async function getMyListByName({ name }: { name: string }) {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
+    if (!session) throw new Error("Usuario no autenticado");
     return await readCustomList({
       name,
       userId: session.userId as string,
@@ -52,7 +54,7 @@ export async function getMyListByName({ name }: { name: string }) {
 
 export async function createNewCustomList(formData: FormData) {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
     const productId = (formData.get("productId") as string) ?? "";
 
     const data = {
@@ -211,7 +213,7 @@ export async function deleteExistingCustomList(customListId: string) {
 
 export async function deleteProductFromAllCustomLists(productId: string) {
   try {
-    const session = await isAuthenticated();
+    const session = await getSession();
     await deleteCustomProductList({
       userId: session?.userId as string,
       productId,

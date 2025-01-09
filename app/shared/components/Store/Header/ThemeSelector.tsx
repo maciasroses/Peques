@@ -1,8 +1,8 @@
 "use client";
 
 import clsx from "clsx";
-import { useTheme } from "@/app/shared/hooks";
 import React, { useEffect, useRef, useState } from "react";
+import { useDisableScroll, useTheme } from "@/app/shared/hooks";
 import { DarkIcon, LightIcon, SystemIcon } from "@/app/shared/icons";
 
 interface IThemeButton {
@@ -36,10 +36,12 @@ const ThemeButton = ({
 };
 
 const ThemeSelector = () => {
-  const { theme, setTheme } = useTheme();
-  const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
-  const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const { theme, setTheme } = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
+
+  useDisableScroll(menuOpen);
 
   const handleThemeChange = (theme: string) => {
     setTheme(theme);

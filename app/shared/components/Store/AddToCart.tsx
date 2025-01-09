@@ -35,7 +35,7 @@ const AddToCart = ({ product }: IAddToCart) => {
       className={cn(
         "font-medium rounded-lg text-sm",
         product.availableQuantity > 0
-          ? "link-button-blue"
+          ? "link-button-primary"
           : "px-4 py-2 text-gray-600 dark:text-gray-200 bg-gray-300 cursor-not-allowed  dark:bg-gray-700"
       )}
     >

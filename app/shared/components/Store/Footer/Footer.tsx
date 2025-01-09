@@ -30,6 +30,7 @@ const Footer = ({ lng, user }: IFooter) => {
                 width={150}
                 height={150}
                 priority
+                className="size-auto"
               />
               <p className="text-sm">Growing happy and healthy kids</p>
             </div>

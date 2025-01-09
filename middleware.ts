@@ -1,16 +1,17 @@
 import acceptLanguage from "accept-language";
 import { NextRequest, NextResponse } from "next/server";
-import { fallbackLng, languages, cookieName } from "./app/i18n/settings";
+import { isAuthenticated } from "@/app/shared/services/auth";
+import { fallbackLng, languages, cookieName } from "@/app/i18n/settings";
 
 acceptLanguage.languages(languages);
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const cookie = request.cookies.get(cookieName);
   const lng = cookie
     ? acceptLanguage.get(cookie.value)
     : acceptLanguage.get(request.headers.get("Accept-Language")) || fallbackLng;
   const pathname = request.nextUrl.pathname;
-  const session = request.cookies.get("session")?.value;
+  const isValidSession = await isAuthenticated();
 
   const protectedRoutes = [
     "/checkout",
@@ -21,11 +22,14 @@ export function middleware(request: NextRequest) {
     `/${lng}/profile`,
   ];
 
-  if (!session && protectedRoutes.some((route) => pathname.startsWith(route))) {
+  if (
+    !isValidSession &&
+    protectedRoutes.some((route) => pathname.startsWith(route))
+  ) {
     return NextResponse.redirect(new URL(`/${lng}/login`, request.url));
   }
 
-  if (session) {
+  if (isValidSession) {
     if (pathname === `/${lng}/login` || pathname === `/${lng}/register`)
       return NextResponse.redirect(new URL(`/${lng}`, request.url));
     if (pathname === `/${lng}/profile`) {

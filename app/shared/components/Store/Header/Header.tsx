@@ -3,14 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import CartMenu from "./CartMenu";
+import MainSearch from "./MainSearch";
 import ProfileMenu from "./ProfileMenu";
+import FiltersMenu from "./FiltersMenu";
 import { cn } from "@/app/shared/utils/cn";
 import ThemeSelector from "./ThemeSelector";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import LogoMini from "@/public/assets/images/logo-mini.webp";
 import type { IUser } from "@/app/shared/interfaces";
-import MainSearch from "./MainSearch";
-import FiltersMenu from "./FiltersMenu";
 
 interface IHeader {
   lng: string;
@@ -20,10 +21,42 @@ interface IHeader {
 const Header = ({ user, lng }: IHeader) => {
   const pathname = usePathname();
   const isAdmin = user?.role === "ADMIN";
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    if (isAdmin) {
+      return;
+    }
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // Oculta el header al hacer scroll down
+        setIsVisible(false);
+      } else {
+        // Muestra el header al hacer scroll up
+        setIsVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [lastScrollY, isAdmin]);
 
   return (
     <header
-      className={cn("fixed z-30 top-0 w-full", isAdmin ? "h-20" : "md:h-20")}
+      className={cn(
+        "fixed z-30 top-0 w-full transition-transform duration-300",
+        isAdmin ? "h-20" : "md:h-20",
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      )}
     >
       <nav className="h-full flex flex-col md:flex-row items-center p-4 gap-4 mx-auto bg-primary dark:bg-neutral text-neutral dark:text-primary-light">
         <ul className="w-full flex justify-between items-center gap-4">

@@ -277,6 +277,7 @@ export interface IProductSearchParams {
   salePriceMXNTo?: number | string;
   isAdminRequest?: boolean;
   takeFromRequest?: number;
+  isForBestReviews?: boolean;
   salePriceMXNFrom?: number | string;
   availableQuantityTo?: number | string;
   availableQuantityFrom?: number | string;

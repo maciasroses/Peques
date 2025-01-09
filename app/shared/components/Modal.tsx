@@ -1,23 +1,19 @@
 "use client";
 
-import { cn } from "@/app/shared/utils/cn";
 import { XMark } from "@/app/shared/icons";
 import { useCallback, useEffect, useRef } from "react";
+import { useDisableScroll } from "../hooks";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  isAdminView?: boolean;
 }
 
-const Modal = ({
-  isOpen,
-  onClose,
-  children,
-  isAdminView = true,
-}: ModalProps) => {
+const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   const menuRef = useRef(null);
+
+  useDisableScroll(isOpen);
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
@@ -42,12 +38,7 @@ const Modal = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className={cn(
-        "fixed flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-75 mt-20 inset-0 z-10",
-        isAdminView && "sm:ml-48"
-      )}
-    >
+    <div className="fixed flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-75 inset-0 z-50">
       <div
         className="relative bg-accent-light dark:bg-neutral p-8 rounded-lg shadow-lg dark:shadow-gray-900 w-[80%] md:w-1/2 h-auto max-h-[80%] overflow-y-auto overflow-x-hidden"
         ref={menuRef}

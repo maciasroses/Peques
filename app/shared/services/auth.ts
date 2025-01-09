@@ -35,17 +35,25 @@ export async function createUserSession(userId: string, role: string) {
 }
 
 export async function getSession() {
-  const session = cookies().get("session")?.value;
-  if (!session) return null;
-  return await decrypt(session);
+  try {
+    const session = cookies().get("session")?.value;
+    if (!session) return null;
+    return await decrypt(session);
+  } catch (error) {
+    console.error("Error retrieving session:", error);
+    return null;
+  }
 }
 
 export async function isAuthenticated() {
-  const session = await getSession();
-  if (!session || !session.userId) {
-    throw new Error("Unauthorized access.");
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) return false;
+    return true;
+  } catch (error) {
+    console.error("Error verifying session:", error);
+    return false;
   }
-  return session;
 }
 
 export async function isAdmin() {

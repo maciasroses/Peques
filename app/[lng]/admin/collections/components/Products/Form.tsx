@@ -77,7 +77,6 @@ const Form = ({ onClose, collectionId, product, action }: IForm) => {
               products: (product as IProduct[]).map((p) => p.key),
             }));
     if (res && !res.success) {
-      console.log(res);
       setBadResponse(res);
     } else {
       onClose();

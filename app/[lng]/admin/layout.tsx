@@ -1,6 +1,8 @@
 import { Sidebar } from "./components";
+import { redirect } from "next/navigation";
+import { getMe } from "@/app/shared/services/user/controller";
 import type { Metadata } from "next";
-import type { IBaseLangPage } from "@/app/shared/interfaces";
+import type { IBaseLangPage, IUser } from "@/app/shared/interfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +18,11 @@ interface IAdminLayout extends IBaseLangPage {
 }
 
 const AdminLayout = async ({ children, params: { lng } }: IAdminLayout) => {
+  const me = (await getMe()) as IUser;
+  if (!me || me.role !== "ADMIN") {
+    redirect(`/${lng}`);
+  }
+
   return (
     <>
       <Sidebar lng={lng} />
