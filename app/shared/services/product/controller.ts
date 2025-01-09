@@ -66,6 +66,34 @@ export async function getAllProducts() {
   }
 }
 
+export async function getTheNewestProducts({
+  takeFromRequest = 6,
+}: IProductSearchParams) {
+  try {
+    return await read({
+      allData: true,
+      takeFromRequest,
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getTheFavoritesProducts({
+  takeFromRequest = 6,
+}: IProductSearchParams) {
+  try {
+    return await read({
+      takeFromRequest,
+      isForFavorites: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 export async function getProductById({ id }: { id: string }) {
   try {
     return await read({ id });

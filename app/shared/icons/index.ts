@@ -1,5 +1,6 @@
 import Plus from "./Plus";
 import XBox from "./XBox";
+import Star from "./Star";
 import XMark from "./XMark";
 import Heart from "./Heart";
 import TagIcon from "./Tag";
@@ -38,6 +39,7 @@ export {
   Heart,
   XBox,
   Filters,
+  Star,
   XMark,
   MXFlag,
   Upload,

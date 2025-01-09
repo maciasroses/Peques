@@ -1,9 +1,10 @@
 import { Footer } from "./Footer";
 import AddToCart from "./AddToCart";
 import HeroSlider from "./HeroSlider";
-import RecentList from "./RecentList";
+import ProductList from "./ProductList";
 import { Header, Filters } from "./Header";
 import { AddCustomList } from "./CustomList";
+import FullCollection from "./FullCollection";
 import CollectionsList from "./CollectionsList";
 
 export {
@@ -12,7 +13,8 @@ export {
   Filters,
   AddToCart,
   HeroSlider,
-  RecentList,
+  ProductList,
   AddCustomList,
+  FullCollection,
   CollectionsList,
 };

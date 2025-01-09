@@ -46,6 +46,8 @@ export async function read({
   collection,
   salePriceMXNTo,
   isAdminRequest = false,
+  isForFavorites = false,
+  takeFromRequest = undefined,
   salePriceMXNFrom,
   availableQuantityTo,
   availableQuantityFrom,
@@ -64,8 +66,35 @@ export async function read({
   if (allData) {
     return await prisma.product.findMany({
       include: globalInclude,
-      orderBy: { updatedAt: "desc" },
+      orderBy,
+      take: takeFromRequest,
     });
+  }
+
+  if (isForFavorites) {
+    const productsWithBestRatings = await prisma.productReview.groupBy({
+      by: ["productId"],
+      _avg: { rating: true },
+      orderBy: { _avg: { rating: "desc" } },
+      take: takeFromRequest,
+    });
+
+    const productIds = productsWithBestRatings.map((item) => item.productId);
+
+    const products = await prisma.product.findMany({
+      where: {
+        id: {
+          in: productIds,
+        },
+      },
+      include: globalInclude,
+    });
+
+    const orderedProducts = productIds.map((id) =>
+      products.find((product) => product.id === id)
+    );
+
+    return orderedProducts;
   }
 
   if (id) {

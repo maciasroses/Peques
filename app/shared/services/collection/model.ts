@@ -23,7 +23,11 @@ export async function read({
   isAdminRequest = false,
 }: ICollectionSearchParams) {
   const globalInclude = {
-    hero: isAdminRequest ? true : false,
+    hero: {
+      where: {
+        isActive: isAdminRequest ? undefined : true,
+      },
+    },
     products: {
       include: {
         product: {
@@ -38,6 +42,11 @@ export async function read({
   if (allData) {
     return await prisma.collection.findMany({
       orderBy,
+      where: {
+        OR: isAdminRequest
+          ? undefined
+          : [{ hero: { isActive: true } }, { hero: null }],
+      },
       include: globalInclude,
     });
   }

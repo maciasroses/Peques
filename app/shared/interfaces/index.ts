@@ -273,8 +273,10 @@ export interface IProductSearchParams {
   provider?: string;
   category?: string;
   collection?: string;
+  isForFavorites?: boolean;
   salePriceMXNTo?: number | string;
   isAdminRequest?: boolean;
+  takeFromRequest?: number;
   salePriceMXNFrom?: number | string;
   availableQuantityTo?: number | string;
   availableQuantityFrom?: number | string;

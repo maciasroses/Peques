@@ -208,6 +208,8 @@ model ProductReview {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([productId, userId])
 }
 
 model ProductOnOrder {

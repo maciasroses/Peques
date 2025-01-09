@@ -54,7 +54,7 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
                     {hero.description}
                   </p>
                   {(hero.title || hero.subtitle || hero.description) && (
-                    <div className="mt-2 px-4 py-2 bg-white text-black rounded-full text-base md:text-lg xl:text-2xl">
+                    <div className="mt-2 text-base md:text-lg xl:text-2xl link-button-primary">
                       Ver colección
                     </div>
                   )}
