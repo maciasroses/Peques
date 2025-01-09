@@ -10,6 +10,7 @@ interface IFullCollection {
 }
 
 const FullCollection = ({ lng, collection, imageSide }: IFullCollection) => {
+  if (!collection) return null;
   const isTextLeft = imageSide === "left";
 
   return (

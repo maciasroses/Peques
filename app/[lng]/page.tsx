@@ -45,15 +45,13 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
         userId={me?.id}
       />
       <FullCollection lng={lng} collection={selected[0]} imageSide="left" />
-      {favoriteProducts.length > 0 && (
-        <ProductList
-          title="Los favoritos"
-          lng={lng}
-          myLists={myLists}
-          products={favoriteProducts}
-          userId={me?.id}
-        />
-      )}
+      <ProductList
+        title="Los favoritos"
+        lng={lng}
+        myLists={myLists}
+        products={favoriteProducts}
+        userId={me?.id}
+      />
       <CollectionsList lng={lng} collections={part2} />
       <ReviewList lng={lng} title="Testimonios" products={bestReviews} />
       <FullCollection lng={lng} collection={selected[1]} imageSide="right" />
@@ -62,6 +60,23 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
 }
 
 function splitCollections(collections: ICollection[]) {
+  // Si el array está vacío, retornar valores predeterminados
+  if (collections.length === 0) {
+    return {
+      selected: [],
+      part1: [],
+      part2: [],
+    };
+  }
+
+  // Si el array tiene menos de 3 elementos, ajustamos los resultados
+  if (collections.length < 3) {
+    const selected = collections.slice(0, 2); // Tomamos hasta 2 elementos como seleccionados
+    const part1 = collections.length > 2 ? collections.slice(2) : []; // El resto queda como parte 1
+    const part2 = [] as ICollection[]; // No hay parte 2
+    return { selected, part1, part2 };
+  }
+
   // Clonar el array para no modificar el original
   const remainingCollections = [...collections];
 

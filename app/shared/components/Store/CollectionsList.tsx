@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { cn } from "@/app/shared/utils/cn";
 import type { ICollection } from "@/app/shared/interfaces";
-import { cn } from "../../utils/cn";
 
 interface ICollectionsList {
   lng: string;
@@ -9,6 +9,7 @@ interface ICollectionsList {
 }
 
 const CollectionsList = ({ lng, layDown, collections }: ICollectionsList) => {
+  if (!collections.length) return null;
   return (
     <section>
       <ul className="flex pr-5 overflow-x-auto items-start w-full max-w-min mx-auto">
