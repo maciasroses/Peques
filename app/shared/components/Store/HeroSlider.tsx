@@ -15,7 +15,7 @@ interface IHeroSlider {
 }
 
 const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
-  if (!heroes.length) return null;
+  if (heroes.length === 0) return null;
   return (
     <div className="">
       <Swiper

@@ -8,7 +8,7 @@ interface IReviewList {
 }
 
 const ReviewList = ({ lng, title, products }: IReviewList) => {
-  if (!products.length) return null;
+  if (products.length === 0) return null;
   return (
     <section>
       <h1 className="text-2xl sm:text-4xl md:text-6xl text-center mb-2 md:mb-4">

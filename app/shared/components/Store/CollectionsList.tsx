@@ -9,7 +9,7 @@ interface ICollectionsList {
 }
 
 const CollectionsList = ({ lng, layDown, collections }: ICollectionsList) => {
-  if (!collections.length) return null;
+  if (collections.length === 0) return null;
   return (
     <section>
       <ul className="flex pr-5 overflow-x-auto items-start w-full max-w-min mx-auto">

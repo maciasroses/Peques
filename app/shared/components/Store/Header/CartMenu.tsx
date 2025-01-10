@@ -63,7 +63,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                 <XMark />
               </button>
             </div>
-            {!cart.length ? (
+            {cart.length === 0 ? (
               <p className="text-gray-500 dark:text-gray-200">
                 Tu carrito está vacío
               </p>
@@ -133,7 +133,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
               </ul>
             )}
           </div>
-          {cart.length && (
+          {cart.length > 0 && (
             <div className="h-1/6 flex flex-col justify-end gap-2">
               <p className="text-right">
                 Subtotal:{" "}
