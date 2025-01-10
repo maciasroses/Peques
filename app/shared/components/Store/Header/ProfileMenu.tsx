@@ -3,11 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/app/shared//utils/cn";
-import { useAuth, useDisableScroll } from "@/app/shared/hooks";
 import { DownChevron } from "@/app/shared/icons";
 import { useEffect, useRef, useState } from "react";
 import { logout } from "@/app/shared/services/user/controller";
-import ProfilePic from "@/public/assets/images/profilepic.webp";
+import { useAuth, useDisableScroll } from "@/app/shared/hooks";
 import type { IUser } from "@/app/shared/interfaces";
 
 interface IProfileLink {
@@ -91,7 +90,7 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
           alt="Profile"
           width={40}
           height={40}
-          src={user.image || ProfilePic}
+          src={user.image || "/assets/images/profilepic.webp"}
           className="size-full object-cover rounded-full"
         />
       </button>

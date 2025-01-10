@@ -49,9 +49,9 @@ const AddCustomList = ({
     <>
       <button aria-label="Custom List Button" onClick={handleFavorite}>
         {isFavorite ? (
-          <Heart isFilled size="size-10" />
+          <Heart isFilled size="size-7 md:size-10" />
         ) : (
-          <Heart size="size-10" />
+          <Heart size="size-7 md:size-10" />
         )}
       </button>
       <Modal isOpen={isOpen} onClose={onClose}>

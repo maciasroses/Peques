@@ -17,7 +17,9 @@ const ReviewCard = ({ lng, product }: IReviewCard) => {
           height={300}
           alt={product.name}
           className="size-auto rounded-t-lg"
-          src={product.files[0]?.url || "/assets/images/profilepic.webp"}
+          src={
+            product.files[0]?.url || "/assets/images/landscape-placeholder.webp"
+          }
         />
         <div className="flex flex-col gap-2 items-center p-5">
           <StarRating rating={product.reviews[0].rating} />

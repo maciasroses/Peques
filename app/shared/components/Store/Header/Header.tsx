@@ -11,14 +11,15 @@ import ThemeSelector from "./ThemeSelector";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import LogoMini from "@/public/assets/images/logo-mini.webp";
-import type { IUser } from "@/app/shared/interfaces";
+import type { IProduct, IUser } from "@/app/shared/interfaces";
 
 interface IHeader {
   lng: string;
   user: IUser | null;
+  products: IProduct[];
 }
 
-const Header = ({ user, lng }: IHeader) => {
+const Header = ({ lng, user, products }: IHeader) => {
   const pathname = usePathname();
   const isAdmin = user?.role === "ADMIN";
   const [isVisible, setIsVisible] = useState(true);
@@ -93,7 +94,7 @@ const Header = ({ user, lng }: IHeader) => {
                 !pathname.startsWith(`/${lng}/admin`) &&
                 !pathname.startsWith(`/${lng}/checkout`) && (
                   <li className="flex items-center text-gray-600 dark:text-white">
-                    <CartMenu lng={lng} />
+                    <CartMenu lng={lng} products={products} />
                   </li>
                 )}
               {user && !pathname.startsWith(`/${lng}/checkout`) ? (

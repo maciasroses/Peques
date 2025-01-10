@@ -12,7 +12,8 @@ import {
   ThemeComponent,
 } from "@/app/shared/components";
 import type { Metadata } from "next";
-import type { IBaseLangPage, IUser } from "@/app/shared/interfaces";
+import type { IBaseLangPage, IProduct, IUser } from "@/app/shared/interfaces";
+import { getAllProducts } from "../shared/services/product/controller";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,7 @@ export default async function RootLayout({
   params: { lng },
 }: Readonly<IRootLayout>) {
   const me = (await getMe()) as IUser;
+  const products = (await getAllProducts()) as IProduct[];
 
   return (
     <html lang={lng} dir={dir(lng)}>
@@ -48,7 +50,7 @@ export default async function RootLayout({
           <CartComponent>
             <AuthComponent>
               <ToastContainer />
-              <Header user={me} lng={lng} />
+              <Header user={me} lng={lng} products={products} />
               <main className="bg-white dark:bg-gray-900 w-full min-h-screen mx-auto">
                 {children}
               </main>

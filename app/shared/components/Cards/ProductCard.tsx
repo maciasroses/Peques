@@ -31,7 +31,9 @@ const ProductCard = ({ lng, userId, product, myLists }: IProductCard) => {
           height={300}
           alt={product.name}
           className="size-auto"
-          src={product.files[0]?.url || "/assets/images/profilepic.webp"}
+          src={
+            product.files[0]?.url || "/assets/images/landscape-placeholder.webp"
+          }
         />
       </Link>
       <div className="flex flex-col gap-2 px-5 pb-5">

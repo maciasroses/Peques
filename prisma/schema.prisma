@@ -9,9 +9,9 @@ datasource db {
 }
 
 model CartItem {
-  id           String @id @default(uuid())
-  quantity     Int
-  priceInCents Int
+  id       String @id @default(uuid())
+  quantity Int
+  priceMXN Float
 
   cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId    String

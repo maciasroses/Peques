@@ -53,7 +53,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
               id: item.product.key,
               name: item.product.name,
               quantity: item.quantity,
-              price: item.priceInCents,
+              price: item.priceMXN,
               file: item.product.files[0]?.url || "",
             }))
           );

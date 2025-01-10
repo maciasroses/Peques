@@ -69,7 +69,7 @@ export async function addToMyCart(item: ICartItemForFrontend) {
           cart: { connect: { id: cart.id } },
           product: { connect: { id: productItem.id } },
           quantity: item.quantity,
-          priceInCents: item.price * 100, // Convert to cents
+          priceMXN: item.price, // convert to cents in the checkout page for Stripe
         },
       });
     }
@@ -151,7 +151,7 @@ export async function mergeCarts(localCart: ICartItemForFrontend[]) {
             cart: { connect: { id: remoteCart.id } },
             product: { connect: { id: product.id } },
             quantity: localItem.quantity,
-            priceInCents: product.salePriceMXN * 100, // Convert to cents
+            priceMXN: product.salePriceMXN, // convert to cents in the checkout page for Stripe
           },
         });
       }
