@@ -8,14 +8,11 @@ import { create, read, update } from "../model";
 import { redirect } from "next/navigation";
 import { validateSchema } from "../schema";
 // import { PasswordRecovery as PasswordRecoveryTemplate } from "@/app/email/PasswordRecovery";
-import {
-  getSession,
-  isAuthenticated,
-  createUserSession,
-} from "@/app/shared/services/auth";
+import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser } from "@/app/shared/interfaces";
 
 // const resend = new Resend(process.env.RESEND_API_KEY as string);
+// const resend_email = process.env.RESEND_EMAIL as string;
 
 export async function login(formData: FormData) {
   const dataToValidate = {
@@ -147,7 +144,7 @@ export async function passwordRecovery(formData: FormData) {
     });
 
     // const { data, error } = await resend.emails.send({
-    //   from: "Peques <onboarding@resend.dev>",
+    //   from: `Peques <${resend_email}>`,
     //   to: (user as IUser).email,
     //   subject: "Recuperación de contraseña",
     //   react: PasswordRecoveryTemplate({ resetPasswordToken }),
