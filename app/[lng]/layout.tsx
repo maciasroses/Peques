@@ -4,6 +4,8 @@ import { dir } from "i18next";
 import { languages } from "@/app/i18n/settings";
 import { ToastContainer } from "react-toastify";
 import { getMe } from "@/app/shared/services/user/controller";
+import { getAllProducts } from "@/app/shared/services/product/controller";
+import { getAllCollections } from "@/app/shared/services/collection/controller";
 import {
   Footer,
   Header,
@@ -12,8 +14,12 @@ import {
   ThemeComponent,
 } from "@/app/shared/components";
 import type { Metadata } from "next";
-import type { IBaseLangPage, IProduct, IUser } from "@/app/shared/interfaces";
-import { getAllProducts } from "../shared/services/product/controller";
+import type {
+  IUser,
+  IProduct,
+  ICollection,
+  IBaseLangPage,
+} from "@/app/shared/interfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +45,7 @@ export default async function RootLayout({
 }: Readonly<IRootLayout>) {
   const me = (await getMe()) as IUser;
   const products = (await getAllProducts()) as IProduct[];
+  const collections = (await getAllCollections()) as ICollection[];
 
   return (
     <html lang={lng} dir={dir(lng)}>
@@ -50,7 +57,12 @@ export default async function RootLayout({
           <CartComponent>
             <AuthComponent>
               <ToastContainer />
-              <Header user={me} lng={lng} products={products} />
+              <Header
+                user={me}
+                lng={lng}
+                products={products}
+                collections={collections}
+              />
               <main className="bg-white dark:bg-gray-900 w-full min-h-screen mx-auto">
                 {children}
               </main>

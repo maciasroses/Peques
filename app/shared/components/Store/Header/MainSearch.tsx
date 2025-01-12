@@ -7,9 +7,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 interface IMainSearch {
   id: string;
   lng: string;
+  onParentClose?: () => void;
 }
 
-const MainSearch = ({ id, lng }: IMainSearch) => {
+const MainSearch = ({ id, lng, onParentClose }: IMainSearch) => {
   const { push } = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
@@ -25,6 +26,9 @@ const MainSearch = ({ id, lng }: IMainSearch) => {
       push(`/${lng}/search?${params.toString()}`);
     } else {
       push(`/${lng}`);
+    }
+    if (onParentClose) {
+      onParentClose();
     }
   };
 

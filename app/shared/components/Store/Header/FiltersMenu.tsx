@@ -1,6 +1,6 @@
 "use client";
 
-import Filters from "./Filters";
+import Filters from "../Filters";
 import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { useDisableScroll } from "@/app/shared/hooks";

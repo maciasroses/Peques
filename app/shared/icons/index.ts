@@ -6,6 +6,7 @@ import Heart from "./Heart";
 import TagIcon from "./Tag";
 import EyeIcon from "./Eye";
 import MXFlag from "./MXFlag";
+import BarsII from "./BarsII";
 import Upload from "./Upload";
 import USFlag from "./USFlag";
 import Puzzle from "./Puzzle";
@@ -39,6 +40,7 @@ export {
   Heart,
   XBox,
   Filters,
+  BarsII,
   Star,
   XMark,
   MXFlag,

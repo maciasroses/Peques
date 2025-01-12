@@ -84,7 +84,7 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
       <button
         type="button"
         onClick={toggleMenu}
-        className="size-10 rounded-full flex items-center"
+        className="size-6 rounded-full flex items-center"
       >
         <Image
           alt="Profile"
@@ -109,12 +109,6 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
               </p>
             </div>
             <div className="border-t border-gray-300 dark:border-gray-800"></div>
-
-            <ProfileLink
-              text="Inicio"
-              onClick={closeMenu}
-              to={user.role === "ADMIN" ? `/${lng}/admin/home` : `/${lng}`}
-            />
 
             {user.role === "ADMIN" ? (
               <div className="sm:hidden pb-1">

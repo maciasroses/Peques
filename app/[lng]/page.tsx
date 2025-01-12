@@ -34,7 +34,7 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
   const favoriteProducts = (await getTheFavoritesProducts({})) as IProduct[];
 
   return (
-    <article className="pt-[156px] md:pt-20 flex flex-col gap-8">
+    <article className="pt-20 flex flex-col gap-8">
       <HeroSlider lng={lng} heroes={heroes} />
       <CollectionsList lng={lng} collections={part1} layDown />
       <ProductList
