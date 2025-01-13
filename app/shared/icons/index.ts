@@ -15,6 +15,7 @@ import Search from "./Search";
 import HomeIcon from "./Home";
 import DarkIcon from "./Dark";
 import UserIcon from "./User";
+import PlayIcon from "./Play";
 import SadFace from "./SadFace";
 import Filters from "./Filters";
 import TrashIcon from "./Trash";
@@ -29,6 +30,7 @@ import LeftArrow from "./LeftArrow";
 import RightArrow from "./RightArrow";
 import PlusCircle from "./PlusCircle";
 import EyeSlashIcon from "./EyeSlash";
+import HandThumbUp from "./HandThumbUp";
 import LeftChevron from "./LeftChevron";
 import DownChevron from "./DownChevron";
 import MinusCircle from "./MinusCircle";
@@ -55,6 +57,8 @@ export {
   HomeIcon,
   DarkIcon,
   UserIcon,
+  HandThumbUp,
+  PlayIcon,
   SmileFace,
   TrashIcon,
   LightIcon,

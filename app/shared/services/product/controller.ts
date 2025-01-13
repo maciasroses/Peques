@@ -55,6 +55,30 @@ export async function getProducts({
   }
 }
 
+export async function getProductsForStore({
+  q,
+  page,
+  category,
+  salePriceMXNTo,
+  salePriceMXNFrom,
+  isAdminRequest = false,
+}: IProductSearchParams) {
+  try {
+    return await read({
+      q,
+      category,
+      isAdminRequest,
+      page: page ? Number(page) : undefined,
+      salePriceMXNTo: salePriceMXNTo ? Number(salePriceMXNTo) : undefined,
+      salePriceMXNFrom: salePriceMXNFrom ? Number(salePriceMXNFrom) : undefined,
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+    // throw new Error("An internal error occurred");
+  }
+}
+
 export async function getAllProducts() {
   try {
     return await read({
@@ -101,6 +125,17 @@ export async function getTheBestReviews({
     return await read({
       takeFromRequest,
       isForBestReviews: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getSimilarProducts({ category }: IProductSearchParams) {
+  try {
+    return await read({
+      category,
     });
   } catch (error) {
     console.error(error);

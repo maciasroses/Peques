@@ -19,8 +19,12 @@ const ProductCard = ({ lng, userId, product, myLists }: IProductCard) => {
   });
 
   const averageRating = product.reviews.length
-    ? product.reviews.reduce((sum, review) => sum + review.rating, 0) /
-      product.reviews.length
+    ? Number(
+        (
+          product.reviews.reduce((sum, review) => sum + review.rating, 0) /
+          product.reviews.length
+        ).toFixed(1)
+      )
     : 0;
 
   return (

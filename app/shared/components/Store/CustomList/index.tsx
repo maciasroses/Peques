@@ -25,10 +25,10 @@ const AddCustomList = ({
   const theme = useResolvedTheme();
   const { isOpen, onOpen, onClose } = useModal();
 
-  const handleFavorite = () => {
+  const handleFavorite = async () => {
     if (userId) {
       if (isFavorite) {
-        deleteProductFromAllCustomLists(productId);
+        await deleteProductFromAllCustomLists(productId);
         Toast({
           theme,
           type: "success",

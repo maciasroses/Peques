@@ -4,6 +4,7 @@ import { cn } from "@/app/shared/utils/cn";
 import { CATEGORIES_FILTERS } from "@/app/shared/constants";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { LanguageTypeForSchemas } from "@/app/shared/interfaces";
+import { useEffect, useState } from "react";
 
 interface IFiltersComp {
   lng: string;
@@ -13,6 +14,18 @@ const Filters = ({ lng }: IFiltersComp) => {
   const pathname = usePathname();
   const { replace } = useRouter();
   const searchParams = useSearchParams();
+  const [salePriceMXNFrom, setSalePriceMXNFrom] = useState(
+    searchParams.get("salePriceMXNFrom") || ""
+  );
+  const [salePriceMXNTo, setSalePriceMXNTo] = useState(
+    searchParams.get("salePriceMXNTo") || ""
+  );
+
+  useEffect(() => {
+    // Sincroniza los valores cuando cambian los searchParams
+    setSalePriceMXNFrom(searchParams.get("salePriceMXNFrom") || "");
+    setSalePriceMXNTo(searchParams.get("salePriceMXNTo") || "");
+  }, [searchParams]);
 
   const handleCategory = (category: string) => {
     const params = new URLSearchParams(searchParams);
@@ -26,16 +39,22 @@ const Filters = ({ lng }: IFiltersComp) => {
     const formData = new FormData(e.currentTarget);
     const params = new URLSearchParams(searchParams);
     params.delete("page");
-    if (formData.get("priceFrom")) {
-      params.set("priceFrom", formData.get("priceFrom") as string);
+
+    const fromValue = formData.get("salePriceMXNFrom") as string;
+    const toValue = formData.get("salePriceMXNTo") as string;
+
+    if (fromValue) {
+      params.set("salePriceMXNFrom", fromValue);
     } else {
-      params.delete("priceFrom");
+      params.delete("salePriceMXNFrom");
     }
-    if (formData.get("priceTo")) {
-      params.set("priceTo", formData.get("priceTo") as string);
+
+    if (toValue) {
+      params.set("salePriceMXNTo", toValue);
     } else {
-      params.delete("priceTo");
+      params.delete("salePriceMXNTo");
     }
+
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -63,15 +82,17 @@ const Filters = ({ lng }: IFiltersComp) => {
         <form onSubmit={handlePrice} className="flex gap-2 flex-col ml-5 mt-2">
           <div className="flex gap-2 items-center">
             <InputField
-              name="priceFrom"
               placeholder="Desde"
-              defaultValue={searchParams.get("priceFrom")}
+              name="salePriceMXNFrom"
+              value={salePriceMXNFrom}
+              onChange={(e) => setSalePriceMXNFrom(e.target.value)}
             />
             {" - "}
             <InputField
-              name="priceTo"
               placeholder="Hasta"
-              defaultValue={searchParams.get("priceTo")}
+              name="salePriceMXNTo"
+              value={salePriceMXNTo}
+              onChange={(e) => setSalePriceMXNTo(e.target.value)}
             />
           </div>
           <button type="submit" className="link-button-blue">
@@ -109,11 +130,13 @@ const ButtonCategoryComponent = ({
 const InputField = ({
   name,
   placeholder,
-  defaultValue,
+  value,
+  onChange,
 }: {
   name: string;
   placeholder: string;
-  defaultValue: string | null;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => (
   <input
     type="number"
@@ -122,7 +145,8 @@ const InputField = ({
     min="0"
     max="19999999"
     placeholder={placeholder}
-    defaultValue={defaultValue ?? ""}
+    value={value}
+    onChange={onChange}
     className="w-full p-2 rounded-lg focus:outline-none border bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white dark:placeholder-gray-400 border-gray-300 focus:border-gray-500 dark:focus:border-gray-100"
   />
 );

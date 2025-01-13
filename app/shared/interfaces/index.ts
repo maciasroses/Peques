@@ -266,7 +266,7 @@ export interface IProductSearchParams {
   q?: string;
   id?: string;
   key?: string;
-  page?: number;
+  page?: number | string;
   limit?: number;
   orderBy?: object;
   allData?: boolean;
@@ -313,6 +313,22 @@ export interface ICustomListSearchParams {
   limit?: string | number;
   allData?: boolean;
   isForFav?: boolean;
+}
+
+// LISTS
+export interface IProductList {
+  products: IProduct[];
+  totalPages: number;
+}
+
+export interface IOrderList {
+  orders: IOrder[];
+  totalPages: number;
+}
+
+export interface ICustomListList {
+  customLists: ICustomList[];
+  totalPages: number;
 }
 
 // OTHERS

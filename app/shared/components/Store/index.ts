@@ -7,6 +7,7 @@ import StarRating from "./StarRating";
 import ReviewList from "./ReviewList";
 import ProductList from "./ProductList";
 import AddCustomList from "./CustomList";
+import ImageGallery from "./ImageGallery";
 import FullCollection from "./FullCollection";
 import CollectionsList from "./CollectionsList";
 
@@ -19,6 +20,7 @@ export {
   ReviewList,
   StarRating,
   ProductList,
+  ImageGallery,
   AddCustomList,
   FullCollection,
   CollectionsList,

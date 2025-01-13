@@ -160,7 +160,7 @@ export async function read({
 
   if (provider) where.provider = { alias: provider };
 
-  if (category) where.category = { alias: category };
+  if (category) where.category = { equals: category };
 
   if (salePriceMXNFrom || salePriceMXNTo)
     where.salePriceMXN = { gte: salePriceMXNFrom, lte: salePriceMXNTo };

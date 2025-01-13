@@ -2,6 +2,7 @@ import useModal from "./useModal";
 import { useAuth } from "./useAuth";
 import { useCart } from "./useCart";
 import { useTheme } from "./useTheme";
+import { useImageZoom } from "./useImageZoom";
 import { useToggleMenu } from "./useToggleMenu";
 import useDisableScroll from "./useDisabledScroll";
 import { useRowSelection } from "./useRowSelection";
@@ -15,6 +16,7 @@ export {
   useCart,
   useModal,
   useTheme,
+  useImageZoom,
   useToggleMenu,
   useRowSelection,
   useSearchFilter,
