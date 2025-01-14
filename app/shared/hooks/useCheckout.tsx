@@ -1,23 +1,32 @@
 import { useState, useEffect } from "react";
 import { useCart } from "@/app/shared/hooks";
 import { Toast } from "@/app/shared/components";
-import { createPaymentIntent } from "@/app/shared/services/stripe/payment";
 import {
   reserverStock,
   checkNUpdateStock,
 } from "@/app/shared/services/stock/controller";
+import {
+  createSetUpIntent,
+  createPaymentIntent,
+} from "@/app/shared/services/stripe/payment";
 import type { ICartItemForFrontend } from "@/app/shared/interfaces";
 
 interface UseCheckoutProps {
   lng: string;
   theme: string;
+  paymentMethodId?: string;
 }
 
-export const useCheckout = ({ lng, theme }: UseCheckoutProps) => {
+export const useCheckout = ({
+  lng,
+  theme,
+  paymentMethodId,
+}: UseCheckoutProps) => {
   const { cart, clearCart, addToCart } = useCart();
   const [isLoading, setIsLoading] = useState(true);
   const [clientSecret, setClientSecret] = useState("");
   const [changesInCart, setChangesInCart] = useState(false);
+  const [isSetUpIntent, setIsSetUpIntent] = useState(true);
   const [isStockChecked, setIsStockChecked] = useState(false);
   const [updatedCart, setUpdatedCart] = useState<ICartItemForFrontend[]>([]);
 
@@ -82,7 +91,15 @@ export const useCheckout = ({ lng, theme }: UseCheckoutProps) => {
           return;
         }
 
-        const clientSecret = await createPaymentIntent(updatedCart);
+        let clientSecret = "";
+        if (isSetUpIntent) {
+          clientSecret = (await createSetUpIntent()) as string;
+        } else {
+          clientSecret = (await createPaymentIntent(
+            updatedCart,
+            paymentMethodId as string
+          )) as string;
+        }
         setClientSecret(clientSecret as string);
       }
     };
@@ -90,9 +107,13 @@ export const useCheckout = ({ lng, theme }: UseCheckoutProps) => {
     if (isStockChecked) {
       handleReservationAndPayment();
     }
-  }, [updatedCart, isStockChecked, lng, theme]);
+  }, [updatedCart, isStockChecked, lng, theme, isSetUpIntent, paymentMethodId]);
+
+  const handleSetUpIntent = () => {
+    setIsSetUpIntent(!isSetUpIntent);
+  };
 
   const shippingCost = 99; // Change this to a dynamic value
 
-  return { cart, isLoading, clientSecret, shippingCost };
+  return { cart, isLoading, clientSecret, shippingCost, handleSetUpIntent };
 };

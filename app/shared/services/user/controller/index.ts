@@ -317,3 +317,23 @@ export async function getMe() {
     return null; // Retornar null si ocurre un error
   }
 }
+
+export async function addStripeCustomerIdToMe({
+  stripeCustomerId,
+}: {
+  stripeCustomerId: string;
+}) {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) return null;
+    return await update({
+      id: session.userId as string,
+      data: {
+        stripeCustomerId,
+      },
+    });
+  } catch (error) {
+    console.error("Error getting user session:", error);
+    return null; // Retornar null si ocurre un error
+  }
+}

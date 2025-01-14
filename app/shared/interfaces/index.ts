@@ -276,6 +276,20 @@ export interface ICustomListState extends ISharedState {
   };
 }
 
+export interface IAddressState extends ISharedState {
+  errors?: {
+    fullName?: string;
+    address1?: string;
+    address2?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+    phoneNumber?: string;
+    additionalInfo?: string;
+  };
+}
+
 // SEARCH PARAMS
 export interface IProductSearchParams {
   q?: string;
@@ -352,6 +366,24 @@ export interface IOrderSearchParams {
   isAdminRequest?: boolean;
 }
 
+export interface IPaymentMethodSearchParams {
+  id?: string;
+  userId?: string;
+  page?: string | number;
+  limit?: string | number;
+  allData?: boolean;
+  isAdminRequest?: boolean;
+}
+
+export interface IAddressSearchParams {
+  id?: string;
+  userId?: string;
+  page?: string | number;
+  limit?: string | number;
+  allData?: boolean;
+  isAdminRequest?: boolean;
+}
+
 // LISTS
 export interface IProductList {
   products: IProduct[];
@@ -365,6 +397,16 @@ export interface IOrderList {
 
 export interface ICustomListList {
   customLists: ICustomList[];
+  totalPages: number;
+}
+
+export interface IPaymentMethodList {
+  paymentMethods: IPaymentMethod[];
+  totalPages: number;
+}
+
+export interface IAddressesList {
+  addresses: IAddress[];
   totalPages: number;
 }
 

@@ -51,6 +51,7 @@ model User {
   lastName             String?
   firstName            String?
   wantsNewsletter      Boolean   @default(false)
+  stripeCustomerId     String?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
 

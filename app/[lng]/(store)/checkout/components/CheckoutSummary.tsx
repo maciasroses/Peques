@@ -2,7 +2,6 @@
 
 import CartSummary from "./CartSummary";
 import { Loading } from "@/app/shared/components";
-import StripeCheckoutForm from "./StripeCheckoutForm";
 import { useResolvedTheme } from "@/app/shared/hooks";
 import { useCheckout } from "@/app/shared/hooks/useCheckout";
 import GenericBackToPage from "@/app/shared/components/GenericBackToPage";
@@ -10,6 +9,8 @@ import { useState } from "react";
 import { DownChevron } from "@/app/shared/icons";
 import { cn } from "@/app/shared/utils/cn";
 import { IAddress, IUser } from "@/app/shared/interfaces";
+import CheckoutTab from "./CheckoutTab";
+import AddressTab from "./AddressTab";
 
 interface ICheckoutSummary {
   lng: string;
@@ -19,11 +20,11 @@ interface ICheckoutSummary {
 const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
   const theme = useResolvedTheme();
   const [activeTab, setActiveTab] = useState<number>(1);
-  const [address, setAddress] = useState<IAddress | null>(null);
+  const [address, setAddress] = useState<IAddress | null>(
+    user.addresses.find((address) => address.isDefault) || null
+  );
 
-  console.log(address);
-
-  const { cart, isLoading, clientSecret, shippingCost } = useCheckout({
+  const { cart, isLoading, shippingCost } = useCheckout({
     lng,
     theme,
   });
@@ -55,12 +56,11 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
             </span>
           </button>
           {activeTab === 1 && (
-            <div>
-              Componente de dirección de envío
-              <button onClick={() => setAddress(user.addresses[0])}>
-                Establecer dirección de envío {user.addresses[0].address1}
-              </button>
-            </div>
+            <AddressTab
+              addresses={user.addresses}
+              setAddress={setAddress}
+              addressSelected={address}
+            />
           )}
         </div>
         <div
@@ -85,12 +85,11 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
             </span>
           </button>
           {activeTab === 2 && (
-            <StripeCheckoutForm
+            <CheckoutTab
               lng={lng}
               user={user}
               theme={theme}
               address={address as IAddress}
-              clientSecret={clientSecret}
             />
           )}
         </div>

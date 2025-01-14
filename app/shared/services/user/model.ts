@@ -29,11 +29,21 @@ export async function read({
 }: IUserSearchParams) {
   const globalInclude = {
     orders: true,
-    addresses: true,
+    reviews: true,
     customLists: true,
-    reviews: isAdminRequest ? true : false,
-    paymentMethods: isAdminRequest ? true : false,
-    stockReservations: isAdminRequest ? true : false,
+    stockReservations: true,
+    addresses: {
+      where: {
+        isActive: isAdminRequest ? undefined : true,
+      },
+    },
+    paymentMethods: {
+      where: {
+        isActive: isAdminRequest ? undefined : true,
+      },
+    },
+    // reviews: isAdminRequest ? true : false,
+    // stockReservations: isAdminRequest ? true : false,
   };
 
   if (allData) {
