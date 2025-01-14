@@ -261,6 +261,21 @@ export interface IAddProductToCustomList extends ISharedState {
   }[];
 }
 
+export interface IUpdateMyMainInfo extends ISharedState {
+  errors?: {
+    email?: string;
+    username?: string;
+    lastName?: string;
+    firstName?: string;
+  };
+}
+
+export interface ICustomListState extends ISharedState {
+  errors?: {
+    name?: string;
+  };
+}
+
 // SEARCH PARAMS
 export interface IProductSearchParams {
   q?: string;
@@ -313,6 +328,28 @@ export interface ICustomListSearchParams {
   limit?: string | number;
   allData?: boolean;
   isForFav?: boolean;
+}
+
+export interface IOrderSearchParams {
+  id?: string;
+  page?: string | number;
+  limit?: string | number;
+  userId?: string;
+  allData?: boolean;
+  isPaid?: boolean;
+  client?: string;
+  deliveryStatus?: string;
+  paymentMethod?: string;
+  discountFrom?: string | number;
+  discountTo?: string | number;
+  subtotalFrom?: string | number;
+  subtotalTo?: string | number;
+  totalFrom?: string | number;
+  totalTo?: string | number;
+  isForGraph?: boolean;
+  orderBy?: object;
+  yearOfData?: string | number;
+  isAdminRequest?: boolean;
 }
 
 // LISTS

@@ -236,6 +236,75 @@ export async function resetPassword(formData: FormData, token: string) {
   }
 }
 
+export async function updateMyMainInfo(formData: FormData) {
+  const dataToValidate = {
+    email: formData.get("email"),
+    lastName: formData.get("lastName"),
+    username: formData.get("username"),
+    firstName: formData.get("firstName"),
+  };
+
+  const errors = validateSchema("updateMainInfo", dataToValidate);
+
+  if (Object.keys(errors).length !== 0) {
+    return {
+      errors,
+      success: false,
+    };
+  }
+
+  try {
+    const me = (await getMe()) as IUser;
+
+    if (!me) {
+      return {
+        message: "Usuario no encontrado.",
+        success: false,
+      };
+    }
+
+    const userWithSameEmail = (await read({
+      email: dataToValidate.email as string,
+    })) as IUser;
+
+    if (userWithSameEmail && userWithSameEmail.id !== me.id) {
+      return {
+        message: "El correo electrónico ya está en uso.",
+        success: false,
+      };
+    }
+
+    const userWithSameUsername = (await read({
+      username: dataToValidate.username as string,
+    })) as IUser;
+
+    if (userWithSameUsername && userWithSameUsername.id !== me.id) {
+      return {
+        message: "El nombre de usuario ya está en uso.",
+        success: false,
+      };
+    }
+
+    await update({
+      id: me.id,
+      data: {
+        email: dataToValidate.email,
+        username: dataToValidate.username,
+        lastName: dataToValidate.lastName,
+        firstName: dataToValidate.firstName,
+      },
+    });
+
+    return {
+      message: "Usuario actualizado correctamente.",
+      success: true,
+    };
+  } catch (error) {
+    console.error(error);
+    return { message: "Ocurrió un error interno.", success: false };
+  }
+}
+
 export async function getMe() {
   try {
     const session = await getSession();

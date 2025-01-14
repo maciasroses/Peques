@@ -19,22 +19,23 @@ import {
   deleteMassive,
 } from "./model";
 import { getProducts } from "../product/controller";
-import type { IProduct } from "@/app/shared/interfaces";
+import type { IOrderSearchParams, IProduct } from "@/app/shared/interfaces";
+import { getSession } from "../auth";
 
-interface ISearchParams {
-  client?: string;
-  deliveryStatus?: string;
-  paymentMethod?: string;
-  discountFrom?: string;
-  discountTo?: string;
-  subtotalFrom?: string;
-  subtotalTo?: string;
-  totalFrom?: string;
-  totalTo?: string;
-  isForGraph?: boolean;
-  orderBy?: object;
-  yearOfData?: string;
-}
+// interface ISearchParams {
+//   client?: string;
+//   deliveryStatus?: string;
+//   paymentMethod?: string;
+//   discountFrom?: string;
+//   discountTo?: string;
+//   subtotalFrom?: string;
+//   subtotalTo?: string;
+//   totalFrom?: string;
+//   totalTo?: string;
+//   isForGraph?: boolean;
+//   orderBy?: object;
+//   yearOfData?: string;
+// }
 
 export async function getOrders({
   client,
@@ -46,9 +47,10 @@ export async function getOrders({
   subtotalTo,
   totalFrom,
   totalTo,
-}: ISearchParams) {
+}: IOrderSearchParams) {
   try {
     return await read({
+      isAdminRequest: true,
       client,
       deliveryStatus,
       paymentMethod: paymentMethod ? paymentMethod : undefined,
@@ -79,9 +81,10 @@ export async function getSales({
   isForGraph = false,
   orderBy = { createdAt: "desc" },
   yearOfData,
-}: ISearchParams) {
+}: IOrderSearchParams) {
   try {
     return await read({
+      isAdminRequest: true,
       client,
       deliveryStatus,
       paymentMethod: paymentMethod ? paymentMethod : undefined,
@@ -103,7 +106,6 @@ export async function getSales({
   } catch (error) {
     console.error(error);
     return [];
-    // throw new Error("An internal error occurred");
   }
 }
 
@@ -577,7 +579,10 @@ export async function updateDeliveryStatus(
 ) {
   try {
     if (deliveryStatus === "CANCELLED") {
-      const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
+      const order = (await read({
+        id,
+        isAdminRequest: true,
+      })) as IOrderForUpdateDeliveryStatus;
       order.products.forEach(async (product) => {
         await updateProduct({
           key: product.product.key,
@@ -610,7 +615,10 @@ export async function updateMassiveDeliveryStatus(
   try {
     if (deliveryStatus === "CANCELLED") {
       for (const id of ids) {
-        const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
+        const order = (await read({
+          id,
+          isAdminRequest: true,
+        })) as IOrderForUpdateDeliveryStatus;
         order.products.forEach(async (product) => {
           await updateProduct({
             key: product.product.key,
@@ -667,7 +675,10 @@ export async function markMassiveAsPaid(ids: string[]) {
 
 export async function deleteOrder(id: string, _pathname: string) {
   try {
-    const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
+    const order = (await read({
+      id,
+      isAdminRequest: true,
+    })) as IOrderForUpdateDeliveryStatus;
     if (order.deliveryStatus !== "CANCELLED") {
       order.products.forEach(async (product) => {
         await updateProduct({
@@ -693,7 +704,10 @@ export async function deleteOrder(id: string, _pathname: string) {
 export async function deleteMassiveOrder(ids: string[]) {
   try {
     for (const id of ids) {
-      const order = (await read({ id })) as IOrderForUpdateDeliveryStatus;
+      const order = (await read({
+        id,
+        isAdminRequest: true,
+      })) as IOrderForUpdateDeliveryStatus;
       if (order.deliveryStatus !== "CANCELLED") {
         order.products.forEach(async (product) => {
           await updateProduct({
@@ -712,5 +726,34 @@ export async function deleteMassiveOrder(ids: string[]) {
     console.error(error);
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
+  }
+}
+
+export async function getMyOrders({ page, limit }: IOrderSearchParams) {
+  try {
+    const session = await getSession();
+    if (!session) throw new Error("Usuario no autenticado");
+    return await read({
+      page,
+      limit,
+      userId: session.userId as string,
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getMyOrderById({ id }: { id: string }) {
+  try {
+    const session = await getSession();
+    if (!session) throw new Error("Usuario no autenticado");
+    return await read({
+      id,
+      userId: session.userId as string,
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 }

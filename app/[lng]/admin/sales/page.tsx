@@ -3,12 +3,13 @@ import { DataFetch } from "./components";
 import { Searchbar } from "../orders/components";
 import { DatatableSkeleton } from "@/app/shared/components";
 import { Metadata } from "next";
+import { IBaseLangPage } from "@/app/shared/interfaces";
 
 export const metadata: Metadata = {
   title: "Ventas",
 };
 
-interface IAdminSalesPage {
+interface IAdminSalesPage extends IBaseLangPage {
   searchParams?: {
     client?: string;
     deliveryStatus?: string;
@@ -22,7 +23,10 @@ interface IAdminSalesPage {
   };
 }
 
-const AdminSalesPage = async ({ searchParams }: IAdminSalesPage) => {
+const AdminSalesPage = async ({
+  searchParams,
+  params: { lng },
+}: IAdminSalesPage) => {
   const {
     client = "",
     deliveryStatus = "",
@@ -64,7 +68,7 @@ const AdminSalesPage = async ({ searchParams }: IAdminSalesPage) => {
         }
         fallback={<DatatableSkeleton />}
       >
-        <DataFetch searchParams={searchParamsForDatatable} />
+        <DataFetch lng={lng} searchParams={searchParamsForDatatable} />
       </Suspense>
     </>
   );

@@ -3,6 +3,7 @@ import { getSales } from "@/app/shared/services/order/controller";
 import type { IOrder } from "@/app/shared/interfaces";
 
 interface IDataFetch {
+  lng: string;
   searchParams: {
     client?: string;
     deliveryStatus?: string;
@@ -16,10 +17,10 @@ interface IDataFetch {
   };
 }
 
-const DataFetch = async ({ searchParams }: IDataFetch) => {
+const DataFetch = async ({ lng, searchParams }: IDataFetch) => {
   const sales = (await getSales(searchParams)) as unknown as IOrder[];
 
-  return <Datatable orders={sales} />;
+  return <Datatable orders={sales} lng={lng} />;
 };
 
 export default DataFetch;

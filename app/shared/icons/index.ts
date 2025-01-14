@@ -3,6 +3,7 @@ import XBox from "./XBox";
 import Star from "./Star";
 import XMark from "./XMark";
 import Heart from "./Heart";
+import Check from "./Check";
 import TagIcon from "./Tag";
 import EyeIcon from "./Eye";
 import MXFlag from "./MXFlag";
@@ -27,6 +28,7 @@ import Instagram from "./Instagram";
 import UserGroup from "./UserGroup";
 import SmileFace from "./SmileFace";
 import LeftArrow from "./LeftArrow";
+import BulletList from "./BulletList";
 import RightArrow from "./RightArrow";
 import PlusCircle from "./PlusCircle";
 import EyeSlashIcon from "./EyeSlash";
@@ -35,6 +37,7 @@ import LeftChevron from "./LeftChevron";
 import DownChevron from "./DownChevron";
 import MinusCircle from "./MinusCircle";
 import ShoppingBag from "./ShoppingBag";
+import ElipsisList from "./EllipsisList";
 import RightChevron from "./RightChevron";
 
 export {
@@ -52,6 +55,7 @@ export {
   Puzzle,
   Dollar,
   EyeIcon,
+  BulletList,
   TagIcon,
   SadFace,
   HomeIcon,
@@ -60,6 +64,7 @@ export {
   HandThumbUp,
   PlayIcon,
   SmileFace,
+  Check,
   TrashIcon,
   LightIcon,
   PhotoIcon,
@@ -76,4 +81,5 @@ export {
   ShoppingBag,
   RightChevron,
   EyeSlashIcon,
+  ElipsisList,
 };

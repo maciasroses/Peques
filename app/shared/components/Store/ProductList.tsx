@@ -19,7 +19,6 @@ const ProductList = ({
   products,
 }: IProductList) => {
   if (products.length === 0) return null;
-  console.log(products);
   return (
     <section>
       <h1 className="text-2xl sm:text-4xl md:text-6xl text-center mb-2 md:mb-4">

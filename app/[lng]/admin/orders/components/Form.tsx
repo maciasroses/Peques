@@ -32,13 +32,14 @@ interface IProductInOrder {
 }
 
 interface IForm {
+  lng: string;
   onClose: () => void;
   products?: IProduct[];
   order?: IOrder | IOrder[];
   action: "create" | "update" | "delete" | "massiveDelete";
 }
 
-const Form = ({ onClose, products, order, action }: IForm) => {
+const Form = ({ lng, onClose, products, order, action }: IForm) => {
   const pathname = usePathname();
   const [formView, setFormView] = useState(true);
   const [isPending, setIsPending] = useState(false);
@@ -112,7 +113,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
             : action === "update"
               ? "Actualizando"
               : "Eliminando"}{" "}
-          {pathname === "/admin/orders" ? "pedido" : "venta"}
+          {pathname === `/${lng}/admin/orders` ? "pedido" : "venta"}
         </h1>
       </div>
       {action === "create" && (
@@ -245,7 +246,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                     </p>
                     <p className="text-center text-base md:text-xl">
                       ¿Estás seguro de que deseas eliminar
-                      {pathname === "/admin/orders"
+                      {pathname === `/${lng}/admin/orders`
                         ? " este pedido"
                         : " esta venta"}
                       ?
@@ -277,7 +278,7 @@ const Form = ({ onClose, products, order, action }: IForm) => {
                     <h1 className="text-center text-base md:text-xl">
                       ¿Estás seguro de que deseas eliminar
                       <span>
-                        {pathname === "/admin/orders"
+                        {pathname === `/${lng}/admin/orders`
                           ? " estos pedidos"
                           : " estas ventas"}
                       </span>

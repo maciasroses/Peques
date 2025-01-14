@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/app/shared/services/prisma";
+import { IOrderSearchParams } from "../../interfaces";
 
 export async function create({
   data,
@@ -22,27 +23,31 @@ export async function create({
 //   });
 // }
 
-interface ISearchParams {
-  id?: string;
-  isPaid?: boolean;
-  client?: string;
-  deliveryStatus?: string;
-  paymentMethod?: string;
-  discountFrom?: number;
-  discountTo?: number;
-  subtotalFrom?: number;
-  subtotalTo?: number;
-  totalFrom?: number;
-  totalTo?: number;
-  isForGraph?: boolean;
-  orderBy?: object;
-  yearOfData?: number;
-}
+// interface ISearchParams {
+//   id?: string;
+//   isPaid?: boolean;
+//   client?: string;
+//   deliveryStatus?: string;
+//   paymentMethod?: string;
+//   discountFrom?: number;
+//   discountTo?: number;
+//   subtotalFrom?: number;
+//   subtotalTo?: number;
+//   totalFrom?: number;
+//   totalTo?: number;
+//   isForGraph?: boolean;
+//   orderBy?: object;
+//   yearOfData?: number;
+// }
 
 export async function read({
   id,
   isPaid,
   client,
+  page = 1,
+  limit = 12,
+  userId,
+  allData = false,
   deliveryStatus,
   paymentMethod,
   discountFrom,
@@ -52,15 +57,40 @@ export async function read({
   totalFrom,
   totalTo,
   isForGraph,
-  orderBy,
+  orderBy = { createdAt: "desc" },
   yearOfData,
-}: ISearchParams) {
+  isAdminRequest = false,
+}: IOrderSearchParams) {
+  const globalInclude = {
+    products: {
+      include: {
+        product: {
+          include: {
+            files: true,
+          },
+        },
+      },
+    },
+  };
+
+  if (allData) {
+    return await prisma.order.findMany({
+      include: globalInclude,
+      orderBy,
+    });
+  }
+
+  if (id && userId) {
+    return await prisma.order.findUnique({
+      where: { id, userId },
+      include: globalInclude,
+    });
+  }
+
   if (id) {
     return await prisma.order.findUnique({
       where: { id },
-      include: {
-        products: { include: { product: true } },
-      },
+      include: globalInclude,
     });
   }
 
@@ -97,8 +127,8 @@ export async function read({
   if (isForGraph) where.deliveryStatus = { not: "CANCELLED" };
 
   if (yearOfData) {
-    const startOfYear = new Date(yearOfData, 0, 1);
-    const endOfYear = new Date(yearOfData + 1, 0, 1);
+    const startOfYear = new Date(yearOfData as number, 0, 1);
+    const endOfYear = new Date((yearOfData as number) + 1, 0, 1);
 
     where.createdAt = {
       gte: startOfYear,
@@ -110,11 +140,39 @@ export async function read({
 
   where.isPaid = { equals: isPaid };
 
-  return await prisma.order.findMany({
-    where,
-    include: { products: { include: { product: { select: { name: true } } } } },
-    orderBy,
-  });
+  if (isAdminRequest) {
+    return await prisma.order.findMany({
+      where,
+      orderBy,
+      include: globalInclude,
+    });
+  } else {
+    const take = Number(limit);
+    const skip = (Number(page) - 1) * Number(limit);
+
+    if (userId) {
+      const totalCount = await prisma.order.count({
+        where: {
+          userId,
+        },
+      });
+      const totalPages = Math.ceil(totalCount / Number(limit));
+
+      const orders = await prisma.order.findMany({
+        where: {
+          userId,
+        },
+        orderBy,
+        include: globalInclude,
+        take,
+        skip,
+      });
+      return {
+        orders,
+        totalPages,
+      };
+    }
+  }
 }
 
 export async function update({

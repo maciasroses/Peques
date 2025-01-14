@@ -25,6 +25,7 @@ import type { IOrder } from "@/app/shared/interfaces";
 import OrderSummary from "./OrderSummary";
 
 interface IDataTable {
+  lng: string;
   orders: IOrder[];
 }
 
@@ -39,7 +40,7 @@ export interface IProductInOrder {
   };
 }
 
-const Datatable = ({ orders }: IDataTable) => {
+const Datatable = ({ lng, orders }: IDataTable) => {
   const pathname = usePathname();
   const { isOpen, onOpen, onClose } = useModal();
   const {
@@ -111,14 +112,14 @@ const Datatable = ({ orders }: IDataTable) => {
   const columns = [
     {
       name: "Acciones",
-      width: pathname === "/admin/orders" ? "250px" : "80px",
+      width: pathname === `/${lng}/admin/orders` ? "250px" : "80px",
       cell: (row: IOrder) => (
         <div className="flex justify-center gap-2">
           <Action action="delete">
             {/* @ts-ignore */}
-            <Form order={row} />
+            <Form order={row} lng={lng} />
           </Action>
-          {pathname === "/admin/orders" && (
+          {pathname === `/${lng}/admin/orders` && (
             <button
               onClick={
                 row.deliveryStatus !== "CANCELLED"
@@ -248,12 +249,12 @@ const Datatable = ({ orders }: IDataTable) => {
                   <p className="text-center text-base md:text-xl">
                     {isMassiveForConfirm
                       ? `¿Estás seguro de cancelar ${
-                          pathname === "/admin/orders"
+                          pathname === `/${lng}/admin/orders`
                             ? "estos pedidos"
                             : "estas ventas"
                         }?`
                       : `¿Estás seguro de cancelar ${
-                          pathname === "/admin/orders"
+                          pathname === `/${lng}/admin/orders`
                             ? "este pedido"
                             : "esta venta"
                         }?`}
@@ -330,9 +331,9 @@ const Datatable = ({ orders }: IDataTable) => {
                 <div className="flex justify-end gap-2 mb-4">
                   <Action action="massiveDelete">
                     {/* @ts-ignore */}
-                    <Form order={selectedRows} />
+                    <Form order={selectedRows} lng={lng} />
                   </Action>
-                  {pathname === "/admin/orders" &&
+                  {pathname === `/${lng}/admin/orders` &&
                     !selectedRows.some(
                       (row) => row.deliveryStatus === "CANCELLED"
                     ) && (
@@ -377,10 +378,12 @@ const Datatable = ({ orders }: IDataTable) => {
       ) : (
         <Card404
           title={
-            pathname === "/admin/orders" ? "No hay pedidos" : "No hay ventas"
+            pathname === `/${lng}/admin/orders`
+              ? "No hay pedidos"
+              : "No hay ventas"
           }
           description={
-            pathname === "/admin/orders"
+            pathname === `/${lng}/admin/orders`
               ? "Agrega un pedido para verlo aquí"
               : "Agrega una venta para verla aquí"
           }

@@ -29,8 +29,8 @@ export async function read({
 }: IUserSearchParams) {
   const globalInclude = {
     orders: true,
+    addresses: true,
     customLists: true,
-    addresses: isAdminRequest ? true : false,
     reviews: isAdminRequest ? true : false,
     paymentMethods: isAdminRequest ? true : false,
     stockReservations: isAdminRequest ? true : false,

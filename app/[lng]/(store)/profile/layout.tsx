@@ -1,3 +1,4 @@
+import { Sidebar } from "./components";
 import type { IBaseLangPage } from "@/app/shared/interfaces";
 
 interface IProfileLayout extends IBaseLangPage {
@@ -7,8 +8,8 @@ interface IProfileLayout extends IBaseLangPage {
 const ProfileLayout = ({ children, params: { lng } }: IProfileLayout) => {
   return (
     <>
-      {/* <Sidebar /> */}
-      <article className="sm:ml-48 pt-40 md:pt-24 px-4 pb-4 min-h-screen">
+      <Sidebar lng={lng} />
+      <article className="md:ml-48 pt-24 px-4 pb-4 min-h-screen">
         {children}
       </article>
     </>

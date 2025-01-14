@@ -235,7 +235,7 @@ model StockReservation {
   productId String
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  expiresAt DateTime
 
   @@unique([userId, productId])
 }

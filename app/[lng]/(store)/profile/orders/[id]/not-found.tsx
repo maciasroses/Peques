@@ -1,7 +1,14 @@
-import React from "react";
+import { Card404 } from "@/app/shared/components";
 
-const ProfileOrderIdPageNotFound = () => {
-  return <div>ProfileOrderIdPageNotFound</div>;
+const OrderIdNotFoundPage = () => {
+  return (
+    <div>
+      <Card404
+        title="Order Not Found"
+        description="The order you are looking for does not exist."
+      />
+    </div>
+  );
 };
 
-export default ProfileOrderIdPageNotFound;
+export default OrderIdNotFoundPage;
