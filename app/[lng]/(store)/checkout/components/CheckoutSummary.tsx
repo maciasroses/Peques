@@ -45,7 +45,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
             onClick={() => toggleTab(1)}
             className="w-full py-4 flex justify-between items-center transition duration-200"
           >
-            <p className="text-lg font-semibold">Dirección de envío</p>
+            <p className="text-xl font-semibold">Dirección de envío</p>
             <span
               className={cn(
                 "transform transition-all duration-300",
@@ -57,9 +57,9 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
           </button>
           {activeTab === 1 && (
             <AddressTab
-              addresses={user.addresses}
               setAddress={setAddress}
               addressSelected={address}
+              addresses={user.addresses}
             />
           )}
         </div>
@@ -74,7 +74,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
             onClick={() => toggleTab(2)}
             className="w-full py-4 flex justify-between items-center transition duration-200"
           >
-            <p className="text-lg font-semibold">Método de pago</p>
+            <p className="text-xl font-semibold">Método de pago</p>
             <span
               className={cn(
                 "transform transition-all duration-300",

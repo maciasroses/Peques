@@ -43,7 +43,9 @@ const CartSummary = ({ lng, cart, shippingCost }: ICartSummary) => {
       </ul>
       <p className="text-sm sm:text-lg text-right mt-4">
         Envío:{" "}
-        <span className="font-bold">{formatCurrency(shippingCost, "MXN")}</span>
+        <span className="font-bold">
+          {formatCurrency(shippingCost / 100, "MXN")}
+        </span>
       </p>
       <p className="text-sm sm:text-lg text-right">
         Subtotal:{" "}

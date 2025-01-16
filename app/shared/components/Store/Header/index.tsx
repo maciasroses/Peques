@@ -102,7 +102,8 @@ const Header = ({ lng, user, products, collections }: IHeader) => {
                   <ProfileMenu lng={lng} user={user} />
                 </li>
               ) : (
-                !isAuthPage && (
+                !isAuthPage &&
+                !isCheckoutOrAdmin && (
                   <li className="text-gray-600 dark:text-white">
                     <Link href={`/${lng}/login`}>
                       <UserIcon strokeWidth={1} />

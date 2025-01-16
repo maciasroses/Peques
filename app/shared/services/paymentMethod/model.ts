@@ -19,6 +19,7 @@ export async function readPaymentMethod({
   page = 1,
   limit = 6,
   allData,
+  stripePaymentMethodId,
   isAdminRequest = false,
 }: IPaymentMethodSearchParams) {
   if (allData) {
@@ -34,6 +35,15 @@ export async function readPaymentMethod({
   if (id) {
     return await prisma.paymentMethod.findUnique({
       where: { id, isActive: isAdminRequest ? undefined : true },
+    });
+  }
+
+  if (stripePaymentMethodId) {
+    return await prisma.paymentMethod.findUnique({
+      where: {
+        stripePaymentMethodId,
+        isActive: isAdminRequest ? undefined : true,
+      },
     });
   }
 

@@ -19,8 +19,15 @@ import {
   deleteMassive,
 } from "./model";
 import { getProducts } from "../product/controller";
-import type { IOrderSearchParams, IProduct } from "@/app/shared/interfaces";
+import type {
+  IOrderSearchParams,
+  IPaymentMethod,
+  IProduct,
+  IUser,
+} from "@/app/shared/interfaces";
 import { getSession } from "../auth";
+import { getUserById } from "../user/controller/admin";
+import { getPaymentMethodByStripeId } from "../paymentMethod/controller";
 
 // interface ISearchParams {
 //   client?: string;
@@ -755,5 +762,72 @@ export async function getMyOrderById({ id }: { id: string }) {
   } catch (error) {
     console.error(error);
     return null;
+  }
+}
+
+interface ICreateOrderThroughStripWebHook {
+  userId: string;
+  amount: number;
+  addressId: string;
+  productsIds: string[];
+  productsPrices: number[];
+  productsQuantities: number[];
+  stripePaymentMethodId: string;
+  paymentMethodFromStripe: string;
+}
+
+export async function createOrderThroughStripeWebHook({
+  userId,
+  amount,
+  addressId,
+  productsIds,
+  productsPrices,
+  productsQuantities,
+  stripePaymentMethodId,
+  paymentMethodFromStripe,
+}: ICreateOrderThroughStripWebHook) {
+  try {
+    const user = (await getUserById({ id: userId })) as IUser;
+
+    if (!user) throw new Error("User not found");
+
+    const paymentMethod = (await getPaymentMethodByStripeId({
+      isAdminRequest: true,
+      stripePaymentMethodId,
+    })) as IPaymentMethod;
+
+    if (!paymentMethod) throw new Error("Payment method not found");
+
+    return await create({
+      data: {
+        client:
+          user.firstName || user.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user.username,
+        discount: 0, // TODO: CHANGE THIS TO REQUESTED VALUE
+        subtotal: amount,
+        total: amount,
+        shipmentType: "Compra desde e-commerce", // TODO: CHANGE THIS TO REQUESTED VALUE
+        paymentMethod: paymentMethodFromStripe, // THIS IS THE OLD VALUE, NOT THE PAYMENT METHOD ID
+        isPaid: true,
+        products: {
+          create: productsIds.map((productId, index) => ({
+            costMXN: productsPrices[index],
+            quantity: productsQuantities[index],
+            product: {
+              connect: {
+                key: productId,
+              },
+            },
+          })),
+        },
+        userId,
+        paymentId: paymentMethod.id,
+        addressId,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to create order");
   }
 }

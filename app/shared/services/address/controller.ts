@@ -11,10 +11,14 @@ import {
   //   deleteAddress,
 } from "./model";
 import type {
+  IAddress,
   IAddressSearchParams,
   // IAddress,
   IAddressState,
 } from "@/app/shared/interfaces";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export async function getMyAddresses({ page }: IAddressSearchParams) {
   try {
@@ -45,9 +49,15 @@ export async function getMyAddressById({ id }: { id: string }) {
   }
 }
 
-export async function createNewAddress(
-  formData: FormData
-): Promise<IAddressState> {
+interface ICreateNewAddress {
+  formData: FormData;
+  isForCheckout?: boolean;
+}
+
+export async function createNewAddress({
+  formData,
+  isForCheckout,
+}: ICreateNewAddress): Promise<IAddressState> {
   const session = await getSession();
   if (!session || !session.userId) return { success: false };
 
@@ -58,8 +68,9 @@ export async function createNewAddress(
     address2: formData.get("address2") as string,
     city: formData.get("city") as string,
     state: formData.get("state") as string,
-    zipCode: formData.get("zipCode") as string,
-    country: formData.get("country") as string,
+    zipCode: Number(formData.get("zipCode")),
+    // country: formData.get("country") as string,
+    country: "MX",
     phoneNumber: formData.get("phoneNumber") as string,
     additionalInfo: formData.get("additionalInfo") as string,
     isDefault: formData.get("isDefault") === "on",
@@ -84,9 +95,13 @@ export async function createNewAddress(
       });
     }
 
-    await createAddress({
+    const newAddress = (await createAddress({
       data,
-    });
+    })) as IAddress;
+
+    if (isForCheckout) {
+      return { success: true, address: newAddress };
+    }
   } catch (error) {
     console.error(error);
     return {

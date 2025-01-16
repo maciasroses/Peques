@@ -10,8 +10,10 @@ import type { IUser, ICartItemForFrontend } from "@/app/shared/interfaces";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export async function createPaymentIntent(
-  cart: ICartItemForFrontend[],
-  paymentMethodId: string
+  addressId: string,
+  shippingCost: number,
+  paymentMethodId: string,
+  cart: ICartItemForFrontend[]
 ) {
   try {
     const me = (await getMe()) as IUser;
@@ -22,19 +24,26 @@ export async function createPaymentIntent(
     await createStriperCustomer({ me });
 
     const paymentIntent = await stripe.paymentIntents.create({
-      customer: me.stripeCustomerId || undefined,
+      currency: "MXN",
       payment_method: paymentMethodId,
+      customer: me.stripeCustomerId || undefined,
+      // amount multiplied by 100 because stripe uses cents
       amount:
         cart.reduce((acc, item) => acc + item.price * 100 * item.quantity, 0) +
-        9900, // *100 for cents and 9900 for 99MXN for shipping
-      currency: "MXN",
+        shippingCost,
       metadata: {
         userId: me.id,
-        productsIds: JSON.stringify(cart.map((item) => item.id)),
-        productsNames: JSON.stringify(cart.map((item) => item.name)),
-        productsFiles: JSON.stringify(cart.map((item) => item.file)),
-        productsPrices: JSON.stringify(cart.map((item) => item.price)),
-        productsQuantities: JSON.stringify(cart.map((item) => item.quantity)),
+        addressId,
+        products: JSON.stringify(
+          cart.map((item) => ({
+            id: item.id,
+            name: item.name,
+            file: item.file,
+            price: item.price,
+            quantity: item.quantity,
+          }))
+        ),
+        shippingCost,
       },
     });
 
@@ -139,5 +148,49 @@ async function createStriperCustomer({ me }: { me: IUser }) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to create customer");
+  }
+}
+
+interface PaymentIntentMetadata {
+  userId: string;
+  products: string;
+  addressId: string;
+  shippingCost: string;
+  processed?: string;
+}
+
+export async function processMetadata(paymentIntent: Stripe.PaymentIntent) {
+  try {
+    const metadata = paymentIntent.metadata as unknown as PaymentIntentMetadata;
+
+    if (
+      !metadata.userId ||
+      !metadata.products ||
+      !metadata.addressId ||
+      !metadata.shippingCost
+    ) {
+      throw new Error("Missing required metadata fields");
+    }
+
+    if (metadata.processed === "true") {
+      console.log(
+        "Metadata already processed for paymentIntent:",
+        paymentIntent.id
+      );
+      return { success: true, alreadyProcessed: true };
+    }
+
+    await stripe.paymentIntents.update(paymentIntent.id, {
+      metadata: { processed: "true" },
+    });
+
+    return { success: true, alreadyProcessed: false };
+  } catch (error) {
+    if (error instanceof Stripe.errors.StripeError) {
+      console.error("Stripe-specific error:", error.message);
+    } else {
+      console.error("Unknown error:", error);
+    }
+    throw new Error("Failed to process payment metadata");
   }
 }

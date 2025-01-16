@@ -32,6 +32,21 @@ export async function getMyActivePaymentMethods({
   }
 }
 
+export async function getPaymentMethodByStripeId({
+  isAdminRequest,
+  stripePaymentMethodId,
+}: IPaymentMethodSearchParams) {
+  try {
+    return await readPaymentMethod({
+      isAdminRequest,
+      stripePaymentMethodId,
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 interface IDataToValidateCard {
   last4Digits: string;
   expiryMonth: number;

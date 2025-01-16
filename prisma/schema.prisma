@@ -350,7 +350,7 @@ model Address {
   id             String    @id @default(uuid())
   city           String
   state          String
-  zipCode        String
+  zipCode        Int
   country        String
   fullName       String
   address1       String

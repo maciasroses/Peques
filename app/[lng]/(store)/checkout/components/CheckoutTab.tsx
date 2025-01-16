@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { useCheckout } from "@/app/shared/hooks/useCheckout";
 import { loadStripe, StripeElementLocale } from "@stripe/stripe-js";
@@ -14,6 +14,8 @@ import {
 } from "@stripe/react-stripe-js";
 import type { IAddress, IUser } from "@/app/shared/interfaces";
 import { updateBillingDetails } from "@/app/shared/services/stripe/payment";
+import PaymentMethodCard from "@/app/shared/components/Cards/PaymentMethodCard";
+import { PlusCircle } from "@/app/shared/icons";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
@@ -27,13 +29,11 @@ interface ICheckoutTab {
 }
 
 const CheckoutTab = ({ lng, user, theme, address }: ICheckoutTab) => {
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(
-    user.paymentMethods.find((method) => method.isDefault)
-      ?.stripePaymentMethodId || null
-  );
-  const { clientSecret, handleSetUpIntent } = useCheckout({
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const { isLoading, clientSecret, handleSetUpIntent } = useCheckout({
     lng,
     theme,
+    addressId: address.id,
     paymentMethodId: selectedMethod ?? "",
   });
 
@@ -59,6 +59,7 @@ const CheckoutTab = ({ lng, user, theme, address }: ICheckoutTab) => {
             theme={theme}
             address={address}
             clientSecret={clientSecret}
+            isLoadingFromHook={isLoading}
             selectedMethod={selectedMethod}
             handleSetUpIntent={handleSetUpIntent}
             setSelectedMethod={setSelectedMethod}
@@ -77,8 +78,9 @@ interface IStripeForm {
   theme: string;
   address: IAddress;
   clientSecret: string;
+  isLoadingFromHook: boolean;
   selectedMethod: string | null;
-  handleSetUpIntent: () => void;
+  handleSetUpIntent: (value: boolean) => void;
   setSelectedMethod: (method: string | null) => void;
 }
 
@@ -89,6 +91,7 @@ const StripeForm = ({
   address,
   clientSecret,
   selectedMethod,
+  isLoadingFromHook,
   handleSetUpIntent,
   setSelectedMethod,
 }: IStripeForm) => {
@@ -107,14 +110,14 @@ const StripeForm = ({
       line1: address.address1,
       line2: address.address2 ?? undefined,
       country: address.country,
-      postal_code: address.zipCode,
+      postal_code: address.zipCode.toString(),
     },
   };
 
   const handleConfirmPayment = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (stripe == null || elements == null) return;
+    if (isLoadingFromHook || stripe == null || elements == null) return;
 
     setIsLoading(true);
 
@@ -183,17 +186,23 @@ const StripeForm = ({
   };
 
   const handleChangePaymentMethod = (method?: string) => {
-    handleSetUpIntent();
     setErrorMessage("");
+    handleSetUpIntent(method ? false : true);
     setSelectedMethod(method ?? null);
   };
 
   return (
     <form onSubmit={handleConfirmPayment}>
       <fieldset
-        disabled={stripe == null || elements == null || isLoading}
+        disabled={
+          stripe == null || elements == null || isLoading || isLoadingFromHook
+        }
         className={cn(
-          stripe == null || elements == null || (isLoading && "opacity-50")
+          (stripe == null ||
+            elements == null ||
+            isLoading ||
+            isLoadingFromHook) &&
+            "opacity-50"
         )}
       >
         {errorMessage && (
@@ -203,35 +212,45 @@ const StripeForm = ({
         )}
 
         {/* Lista de métodos de pago guardados */}
-        <div className="mb-4">
+        <ul
+          className={cn(
+            "flex flex-col gap-2 overflow-y-auto mb-4",
+            selectedMethod ? "max-h-[300px]" : "max-h-[50px]"
+          )}
+        >
           {user.paymentMethods.map((method) => (
-            <div key={method.id} className="flex items-center">
-              <input
-                type="radio"
-                name="paymentMethod"
-                value={method.stripePaymentMethodId}
-                checked={selectedMethod === method.stripePaymentMethodId}
-                onChange={() =>
+            <li key={method.id}>
+              <button
+                type="button"
+                className={cn(
+                  "w-full border-2 rounded-lg text-left",
+                  selectedMethod === method.stripePaymentMethodId
+                    ? "border-primary bg-primary-light dark:border-primary-dark dark:bg-primary-dark/50"
+                    : "border-gray-200"
+                )}
+                onClick={() =>
                   handleChangePaymentMethod(method.stripePaymentMethodId)
                 }
-              />
-              <label className="ml-2">
-                {method.brand} •••• {method.last4Digits} (Exp.{" "}
-                {method.expiryMonth}/{method.expiryYear})
-              </label>
-            </div>
+              >
+                <PaymentMethodCard paymentMethod={method} />
+              </button>
+            </li>
           ))}
-          <div className="mt-2">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="new"
-              checked={selectedMethod === null}
-              onChange={() => handleChangePaymentMethod()}
-            />
-            <label className="ml-2">Agregar nueva tarjeta</label>
+        </ul>
+        {selectedMethod && (
+          <div className="mt-4 w-full text-center">
+            <button
+              type="button"
+              onClick={() => handleChangePaymentMethod()}
+              className="inline-flex gap-2 items-center justify-center link-button-primary"
+            >
+              Agregar nueva tarjeta
+              <span>
+                <PlusCircle />
+              </span>
+            </button>
           </div>
-        </div>
+        )}
 
         {/* Nueva tarjeta */}
         {selectedMethod === null && (
@@ -252,12 +271,14 @@ const StripeForm = ({
 
         <button
           type="submit"
-          disabled={stripe == null || elements == null || isLoading}
+          disabled={
+            stripe == null || elements == null || isLoading || isLoadingFromHook
+          }
           className={cn(
             "w-full mt-4",
-            stripe == null || elements == null || isLoading
+            stripe == null || elements == null || isLoading || isLoadingFromHook
               ? "py-2 bg-gray-300 dark:bg-gray-800 cursor-not-allowed"
-              : "link-button-blue"
+              : "link-button-primary"
           )}
         >
           {isLoading

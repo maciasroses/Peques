@@ -21,7 +21,7 @@ export async function getUsers({ q, wantsNewsletter }: IUserSearchParams) {
 
 export async function getUserById({ id }: { id: string }) {
   try {
-    await isAdmin();
+    // await isAdmin();
 
     const user = await read({ id });
     if (!user) {

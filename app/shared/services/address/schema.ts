@@ -2,42 +2,42 @@ import z, { UnknownKeysParam, ZodRawShape } from "zod";
 
 const createAddressSchema = z.object({
   userId: z.string().min(2, {
-    message: "Enter a valid userId",
+    message: "User ID is required",
   }),
   fullName: z.string().min(2, {
-    message: "Enter a valid name",
+    message: "El nombre completo es requerido",
   }),
   address1: z.string().min(2, {
-    message: "Enter a valid address",
+    message: "La dirección es requerida",
   }),
   address2: z
     .string()
     .min(0, {
-      message: "Enter a valid address",
+      message: "La dirección 2 es requerida",
     })
     .optional(),
   city: z.string().min(2, {
-    message: "Enter a valid city",
+    message: "La ciudad es requerida",
   }),
   state: z.string().min(2, {
-    message: "Enter a valid state",
+    message: "El estado es requerido",
   }),
-  zipCode: z.string().min(2, {
-    message: "Enter a valid zip code",
+  zipCode: z.number().int().min(5, {
+    message: "El código postal es requerido",
   }),
   country: z.string().min(2, {
-    message: "Enter a valid country",
+    message: "El país es requerido",
   }),
   phoneNumber: z
     .string()
     .min(2, {
-      message: "Enter a valid phone number",
+      message: "El número de teléfono es requerido",
     })
     .optional(),
   additionalInfo: z
     .string()
     .min(0, {
-      message: "Enter a valid additional info",
+      message: "La información adicional es requerida",
     })
     .optional(),
 });

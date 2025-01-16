@@ -277,6 +277,7 @@ export interface ICustomListState extends ISharedState {
 }
 
 export interface IAddressState extends ISharedState {
+  address?: IAddress;
   errors?: {
     fullName?: string;
     address1?: string;
@@ -373,6 +374,7 @@ export interface IPaymentMethodSearchParams {
   limit?: string | number;
   allData?: boolean;
   isAdminRequest?: boolean;
+  stripePaymentMethodId?: string;
 }
 
 export interface IAddressSearchParams {
@@ -432,4 +434,34 @@ export interface ICartItemForFrontend {
   file: string;
   price: number;
   quantity: number;
+}
+
+export interface IProductFromStripe extends ICartItemForFrontend {}
+
+export interface IBillingDetails {
+  address: {
+    city: string;
+    country: string;
+    line1: string;
+    line2?: string;
+    postal_code: string;
+    state: string;
+  };
+  email: string;
+  name: string;
+  phone?: string;
+}
+
+export interface IProductForEmail {
+  name: string;
+  file: string;
+  price: number;
+  quantity: number;
+}
+
+export interface IOrderInfoForEmail {
+  email: string;
+  order: IOrder;
+  products: IProductForEmail[];
+  totalInCents: number;
 }

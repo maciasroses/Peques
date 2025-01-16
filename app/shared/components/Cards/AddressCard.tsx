@@ -11,15 +11,19 @@ const AddressCard = ({ address }: IAddressCard) => {
       <h3 className="font-bold text-lg line-clamp-1 pr-5">
         {address.fullName}
       </h3>
-      <p>{address.address1}</p>
-      <p>{address.address2}</p>
+      <p>
+        {address.address1}
+        {address.address2 && ` - ${address.address2}`}
+      </p>
       <p>
         {address.city}, {address.state}, {address.zipCode}
       </p>
-      <p>{address.country}</p>
+      {/* <p>{address.country}</p> */}
       <p>{address.phoneNumber}</p>
       {address.isDefault && (
-        <p className="absolute bottom-4 right-4 font-thin italic">By Default</p>
+        <p className="absolute bottom-4 right-4 font-thin italic">
+          Predeterminada
+        </p>
       )}
       {/* <Actions lng="en" /> */}
     </div>
