@@ -38,6 +38,7 @@ OrderReceipt.PreviewProps = {
         stripeCustomerId: "",
         resetPasswordToken: "",
         resetPasswordExpires: new Date(),
+        orderInfoDataForStripe: "",
         orders: [],
         reviews: [],
         addresses: [],
@@ -77,7 +78,7 @@ OrderReceipt.PreviewProps = {
 export default function OrderReceipt({ order }: { order: IOrderInfoForEmail }) {
   return (
     <Html lang="en">
-      <Preview>Tu recibo de Shopeques</Preview>
+      <Preview>Tu recibo de Peques</Preview>
       <Head />
       <Body className="bg-white">
         <Container className="max-w-2xl">
@@ -86,7 +87,7 @@ export default function OrderReceipt({ order }: { order: IOrderInfoForEmail }) {
               <Img
                 width={150}
                 height={70}
-                alt="Shopeques logo"
+                alt="Peques logo"
                 src="https://ilidf54ifchqqkqe.public.blob.vercel-storage.com/logo-color-9xETxiG2pvAMLO8T7lJL6xrxGwc1iM.webp"
               />
               <p className="font-thin text-gray-500">Recibo</p>

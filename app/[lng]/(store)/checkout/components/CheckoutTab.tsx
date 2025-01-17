@@ -1,7 +1,10 @@
-import { use, useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
-import { useCheckout } from "@/app/shared/hooks/useCheckout";
+import { PlusCircle } from "@/app/shared/icons";
+import { useCheckout } from "@/app/shared/hooks";
+import { PaymentMethodCard } from "@/app/shared/components";
 import { loadStripe, StripeElementLocale } from "@stripe/stripe-js";
+import { updateBillingDetails } from "@/app/shared/services/stripe/payment";
 import {
   savePaymentMethod,
   validateCardBeforeCreation,
@@ -13,9 +16,6 @@ import {
   CardElement,
 } from "@stripe/react-stripe-js";
 import type { IAddress, IUser } from "@/app/shared/interfaces";
-import { updateBillingDetails } from "@/app/shared/services/stripe/payment";
-import PaymentMethodCard from "@/app/shared/components/Cards/PaymentMethodCard";
-import { PlusCircle } from "@/app/shared/icons";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
@@ -26,9 +26,16 @@ interface ICheckoutTab {
   user: IUser;
   theme: string;
   address: IAddress;
+  handleFinish: () => void;
 }
 
-const CheckoutTab = ({ lng, user, theme, address }: ICheckoutTab) => {
+const CheckoutTab = ({
+  lng,
+  user,
+  theme,
+  address,
+  handleFinish,
+}: ICheckoutTab) => {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const { isLoading, clientSecret, handleSetUpIntent } = useCheckout({
     lng,
@@ -59,6 +66,7 @@ const CheckoutTab = ({ lng, user, theme, address }: ICheckoutTab) => {
             theme={theme}
             address={address}
             clientSecret={clientSecret}
+            handleFinish={handleFinish}
             isLoadingFromHook={isLoading}
             selectedMethod={selectedMethod}
             handleSetUpIntent={handleSetUpIntent}
@@ -78,6 +86,7 @@ interface IStripeForm {
   theme: string;
   address: IAddress;
   clientSecret: string;
+  handleFinish: () => void;
   isLoadingFromHook: boolean;
   selectedMethod: string | null;
   handleSetUpIntent: (value: boolean) => void;
@@ -90,6 +99,7 @@ const StripeForm = ({
   theme,
   address,
   clientSecret,
+  handleFinish,
   selectedMethod,
   isLoadingFromHook,
   handleSetUpIntent,
@@ -120,6 +130,7 @@ const StripeForm = ({
     if (isLoadingFromHook || stripe == null || elements == null) return;
 
     setIsLoading(true);
+    handleFinish();
 
     try {
       if (selectedMethod) {
@@ -182,6 +193,7 @@ const StripeForm = ({
       setErrorMessage((error as Error).message ?? "An unknown error occurred");
     } finally {
       setIsLoading(false);
+      handleFinish();
     }
   };
 
@@ -190,6 +202,22 @@ const StripeForm = ({
     handleSetUpIntent(method ? false : true);
     setSelectedMethod(method ?? null);
   };
+
+  if (!selectedMethod) {
+    // ORDERED BY DEFAULT
+    user.paymentMethods.sort((a, b) => {
+      if (a.isDefault) return -1;
+      if (b.isDefault) return 1;
+      return 0;
+    });
+  } else {
+    // ORDERED BY SELECTED METHOD
+    user.paymentMethods.sort((a, b) => {
+      if (a.stripePaymentMethodId === selectedMethod) return -1;
+      if (b.stripePaymentMethodId === selectedMethod) return 1;
+      return 0;
+    });
+  }
 
   return (
     <form onSubmit={handleConfirmPayment}>
@@ -212,12 +240,7 @@ const StripeForm = ({
         )}
 
         {/* Lista de métodos de pago guardados */}
-        <ul
-          className={cn(
-            "flex flex-col gap-2 overflow-y-auto mb-4",
-            selectedMethod ? "max-h-[300px]" : "max-h-[50px]"
-          )}
-        >
+        <ul className="flex flex-col gap-2 overflow-y-auto mb-4 max-h-[300px]">
           {user.paymentMethods.map((method) => (
             <li key={method.id}>
               <button
@@ -241,8 +264,14 @@ const StripeForm = ({
           <div className="mt-4 w-full text-center">
             <button
               type="button"
+              disabled={isLoading || isLoadingFromHook}
               onClick={() => handleChangePaymentMethod()}
-              className="inline-flex gap-2 items-center justify-center link-button-primary"
+              className={cn(
+                "inline-flex gap-2 items-center justify-center",
+                isLoading || isLoadingFromHook
+                  ? "py-2 px-4 bg-gray-300 dark:bg-gray-800 cursor-not-allowed rounded-md"
+                  : "link-button-primary"
+              )}
             >
               Agregar nueva tarjeta
               <span>
@@ -277,7 +306,7 @@ const StripeForm = ({
           className={cn(
             "w-full mt-4",
             stripe == null || elements == null || isLoading || isLoadingFromHook
-              ? "py-2 bg-gray-300 dark:bg-gray-800 cursor-not-allowed"
+              ? "py-2 bg-gray-300 dark:bg-gray-800 cursor-not-allowed rounded-md"
               : "link-button-primary"
           )}
         >

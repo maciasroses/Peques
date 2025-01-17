@@ -1,5 +1,5 @@
+import { cn } from "@/app/shared/utils/cn";
 import type { IAddress } from "@/app/shared/interfaces";
-// import Actions from "./Actions";
 
 interface IAddressCard {
   address: IAddress;
@@ -18,14 +18,16 @@ const AddressCard = ({ address }: IAddressCard) => {
       <p>
         {address.city}, {address.state}, {address.zipCode}
       </p>
-      {/* <p>{address.country}</p> */}
-      <p>{address.phoneNumber}</p>
-      {address.isDefault && (
-        <p className="absolute bottom-4 right-4 font-thin italic">
-          Predeterminada
-        </p>
-      )}
-      {/* <Actions lng="en" /> */}
+      <div
+        className={cn(
+          address.isDefault && "flex flex-col lg:flex-row gap-2 justify-between"
+        )}
+      >
+        <p>{address.phoneNumber}</p>
+        {address.isDefault && (
+          <p className="font-thin italic">Predeterminada</p>
+        )}
+      </div>
     </div>
   );
 };

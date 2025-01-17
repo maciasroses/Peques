@@ -1,8 +1,8 @@
 import Stripe from "stripe";
 import { AllGood } from "./components";
-import GenericBackToPage from "@/app/shared/components/GenericBackToPage";
-import { IBaseLangPage } from "@/app/shared/interfaces";
+import { GenericBackToPage } from "@/app/shared/components";
 import { processMetadata } from "@/app/shared/services/stripe/payment";
+import type { IBaseLangPage } from "@/app/shared/interfaces";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
@@ -38,7 +38,6 @@ const CheckoutSuccessPage = async ({
 
     if (
       !paymentIntent.metadata.userId ||
-      !paymentIntent.metadata.products ||
       !paymentIntent.metadata.addressId ||
       !paymentIntent.metadata.shippingCost
     ) {

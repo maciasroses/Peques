@@ -14,7 +14,9 @@
     "prisma:push": "prisma db push",
     "prisma:reset": "prisma migrate reset",
     "prisma:seed": "prisma db seed",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "stripe:webhook": "stripe listen --forward-to localhost:3000/webhooks/stripe",
+    "email:react-email": "cp .env ./node_modules/react-email && email dev --dir app/email --port 3001"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

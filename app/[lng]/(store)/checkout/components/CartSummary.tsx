@@ -1,16 +1,18 @@
 import Image from "next/image";
+import { cn } from "@/app/shared/utils/cn";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import type { ICartItemForFrontend } from "@/app/shared/interfaces";
 
 interface ICartSummary {
   lng: string;
+  finished: boolean;
   shippingCost: number;
   cart: ICartItemForFrontend[];
 }
 
-const CartSummary = ({ lng, cart, shippingCost }: ICartSummary) => {
+const CartSummary = ({ lng, cart, finished, shippingCost }: ICartSummary) => {
   return (
-    <div className="w-full md:w-2/3">
+    <div className={cn("w-full md:w-2/3", finished && "opacity-50")}>
       <h1 className="text-2xl font-bold">
         {lng === "en" ? "Order Summary" : "Resumen del pedido"}
       </h1>

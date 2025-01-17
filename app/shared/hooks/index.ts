@@ -2,6 +2,7 @@ import useModal from "./useModal";
 import { useAuth } from "./useAuth";
 import { useCart } from "./useCart";
 import { useTheme } from "./useTheme";
+import { useCheckout } from "./useCheckout";
 import { useImageZoom } from "./useImageZoom";
 import { useToggleMenu } from "./useToggleMenu";
 import useDisableScroll from "./useDisabledScroll";
@@ -16,6 +17,7 @@ export {
   useCart,
   useModal,
   useTheme,
+  useCheckout,
   useImageZoom,
   useToggleMenu,
   useRowSelection,

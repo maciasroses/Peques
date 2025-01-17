@@ -97,13 +97,13 @@ const OrderInfo = ({ order }: { order: IOrderInfoForEmail }) => {
               <Img
                 width={40}
                 height={40}
-                alt="Ecommerce logo"
+                alt="Peques logo"
                 src="https://ilidf54ifchqqkqe.public.blob.vercel-storage.com/logo-mini-618H1j8ecia4nZOF8sSrr5dM6NlNK1.webp"
               />
             </div>
             <p className="text-center">
               <a href="https://ecommerce.com/profile">
-                <span className="text-blue-600">Cuenta de Shopeques</span>
+                <span className="text-blue-600">Cuenta de Peques</span>
               </a>
               {" • "}
               <a href="https://ecommerce.com/terms-of-sales">

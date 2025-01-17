@@ -1,3 +1,14 @@
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000";
+
+export const LINKS = {
+  profile: `${BASE_URL}/profile`,
+  supportEmail: "peques@support.com",
+  terms: `${BASE_URL}/terms-of-service`,
+  privacy: `${BASE_URL}/privacy-policy`,
+  ordersHistory: `${BASE_URL}/profile/orders`,
+};
+
 export const INITIAL_STATE_RESPONSE = {
   success: false,
   message: "",

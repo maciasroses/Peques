@@ -1,24 +1,25 @@
+import React from "react";
 import Stripe from "stripe";
 import { Resend } from "resend";
+import { Prisma } from "@prisma/client";
+import prisma from "@/app/shared/services/prisma";
 import OrderReceipt from "@/app/email/OrderReceipt";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/app/shared/services/prisma";
+import { genericParseJSON } from "@/app/shared/utils/genericParseJSON";
+import { getProductByKey } from "@/app/shared/services/product/controller";
 import { createOrderThroughStripeWebHook } from "@/app/shared/services/order/controller";
 import {
-  IOrder,
-  IOrderInfoForEmail,
-  IProductFromStripe,
-  IStockReservation,
-} from "@/app/shared/interfaces";
-import { getProductByKey } from "@/app/shared/services/product/controller";
-import {
-  deleteStockReservation,
   readStockReservation,
+  deleteStockReservation,
 } from "@/app/shared/services/stock/model";
 import { createInventoryTransactionThroughStripeWebHook } from "@/app/shared/services/inventoryTrans/controller";
-import React from "react";
-import { genericParseJSON } from "@/app/shared/utils/genericParseJSON";
-import { Prisma } from "@prisma/client";
+import type {
+  IUser,
+  IOrder,
+  IStockReservation,
+  IOrderInfoForEmail,
+  IProductFromStripe,
+} from "@/app/shared/interfaces";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
@@ -41,19 +42,19 @@ export async function POST(req: NextRequest) {
 
   switch (event.type) {
     case "setup_intent.created": {
-      console.log("🟡 Setup created");
+      console.log("🟡 SetupIntent created");
       const setupIntent = event.data.object;
       console.log(`SetupIntent status: ${setupIntent.status}`);
       break;
     }
     case "setup_intent.succeeded": {
-      console.log("🟢 Setup succeeded");
+      console.log("🟢 SetupIntent succeeded");
       const setupIntent = event.data.object;
       console.log(`SetupIntent status: ${setupIntent.status}`);
       break;
     }
     case "setup_intent.setup_failed": {
-      console.error("❌ Setup failed");
+      console.error("❌ SetupIntent failed");
       const setupIntent = event.data.object;
       console.log(`Message: ${setupIntent.last_setup_error?.message}`);
       console.log(`SetupIntent id: ${setupIntent.id}`);
@@ -66,13 +67,13 @@ export async function POST(req: NextRequest) {
       break;
     }
     case "payment_intent.created": {
-      console.log("💳 Payment created");
+      console.log("💳 PaymentIntent created");
       const paymentIntent = event.data.object;
       console.log(`PaymentIntent status: ${paymentIntent.status}`);
       break;
     }
     case "payment_intent.succeeded": {
-      console.log("💰 Payment received");
+      console.log("💰 PaymentIntent received");
       const paymentIntent = event.data.object;
       console.log(`PaymentIntent status: ${paymentIntent.status}`);
       break;
@@ -97,21 +98,34 @@ export async function POST(req: NextRequest) {
       break;
     }
     case "charge.succeeded": {
-      console.log("💰 Payment received!");
+      console.log("💸 Charge succeeded!");
       const charge = event.data.object;
       console.log(`Charge id: ${charge.id}`);
 
-      const { userId, products, addressId, shippingCost } = charge.metadata;
+      const { userId, addressId, shippingCost } = charge.metadata;
 
-      if (!userId || !products || !addressId || !shippingCost) {
+      if (!userId || !addressId || !shippingCost) {
         console.error("❌ Missing metadata");
         return new NextResponse("Missing metadata", { status: 400 });
       }
 
-      const parsedProducts = genericParseJSON<IProductFromStripe[]>(products);
-
       try {
         await prisma.$transaction(async () => {
+          const me = (await prisma.user.findUnique({
+            where: { id: userId },
+          })) as IUser;
+
+          if (!me || !me.orderInfoDataForStripe) {
+            console.error("❌ Missing order info data for Stripe");
+            return new NextResponse("Missing order info data for Stripe", {
+              status: 400,
+            });
+          }
+
+          const parsedProducts = genericParseJSON<IProductFromStripe[]>(
+            me.orderInfoDataForStripe
+          );
+
           const order = (await createOrderThroughStripeWebHook({
             userId,
             amount: Number(charge.amount / 100),

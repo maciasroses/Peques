@@ -1,18 +1,18 @@
 "use server";
 
 import bcrypt from "bcrypt";
-// import { Resend } from "resend";
+import { Resend } from "resend";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
-import { create, read, update } from "../model";
 import { redirect } from "next/navigation";
 import { validateSchema } from "../schema";
-// import { PasswordRecovery as PasswordRecoveryTemplate } from "@/app/email/PasswordRecovery";
+import { create, read, update } from "../model";
+import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser } from "@/app/shared/interfaces";
 
-// const resend = new Resend(process.env.RESEND_API_KEY as string);
-// const resend_email = process.env.RESEND_EMAIL as string;
+const resend = new Resend(process.env.RESEND_API_KEY as string);
+const resend_email = process.env.RESEND_EMAIL as string;
 
 export async function login(formData: FormData) {
   const dataToValidate = {
@@ -143,22 +143,22 @@ export async function passwordRecovery(formData: FormData) {
       },
     });
 
-    // const { data, error } = await resend.emails.send({
-    //   from: `Peques <${resend_email}>`,
-    //   to: (user as IUser).email,
-    //   subject: "Recuperación de contraseña",
-    //   react: PasswordRecoveryTemplate({ resetPasswordToken }),
-    // });
+    const { data, error } = await resend.emails.send({
+      from: `Peques <${resend_email}>`,
+      to: (user as IUser).email,
+      subject: "Recuperación de contraseña",
+      react: PasswordRecoveryEmail({ resetPasswordToken }),
+    });
 
-    // console.log(data, error);
+    console.log(data, error);
 
-    // if (error) {
-    //   console.error(error);
-    //   return {
-    //     message: "Error al enviar el correo de recuperación",
-    //     success: false,
-    //   };
-    // }
+    if (error) {
+      console.error(error);
+      return {
+        message: "Error al enviar el correo de recuperación",
+        success: false,
+      };
+    }
 
     return {
       message:
@@ -334,6 +334,38 @@ export async function addStripeCustomerIdToMe({
     });
   } catch (error) {
     console.error("Error getting user session:", error);
+    return null; // Retornar null si ocurre un error
+  }
+}
+
+export async function updateOrderInfoDataForStripe(products: string) {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) return null;
+    return await update({
+      id: session.userId as string,
+      data: {
+        orderInfoDataForStripe: products,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating stripe order info data:", error);
+    return null; // Retornar null si ocurre un error
+  }
+}
+
+export async function clearOrderInfoDataForStripe() {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) return null;
+    return await update({
+      id: session.userId as string,
+      data: {
+        orderInfoDataForStripe: null,
+      },
+    });
+  } catch (error) {
+    console.error("Error clearing stripe order info data:", error);
     return null; // Retornar null si ocurre un error
   }
 }

@@ -4,9 +4,17 @@ import Action from "./Action";
 import Loading from "./Loading";
 import Datatable from "./Datatable";
 import Pagination from "./Pagination";
-import { Card404, ErrorCard, ReviewCard, ProductCard } from "./Cards";
+import GenericBackToPage from "./GenericBackToPage";
 import { GenericInput, SubmitButton, GenericSearchInput } from "./Form";
 import { AuthComponent, CartComponent, ThemeComponent } from "./Providers";
+import {
+  Card404,
+  ErrorCard,
+  ReviewCard,
+  ProductCard,
+  AddressCard,
+  PaymentMethodCard,
+} from "./Cards";
 import {
   Header,
   Footer,
@@ -47,6 +55,7 @@ export {
   Header,
   Footer,
   Filters,
+  GenericBackToPage,
   Card404,
   Loading,
   FullCollection,
@@ -65,6 +74,8 @@ export {
   CartComponent,
   AuthComponent,
   AddCustomList,
+  AddressCard,
+  PaymentMethodCard,
   ThemeComponent,
   ListSkeleton,
   OrderCardSkeleton,

@@ -42,18 +42,19 @@ enum Role {
 }
 
 model User {
-  id                   String    @id @default(uuid())
-  role                 Role      @default(USER)
-  email                String    @unique
-  image                String?   @default("/assets/images/profilepic.webp")
-  password             String
-  username             String    @unique
-  lastName             String?
-  firstName            String?
-  wantsNewsletter      Boolean   @default(false)
-  stripeCustomerId     String?
-  resetPasswordToken   String?
-  resetPasswordExpires DateTime?
+  id                     String    @id @default(uuid())
+  role                   Role      @default(USER)
+  email                  String    @unique
+  image                  String?   @default("/assets/images/profilepic.webp")
+  password               String
+  username               String    @unique
+  lastName               String?
+  firstName              String?
+  wantsNewsletter        Boolean   @default(false)
+  stripeCustomerId       String?
+  resetPasswordToken     String?
+  resetPasswordExpires   DateTime?
+  orderInfoDataForStripe String?   @db.Text
 
   cart              Cart?
   orders            Order[]

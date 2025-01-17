@@ -4,6 +4,8 @@ import Stripe from "stripe";
 import {
   getMe,
   addStripeCustomerIdToMe,
+  clearOrderInfoDataForStripe,
+  updateOrderInfoDataForStripe,
 } from "@/app/shared/services/user/controller";
 import type { IUser, ICartItemForFrontend } from "@/app/shared/interfaces";
 
@@ -23,6 +25,18 @@ export async function createPaymentIntent(
 
     await createStriperCustomer({ me });
 
+    const productsForStripeOrderInfoData = JSON.stringify(
+      cart.map((item) => ({
+        id: item.id,
+        name: item.name,
+        file: item.file,
+        price: item.price,
+        quantity: item.quantity,
+      }))
+    );
+
+    await updateOrderInfoDataForStripe(productsForStripeOrderInfoData);
+
     const paymentIntent = await stripe.paymentIntents.create({
       currency: "MXN",
       payment_method: paymentMethodId,
@@ -34,15 +48,6 @@ export async function createPaymentIntent(
       metadata: {
         userId: me.id,
         addressId,
-        products: JSON.stringify(
-          cart.map((item) => ({
-            id: item.id,
-            name: item.name,
-            file: item.file,
-            price: item.price,
-            quantity: item.quantity,
-          }))
-        ),
         shippingCost,
       },
     });
@@ -153,7 +158,6 @@ async function createStriperCustomer({ me }: { me: IUser }) {
 
 interface PaymentIntentMetadata {
   userId: string;
-  products: string;
   addressId: string;
   shippingCost: string;
   processed?: string;
@@ -163,12 +167,7 @@ export async function processMetadata(paymentIntent: Stripe.PaymentIntent) {
   try {
     const metadata = paymentIntent.metadata as unknown as PaymentIntentMetadata;
 
-    if (
-      !metadata.userId ||
-      !metadata.products ||
-      !metadata.addressId ||
-      !metadata.shippingCost
-    ) {
+    if (!metadata.userId || !metadata.addressId || !metadata.shippingCost) {
       throw new Error("Missing required metadata fields");
     }
 
@@ -183,6 +182,8 @@ export async function processMetadata(paymentIntent: Stripe.PaymentIntent) {
     await stripe.paymentIntents.update(paymentIntent.id, {
       metadata: { processed: "true" },
     });
+
+    await clearOrderInfoDataForStripe();
 
     return { success: true, alreadyProcessed: false };
   } catch (error) {

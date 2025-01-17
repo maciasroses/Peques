@@ -1,4 +1,5 @@
-import { IPaymentMethod } from "../../interfaces";
+import { cn } from "@/app/shared/utils/cn";
+import { IPaymentMethod } from "@/app/shared/interfaces";
 
 interface IPaymentMethodCard {
   paymentMethod: IPaymentMethod;
@@ -10,9 +11,19 @@ const PaymentMethodCard = ({ paymentMethod }: IPaymentMethodCard) => {
       <p>
         {paymentMethod.brand} •••• {paymentMethod.last4Digits}
       </p>
-      <p>
-        Vence el {paymentMethod.expiryMonth}/{paymentMethod.expiryYear}
-      </p>
+      <div
+        className={cn(
+          paymentMethod.isDefault &&
+            "flex flex-col lg:flex-row gap-2 justify-between"
+        )}
+      >
+        <p>
+          Vence el {paymentMethod.expiryMonth}/{paymentMethod.expiryYear}
+        </p>
+        {paymentMethod.isDefault && (
+          <p className="font-thin italic">Predeterminada</p>
+        )}
+      </div>
     </div>
   );
 };
