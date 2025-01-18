@@ -20,6 +20,9 @@ import type {
   CustomProductList,
   ProductOnCollection,
   InventoryTransaction,
+  ProductCategory,
+  ProductCategoryOnPromotion,
+  ProductOnPromotion,
 } from "@prisma/client";
 
 // MODELS
@@ -58,15 +61,22 @@ export interface IProvider extends Provider {
   products: IProduct[];
 }
 
+export interface IProductCategory extends ProductCategory {
+  products: IProduct[];
+  promotions: IProductCategoryOnPromotion[];
+}
+
 export interface IProduct extends Product {
   _count?: object;
   provider: IProvider;
+  category?: IProductCategory;
   files: IProductFile[];
   cartItems: ICartItem[];
   reviews: IProductReview[];
   orders: IProductOnOrder[];
   history: IProductHistory[];
   collections: ICollection[];
+  promotions: IProductOnPromotion[];
   transactions: IInventoryTransaction[];
   stockReservations: IStockReservation[];
   customProductsList: ICustomProductList[];
@@ -118,9 +128,22 @@ export interface IInventoryTransaction extends InventoryTransaction {
   product: IProduct;
 }
 
+export interface IProductCategoryOnPromotion
+  extends ProductCategoryOnPromotion {
+  promotion: IPromotion;
+  productCategory: IProductCategory;
+}
+
+export interface IProductOnPromotion extends ProductOnPromotion {
+  product: IProduct;
+  promotion: IPromotion;
+}
+
 export interface IPromotion extends Promotion {
   orders: IOrder[];
   discountCodes: IDiscountCode[];
+  products: IProductOnPromotion[];
+  categories: IProductCategoryOnPromotion[];
 }
 
 export interface IDiscountCode extends DiscountCode {
@@ -414,6 +437,11 @@ export interface IAddressesList {
 
 // OTHERS
 export type LanguageTypeForSchemas = "en" | "es";
+
+export type CollectionKeys =
+  | "game"
+  | "complementary_feeding"
+  | "blanket_and_quilt";
 
 export interface IBaseLangPage {
   params: {

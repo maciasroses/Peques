@@ -6,7 +6,9 @@ import type {
   IProductList,
   IBaseLangPage,
   IProductSearchParams,
+  IPromotion,
 } from "@/app/shared/interfaces";
+import prisma from "@/app/shared/services/prisma";
 
 interface ISearchPage extends IBaseLangPage {
   searchParams?: IProductSearchParams;
@@ -33,6 +35,38 @@ const SearchPage = async ({ searchParams, params: { lng } }: ISearchPage) => {
     searchParamsForList
   )) as IProductList;
 
+  const promotions = (await prisma.promotion.findMany({
+    where: {
+      AND: [
+        {
+          startDate: {
+            lte: new Date(),
+          },
+        },
+        {
+          endDate: {
+            gte: new Date(),
+          },
+        },
+        {
+          isActive: true,
+        },
+      ],
+    },
+    include: {
+      products: {
+        select: {
+          productId: true,
+        },
+      },
+      categories: {
+        select: {
+          productCategoryId: true,
+        },
+      },
+    },
+  })) as IPromotion[];
+
   return (
     <article className="pt-24 px-4 pb-4 flex md:gap-4">
       <aside className="hidden md:block md:w-1/4 lg:w-1/5 z-20">
@@ -43,7 +77,11 @@ const SearchPage = async ({ searchParams, params: { lng } }: ISearchPage) => {
           key={q + page + category + salePriceMXNTo + salePriceMXNFrom}
           fallback={<ListSkeleton />}
         >
-          <ProductList lng={lng} searchParams={searchParamsForList} />
+          <ProductList
+            lng={lng}
+            promotions={promotions}
+            searchParams={searchParamsForList}
+          />
         </Suspense>
         <Pagination totalPages={totalPages} />
       </section>

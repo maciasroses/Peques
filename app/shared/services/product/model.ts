@@ -69,6 +69,7 @@ export async function read({
       },
     },
     provider: true,
+    promotions: true,
     orders: isAdminRequest ? true : false,
     history: isAdminRequest ? true : false,
     _count: isAdminRequest

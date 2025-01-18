@@ -65,6 +65,50 @@ export const CATEGORIES_FILTERS = {
   ],
 };
 
+export const NEW_FILTERS = {
+  game: {
+    label: "Juego",
+    filters: [
+      {
+        group: "Material",
+        options: ["Madera", "Plástico", "Silicón"],
+        key: "material",
+      },
+      {
+        group: "Edad",
+        options: ["0-12 meses", "1-2 años", "2-4 años", "4-6 años"],
+        key: "age",
+      },
+      {
+        group: "Nivel de Juego",
+        options: [
+          "Explorativo",
+          "De combinación",
+          "Pre simbólico",
+          "Simbólico",
+        ],
+        key: "play_level",
+      },
+    ],
+  },
+  complementary_feeding: {
+    label: "Alimentación Complementaria",
+    filters: [
+      {
+        group: "Categorías",
+        options: ["Sets", "Vasos", "Manteles", "Cubiertos", "Mordederas"],
+        key: "category",
+      },
+    ],
+  },
+  blanket_and_quilt: {
+    label: "Cobijas y Mantas",
+    filters: [
+      { group: "Personalización", options: ["Personalizado"], key: "custom" },
+    ],
+  },
+};
+
 const commonProperties = {
   tradicional: 0,
 };

@@ -7,14 +7,20 @@ import type {
   ICustomList,
   IProductList,
   IProductSearchParams,
+  IPromotion,
 } from "@/app/shared/interfaces";
 
 interface IProductListComp {
   lng: string;
+  promotions: IPromotion[];
   searchParams: IProductSearchParams;
 }
 
-const ProductList = async ({ lng, searchParams }: IProductListComp) => {
+const ProductList = async ({
+  lng,
+  promotions,
+  searchParams,
+}: IProductListComp) => {
   const me = (await getMe()) as IUser;
   const myLists = (await getMyLists({ isForFav: true })) as ICustomList[];
   const { products } = (await getProductsForStore(
@@ -32,6 +38,7 @@ const ProductList = async ({ lng, searchParams }: IProductListComp) => {
               product={product}
               myLists={myLists}
               userId={me?.id}
+              promotions={promotions}
             />
           ))}
         </div>

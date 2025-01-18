@@ -107,11 +107,21 @@ model Provider {
   updatedAt DateTime @updatedAt
 }
 
+model ProductCategory {
+  id   String @id @default(uuid())
+  name String @unique
+
+  products   Product[]
+  promotions ProductCategoryOnPromotion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Product {
   id                        String  @id @default(uuid())
   key                       String  @unique
   name                      String
-  category                  String?
   description               String? @db.Text
   salePriceMXN              Float
   availableQuantity         Int     @default(0)
@@ -124,11 +134,14 @@ model Product {
   history            ProductHistory[]
   stockReservations  StockReservation[]
   customProductsList CustomProductList[]
+  promotions         ProductOnPromotion[]
   collections        ProductOnCollection[]
   transactions       InventoryTransaction[]
 
-  provider   Provider @relation(fields: [providerId], references: [id])
+  provider   Provider         @relation(fields: [providerId], references: [id])
   providerId String
+  category   ProductCategory? @relation(fields: [categoryId], references: [id])
+  categoryId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -294,6 +307,24 @@ enum DiscountType {
   FIXED
 }
 
+model ProductCategoryOnPromotion {
+  productCategory   ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+  productCategoryId String
+  promotion         Promotion       @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId       String
+
+  @@id([productCategoryId, promotionId])
+}
+
+model ProductOnPromotion {
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId String
+
+  @@id([productId, promotionId])
+}
+
 model Promotion {
   id            String       @id @default(uuid())
   title         String
@@ -306,6 +337,8 @@ model Promotion {
 
   orders        Order[]
   discountCodes DiscountCode[]
+  products      ProductOnPromotion[]
+  categories    ProductCategoryOnPromotion[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

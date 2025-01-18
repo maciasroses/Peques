@@ -1,38 +1,31 @@
 "use client";
 
 import { cn } from "@/app/shared/utils/cn";
-import { CATEGORIES_FILTERS } from "@/app/shared/constants";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import type { LanguageTypeForSchemas } from "@/app/shared/interfaces";
 import { useEffect, useState } from "react";
+import { NEW_FILTERS } from "@/app/shared/constants";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { CollectionKeys } from "../../interfaces";
 
 interface IFiltersComp {
-  lng: string;
+  lng?: string;
+  collection?: CollectionKeys;
 }
 
-const Filters = ({ lng }: IFiltersComp) => {
+const Filters = ({ lng, collection }: IFiltersComp) => {
   const pathname = usePathname();
   const { replace } = useRouter();
   const searchParams = useSearchParams();
-  const [salePriceMXNFrom, setSalePriceMXNFrom] = useState(
-    searchParams.get("salePriceMXNFrom") || ""
-  );
   const [salePriceMXNTo, setSalePriceMXNTo] = useState(
     searchParams.get("salePriceMXNTo") || ""
   );
+  const [salePriceMXNFrom, setSalePriceMXNFrom] = useState(
+    searchParams.get("salePriceMXNFrom") || ""
+  );
 
   useEffect(() => {
-    // Sincroniza los valores cuando cambian los searchParams
     setSalePriceMXNFrom(searchParams.get("salePriceMXNFrom") || "");
     setSalePriceMXNTo(searchParams.get("salePriceMXNTo") || "");
   }, [searchParams]);
-
-  const handleCategory = (category: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.delete("page");
-    params.set("category", category);
-    replace(`${pathname}?${params.toString()}`);
-  };
 
   const handlePrice = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,27 +51,95 @@ const Filters = ({ lng }: IFiltersComp) => {
     replace(`${pathname}?${params.toString()}`);
   };
 
+  const [activeTab, setActiveTab] = useState(1);
+
+  const toggleTab = (index: number) => {
+    setActiveTab(activeTab === index ? 1 : index);
+  };
+
+  const handleFilter = (filter: string, group: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("page"); // Reset pagination when changing filters
+
+    // Obtener los filtros actuales
+    const currentFilters = params.get("filters")?.split(",") || [];
+
+    // Filtrar solo el filtro del grupo actual si ya existe y eliminarlo
+    const updatedFilters = currentFilters.filter(
+      (f) => !f.startsWith(`${group}_`) // Eliminar cualquier filtro del grupo actual
+    );
+
+    // Añadir el nuevo filtro para este grupo
+    const newFilter = `${group}_${filter.toLowerCase().replace(/\s+/g, "-")}`;
+    updatedFilters.push(newFilter);
+
+    // Establecer los filtros actualizados en los parámetros de búsqueda
+    params.set("filters", updatedFilters.join(","));
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  // const filteredByCollection = pathname.includes("collections")
+  //   ? (pathname.split("/")[2] as CollectionKeys)
+  //   : null;
+
+  const isValidCollection = collection && collection in NEW_FILTERS;
+
+  const FILTERS = isValidCollection
+    ? NEW_FILTERS[collection]?.filters || []
+    : Object.values(NEW_FILTERS).flatMap((collection) => collection.filters);
+
   return (
     <ul className="flex flex-col gap-4">
-      <li>
-        <h1 className="font-medium text-lg">Categorías</h1>
-        <ul className="flex flex-col">
-          {CATEGORIES_FILTERS[lng as LanguageTypeForSchemas].map(
-            ({ label, category }) => (
-              <li key={category}>
-                <ButtonCategoryComponent
-                  label={label}
-                  category={category}
-                  searchParams={searchParams}
-                  handleCategory={handleCategory}
-                />
+      {FILTERS.map((filter, index) => (
+        <li key={filter.key} className="transition duration-200">
+          <button onClick={() => toggleTab(index + 1)}>
+            <p className="font-medium text-lg">{filter.group}</p>
+          </button>
+          <ul
+            className={cn(
+              "transition duration-200",
+              activeTab === index + 1 ? "block" : "hidden"
+            )}
+          >
+            {filter.options.map((option) => (
+              <li key={option}>
+                <button
+                  className={cn(
+                    "text-sm text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-300 ml-5",
+                    searchParams
+                      .get("filters")
+                      ?.includes(
+                        `${filter.key}_${option.toLowerCase().replace(/\s+/g, "-")}`
+                      ) && "text-blue-600 dark:text-blue-300"
+                  )}
+                  onClick={() => {
+                    handleFilter(option, filter.key);
+                  }}
+                >
+                  {option}
+                </button>
               </li>
-            )
-          )}
-        </ul>
-      </li>
+            ))}
+          </ul>
+
+          {/* <select
+                onChange={(e) => {
+                  // Usar handleFilter con el grupo y la opción seleccionada
+                  const selectedFilter = e.target.value;
+                  handleFilter(selectedFilter, filter.key);
+                }}
+              >
+                <option value="">Seleccionar</option>
+                {filter.options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select> */}
+        </li>
+      ))}
       <li>
-        <h2 className="font-medium text-lg">Precio</h2>
+        <p className="font-medium text-lg">Precio</p>
         <form onSubmit={handlePrice} className="flex gap-2 flex-col ml-5 mt-2">
           <div className="flex gap-2 items-center">
             <InputField
@@ -103,29 +164,6 @@ const Filters = ({ lng }: IFiltersComp) => {
     </ul>
   );
 };
-
-const ButtonCategoryComponent = ({
-  label,
-  category,
-  searchParams,
-  handleCategory,
-}: {
-  label: string;
-  category: string;
-  searchParams: URLSearchParams;
-  handleCategory: (category: string) => void;
-}) => (
-  <button
-    onClick={() => handleCategory(category)}
-    className={cn(
-      "text-sm text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-300 ml-5",
-      searchParams.get("category") === category &&
-        "text-blue-600 dark:text-blue-300"
-    )}
-  >
-    {label}
-  </button>
-);
 
 const InputField = ({
   name,
