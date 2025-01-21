@@ -43,12 +43,15 @@ const OrderPage = async ({ params: { id, lng } }: IOrderPage) => {
         <div className="w-full h-full md:w-1/3 md:sticky md:top-24">
           <h1 className="text-2xl font-bold">Resumen</h1>
           <p className="text-sm sm:text-lg mt-2">
-            Envío: <span className="font-bold">$99.00</span>
+            Envío:{" "}
+            <span className="font-bold">
+              {formatCurrency(order.shippingCost ?? 190, "MXN")}
+            </span>
           </p>
           <p className="text-sm sm:text-lg">
             Subtotal:{" "}
             <span className="font-bold">
-              {formatCurrency(order.total - 99, "MXN")}
+              {formatCurrency(order.total - (order.shippingCost ?? 190), "MXN")}
             </span>
           </p>
           <p className="text-lg sm:text-2xl mt-2">
@@ -85,12 +88,30 @@ const OrderPage = async ({ params: { id, lng } }: IOrderPage) => {
                       {product.product.name}
                     </p>
                   </div>
-                  <p className="text-sm sm:text-lg">
-                    {product.quantity} x{" "}
-                    <span className="font-semibold">
-                      {formatCurrency(product.costMXN, "MXN")}
-                    </span>
-                  </p>
+                  <div className="flex flex-col items-end gap-1">
+                    {product.discount !== 0 && (
+                      <p className="line-through text-xs sm:text-base text-gray-500 dark:text-gray-400">
+                        {formatCurrency(product.costMXN, "MXN")}
+                      </p>
+                    )}
+                    <p className="text-sm sm:text-lg">
+                      {product.quantity} x{" "}
+                      <span className="font-semibold">
+                        {formatCurrency(
+                          product.discount
+                            ? product.costMXN -
+                                (product.costMXN * product.discount) / 100
+                            : product.costMXN,
+                          "MXN"
+                        )}
+                      </span>
+                    </p>
+                    {product.discount !== 0 && (
+                      <p className="text-xs sm:text-base font-medium text-green-600 dark:text-green-400 text-right">
+                        Descuento aplicado
+                      </p>
+                    )}
+                  </div>
                 </li>
               </Link>
             ))}

@@ -50,65 +50,6 @@ export const COLORS_FOR_CHARTS = [
   "#98B4D4", // Azul cielo
 ];
 
-export const CATEGORIES_FILTERS = {
-  en: [
-    { label: "Electronics", category: "ELECTRONICS" },
-    { label: "Books", category: "BOOKS" },
-    { label: "Clothing", category: "CLOTHING" },
-    { label: "Toys", category: "TOYS" },
-  ],
-  es: [
-    { label: "Electrónicos", category: "ELECTRONICS" },
-    { label: "Libros", category: "BOOKS" },
-    { label: "Ropa", category: "CLOTHING" },
-    { label: "Juguetes", category: "TOYS" },
-  ],
-};
-
-export const NEW_FILTERS = {
-  game: {
-    label: "Juego",
-    filters: [
-      {
-        group: "Material",
-        options: ["Madera", "Plástico", "Silicón"],
-        key: "material",
-      },
-      {
-        group: "Edad",
-        options: ["0-12 meses", "1-2 años", "2-4 años", "4-6 años"],
-        key: "age",
-      },
-      {
-        group: "Nivel de Juego",
-        options: [
-          "Explorativo",
-          "De combinación",
-          "Pre simbólico",
-          "Simbólico",
-        ],
-        key: "play_level",
-      },
-    ],
-  },
-  complementary_feeding: {
-    label: "Alimentación Complementaria",
-    filters: [
-      {
-        group: "Categorías",
-        options: ["Sets", "Vasos", "Manteles", "Cubiertos", "Mordederas"],
-        key: "category",
-      },
-    ],
-  },
-  blanket_and_quilt: {
-    label: "Cobijas y Mantas",
-    filters: [
-      { group: "Personalización", options: ["Personalizado"], key: "custom" },
-    ],
-  },
-};
-
 const commonProperties = {
   tradicional: 0,
 };

@@ -17,7 +17,9 @@ import type {
   IProduct,
   ICartItemForFrontend,
   IStockReservation,
+  IPromotion,
 } from "@/app/shared/interfaces";
+import formatCurrency from "../../utils/format-currency";
 
 export async function checkNUpdateStock(cart: ICartItemForFrontend[]) {
   try {
@@ -58,11 +60,115 @@ export async function checkNUpdateStock(cart: ICartItemForFrontend[]) {
       const totalAvailable =
         product.availableQuantity + (reservation?.quantity || 0);
 
+      let updatedItem = { ...item };
+
+      // Actualiza la cantidad en el carrito si hay cambios en el stock
       if (totalAvailable < item.quantity) {
-        updateCart.push({ ...item, quantity: totalAvailable });
-      } else {
-        updateCart.push(item);
+        updatedItem.quantity = totalAvailable;
       }
+
+      // Verifica la promoción asociada al producto
+      if (item.promotionId) {
+        const promotion = await prisma.promotion.findUnique({
+          where: {
+            id: item.promotionId,
+          },
+        });
+
+        if (!promotion) {
+          updatedItem = {
+            ...updatedItem,
+            discount: null,
+            promotionId: null,
+            finalPrice: item.price,
+          };
+        } else {
+          const currentDate = new Date();
+          const isPromotionValid =
+            promotion &&
+            promotion.isActive &&
+            new Date(promotion.startDate) <= currentDate &&
+            new Date(promotion.endDate) >= currentDate;
+
+          if (!isPromotionValid) {
+            updatedItem = {
+              ...updatedItem,
+              discount: null,
+              promotionId: null,
+              finalPrice: item.price,
+            };
+          }
+        }
+      } else {
+        const applicablePromotions = [
+          ...product.promotions
+            .map((promotion) => promotion.promotion)
+            .filter(
+              (promo) =>
+                promo.isActive &&
+                new Date(promo.startDate) <= new Date() &&
+                new Date(promo.endDate) >= new Date()
+            ),
+          ...product.collections.flatMap((collection) =>
+            collection.collection.promotions
+              .map((promotion) => promotion.promotion)
+              .filter(
+                (promo) =>
+                  promo.isActive &&
+                  new Date(promo.startDate) <= new Date() &&
+                  new Date(promo.endDate) >= new Date()
+              )
+          ),
+        ];
+
+        // Selecciona la mejor promoción basada en el descuento total
+        const selectedPromotion =
+          applicablePromotions.reduce<IPromotion | null>((bestPromo, promo) => {
+            const calculateEffectiveDiscount = (promotion: IPromotion) => {
+              if (promotion.discountType === "PERCENTAGE") {
+                return (promotion.discountValue / 100) * product.salePriceMXN;
+              }
+              if (promotion.discountType === "FIXED") {
+                return promotion.discountValue;
+              }
+              return 0; // No discount
+            };
+
+            const currentDiscount = calculateEffectiveDiscount(promo);
+            const bestDiscount = bestPromo
+              ? calculateEffectiveDiscount(bestPromo)
+              : 0;
+
+            if (!bestPromo || currentDiscount > bestDiscount) {
+              return promo;
+            }
+
+            return bestPromo;
+          }, null);
+
+        // Calculate the price with discount (if applicable)
+        const discountedPrice = selectedPromotion
+          ? product.salePriceMXN -
+            (selectedPromotion.discountType === "PERCENTAGE"
+              ? (selectedPromotion.discountValue / 100) * product.salePriceMXN
+              : selectedPromotion.discountValue)
+          : product.salePriceMXN;
+
+        const discountDescription = selectedPromotion
+          ? selectedPromotion.discountType === "PERCENTAGE"
+            ? `${selectedPromotion.discountValue}% de descuento`
+            : `Descuento de ${formatCurrency(selectedPromotion.discountValue, "MXN")}`
+          : null;
+
+        updatedItem = {
+          ...updatedItem,
+          discount: discountDescription,
+          promotionId: selectedPromotion?.id || null,
+          finalPrice: discountedPrice,
+        };
+      }
+
+      updateCart.push(updatedItem);
     }
     return updateCart;
   } catch (error) {

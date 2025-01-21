@@ -50,6 +50,25 @@ export async function readCustomList({
         product: {
           include: {
             files: true,
+            reviews: true,
+            collections: {
+              include: {
+                collection: {
+                  include: {
+                    promotions: {
+                      include: {
+                        promotion: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            promotions: {
+              include: {
+                promotion: true,
+              },
+            },
           },
         },
       },

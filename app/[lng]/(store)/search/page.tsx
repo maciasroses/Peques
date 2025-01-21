@@ -3,11 +3,12 @@ import { ProductList } from "./components";
 import { Filters, ListSkeleton, Pagination } from "@/app/shared/components";
 import { getProductsForStore } from "@/app/shared/services/product/controller";
 import type {
+  IFilterGroup,
   IProductList,
   IBaseLangPage,
   IProductSearchParams,
-  IPromotion,
 } from "@/app/shared/interfaces";
+
 import prisma from "@/app/shared/services/prisma";
 
 interface ISearchPage extends IBaseLangPage {
@@ -18,7 +19,7 @@ const SearchPage = async ({ searchParams, params: { lng } }: ISearchPage) => {
   const {
     q = "",
     page = "1",
-    category = "",
+    filters = "",
     salePriceMXNTo = "",
     salePriceMXNFrom = "",
   } = searchParams || {};
@@ -26,7 +27,7 @@ const SearchPage = async ({ searchParams, params: { lng } }: ISearchPage) => {
   const searchParamsForList = {
     q,
     page,
-    category,
+    filters,
     salePriceMXNTo,
     salePriceMXNFrom,
   };
@@ -35,53 +36,32 @@ const SearchPage = async ({ searchParams, params: { lng } }: ISearchPage) => {
     searchParamsForList
   )) as IProductList;
 
-  const promotions = (await prisma.promotion.findMany({
-    where: {
-      AND: [
-        {
-          startDate: {
-            lte: new Date(),
-          },
-        },
-        {
-          endDate: {
-            gte: new Date(),
-          },
-        },
-        {
-          isActive: true,
-        },
-      ],
-    },
+  const available_filters = (await prisma.filterGroup.findMany({
     include: {
-      products: {
+      filters: true,
+      collections: {
         select: {
-          productId: true,
-        },
-      },
-      categories: {
-        select: {
-          productCategoryId: true,
+          collection: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
     },
-  })) as IPromotion[];
+  })) as IFilterGroup[];
 
   return (
     <article className="pt-24 px-4 pb-4 flex md:gap-4">
       <aside className="hidden md:block md:w-1/4 lg:w-1/5 z-20">
-        <Filters lng={lng} />
+        <Filters lng={lng} filters={available_filters} />
       </aside>
       <section className="w-full md:w-3/4 lg:w-4/5">
         <Suspense
-          key={q + page + category + salePriceMXNTo + salePriceMXNFrom}
+          key={q + page + filters + salePriceMXNTo + salePriceMXNFrom}
           fallback={<ListSkeleton />}
         >
-          <ProductList
-            lng={lng}
-            promotions={promotions}
-            searchParams={searchParamsForList}
-          />
+          <ProductList lng={lng} searchParams={searchParamsForList} />
         </Suspense>
         <Pagination totalPages={totalPages} />
       </section>

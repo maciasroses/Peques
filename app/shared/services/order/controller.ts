@@ -276,13 +276,14 @@ export async function createOrder(formData: FormData) {
 
     await Promise.all(productPromise);
 
-    const subtotal = productsTotal;
+    const subtotal = total;
     total = productsTotal - (productsTotal * data.discount) / 100;
 
     const finalData = {
       ...data,
       subtotal,
       total,
+      shippingCost: 190, // TODO: Change this to requested value
       isPaid:
         data.discount === 100 ||
         finalProducts.every((product) => product.discount === 100),
@@ -506,13 +507,14 @@ export async function createMassiveOrder(formData: FormData) {
           });
         }
 
-        const subtotal = productsTotal;
+        const subtotal = total;
         total = productsTotal - (productsTotal * data.discount) / 100;
 
         const finalData = {
           ...data,
           subtotal,
           total,
+          shippingCost: 190, // TODO: Change this to requested value
           isPaid:
             data.discount === 100 ||
             productsData.every((p) => p.discount === 100),
@@ -769,11 +771,14 @@ interface ICreateOrderThroughStripWebHook {
   userId: string;
   amount: number;
   addressId: string;
+  shippingCost: number;
   productsIds: string[];
   productsPrices: number[];
   productsQuantities: number[];
+  productsFinalPrices: number[];
   stripePaymentMethodId: string;
   paymentMethodFromStripe: string;
+  promotionsIds: (string | undefined)[];
 }
 
 export async function createOrderThroughStripeWebHook({
@@ -781,8 +786,11 @@ export async function createOrderThroughStripeWebHook({
   amount,
   addressId,
   productsIds,
+  shippingCost,
+  promotionsIds,
   productsPrices,
   productsQuantities,
+  productsFinalPrices,
   stripePaymentMethodId,
   paymentMethodFromStripe,
 }: ICreateOrderThroughStripWebHook) {
@@ -798,14 +806,46 @@ export async function createOrderThroughStripeWebHook({
 
     if (!paymentMethod) throw new Error("Payment method not found");
 
+    const promotionsIdsForConnection = promotionsIds.filter(
+      (promotionId) => promotionId !== undefined
+    );
+
+    const finalPromotionsIds =
+      promotionsIdsForConnection.length > 0
+        ? {
+            promotions: {
+              create: promotionsIdsForConnection.map((promotionId) => ({
+                promotion: {
+                  connect: {
+                    id: promotionId,
+                  },
+                },
+              })),
+            },
+          }
+        : {};
+
+    const subtotal = productsPrices.reduce(
+      (acc, price, index) => acc + price * productsQuantities[index],
+      0
+    );
+
+    const percentagesDiscounts = productsFinalPrices.map(
+      (finalPrice, index) => {
+        return calculateDiscountPercentage(productsPrices[index], finalPrice);
+      }
+    );
+
     return await create({
       data: {
+        ...finalPromotionsIds,
         client:
           user.firstName || user.lastName
             ? `${user.firstName} ${user.lastName}`
             : user.username,
         discount: 0, // TODO: CHANGE THIS TO REQUESTED VALUE
-        subtotal: amount,
+        subtotal,
+        shippingCost: shippingCost / 100,
         total: amount,
         shipmentType: "Compra desde e-commerce", // TODO: CHANGE THIS TO REQUESTED VALUE
         paymentMethod: paymentMethodFromStripe, // THIS IS THE OLD VALUE, NOT THE PAYMENT METHOD ID
@@ -814,6 +854,7 @@ export async function createOrderThroughStripeWebHook({
           create: productsIds.map((productId, index) => ({
             costMXN: productsPrices[index],
             quantity: productsQuantities[index],
+            discount: percentagesDiscounts[index],
             product: {
               connect: {
                 key: productId,
@@ -830,4 +871,13 @@ export async function createOrderThroughStripeWebHook({
     console.error(error);
     throw new Error("Failed to create order");
   }
+}
+
+function calculateDiscountPercentage(price: number, finalPrice: number) {
+  if (price <= 0 || finalPrice < 0) {
+    throw new Error("Los valores de precio deben ser positivos y válidos.");
+  }
+
+  const discount = ((price - finalPrice) / price) * 100;
+  return Math.round(discount * 100) / 100; // Redondea a 2 decimales
 }

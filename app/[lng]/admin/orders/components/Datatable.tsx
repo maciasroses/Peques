@@ -189,20 +189,51 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       ),
     },
     {
-      name: "Descuento General",
-      selector: (row: { discount: number }) => row.discount,
-      sortable: true,
-      format: (row: { discount: number }) => `${row.discount}%`,
-    },
-    {
-      name: "Subtotal General",
+      name: "Subtotal de Resumen",
+      width: "170px",
       selector: (row: { subtotal: number }) => row.subtotal,
       sortable: true,
       format: (row: { subtotal: number }) =>
         formatCurrency(row.subtotal, "MXN"),
     },
     {
-      name: "Total",
+      name: "Subtotal General",
+      width: "170px",
+      sortable: true,
+      cell: (row: { products: IProductInOrder[] }) => (
+        <span>
+          {formatCurrency(
+            row.products.reduce(
+              (acc, product) =>
+                acc +
+                product.costMXN *
+                  product.quantity *
+                  (1 - product.discount / 100),
+              0
+            ),
+            "MXN"
+          )}
+        </span>
+      ),
+    },
+    {
+      name: "Descuento General",
+      width: "160px",
+      selector: (row: { discount: number }) => row.discount,
+      sortable: true,
+      format: (row: { discount: number }) => `${row.discount}%`,
+    },
+    {
+      name: "Costo de Envío",
+      width: "150px",
+      selector: (row: { shippingCost: number }) => row.shippingCost,
+      sortable: true,
+      format: (row: { shippingCost: number }) =>
+        formatCurrency(row.shippingCost, "MXN"),
+    },
+    {
+      name: "Total General",
+      width: "150px",
       selector: (row: { total: number }) => row.total,
       sortable: true,
       format: (row: { total: number }) => formatCurrency(row.total, "MXN"),

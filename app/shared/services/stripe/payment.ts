@@ -4,10 +4,12 @@ import Stripe from "stripe";
 import {
   getMe,
   addStripeCustomerIdToMe,
-  clearOrderInfoDataForStripe,
-  updateOrderInfoDataForStripe,
 } from "@/app/shared/services/user/controller";
 import type { IUser, ICartItemForFrontend } from "@/app/shared/interfaces";
+import {
+  clearOrderInfoDataForStripe,
+  updateOrderInfoDataForStripe,
+} from "../cart/controller";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
@@ -31,7 +33,10 @@ export async function createPaymentIntent(
         name: item.name,
         file: item.file,
         price: item.price,
+        discount: item.discount,
         quantity: item.quantity,
+        finalPrice: item.finalPrice,
+        promotionId: item.promotionId,
       }))
     );
 
@@ -43,8 +48,10 @@ export async function createPaymentIntent(
       customer: me.stripeCustomerId || undefined,
       // amount multiplied by 100 because stripe uses cents
       amount:
-        cart.reduce((acc, item) => acc + item.price * 100 * item.quantity, 0) +
-        shippingCost,
+        cart.reduce(
+          (acc, item) => acc + item.finalPrice * 100 * item.quantity,
+          0
+        ) + shippingCost,
       metadata: {
         userId: me.id,
         addressId,
@@ -172,10 +179,6 @@ export async function processMetadata(paymentIntent: Stripe.PaymentIntent) {
     }
 
     if (metadata.processed === "true") {
-      console.log(
-        "Metadata already processed for paymentIntent:",
-        paymentIntent.id
-      );
       return { success: true, alreadyProcessed: true };
     }
 

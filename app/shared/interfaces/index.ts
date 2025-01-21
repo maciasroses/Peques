@@ -18,17 +18,22 @@ import type {
   ProductOnOrder,
   StockReservation,
   CustomProductList,
+  ProductOnPromotion,
   ProductOnCollection,
   InventoryTransaction,
-  ProductCategory,
-  ProductCategoryOnPromotion,
-  ProductOnPromotion,
+  ProductFilter,
+  ProductFilterOnProduct,
+  CollectionOnPromotion,
+  FilterGroup,
+  CollectionOnFilterGroup,
+  OrderOnPromotion,
 } from "@prisma/client";
 
 // MODELS
 export interface ICartItem extends CartItem {
   cart: ICart;
   product: IProduct;
+  promotion?: IPromotion;
 }
 
 export interface ICart extends Cart {
@@ -61,22 +66,32 @@ export interface IProvider extends Provider {
   products: IProduct[];
 }
 
-export interface IProductCategory extends ProductCategory {
-  products: IProduct[];
-  promotions: IProductCategoryOnPromotion[];
+export interface IFilterGroup extends FilterGroup {
+  filters: IProductFilter[];
+  collections: ICollectionOnFilterGroup[];
+}
+
+export interface IProductFilter extends ProductFilter {
+  group: IFilterGroup;
+  products: IProductFilterOnProduct[];
+}
+
+export interface IProductFilterOnProduct extends ProductFilterOnProduct {
+  product: IProduct;
+  filter: IProductFilter;
 }
 
 export interface IProduct extends Product {
   _count?: object;
   provider: IProvider;
-  category?: IProductCategory;
   files: IProductFile[];
   cartItems: ICartItem[];
+  filters: IProductFilter[];
   reviews: IProductReview[];
   orders: IProductOnOrder[];
   history: IProductHistory[];
-  collections: ICollection[];
   promotions: IProductOnPromotion[];
+  collections: IProductOnCollection[];
   transactions: IInventoryTransaction[];
   stockReservations: IStockReservation[];
   customProductsList: ICustomProductList[];
@@ -91,9 +106,16 @@ export interface IProductOnCollection extends ProductOnCollection {
   collection: ICollection;
 }
 
+export interface ICollectionOnFilterGroup extends CollectionOnFilterGroup {
+  group: IFilterGroup;
+  collection: ICollection;
+}
+
 export interface ICollection extends Collection {
   hero?: IHero;
   products: IProductOnCollection[];
+  filters: ICollectionOnFilterGroup[];
+  promotions: ICollectionOnPromotion[];
 }
 
 export interface IProductFile extends ProductFile {
@@ -118,20 +140,17 @@ export interface IStockReservation extends StockReservation {
 export interface IOrder extends Order {
   user?: IUser;
   address?: IAddress;
-  promotion?: IPromotion;
   payment?: IPaymentMethod;
-  products: IProductOnOrder[];
   discountCode?: IDiscountCode;
+
+  products: IProductOnOrder[];
+  promotions: IOrderOnPromotion[];
+  transactions: IInventoryTransaction[];
 }
 
 export interface IInventoryTransaction extends InventoryTransaction {
+  order: IOrder;
   product: IProduct;
-}
-
-export interface IProductCategoryOnPromotion
-  extends ProductCategoryOnPromotion {
-  promotion: IPromotion;
-  productCategory: IProductCategory;
 }
 
 export interface IProductOnPromotion extends ProductOnPromotion {
@@ -139,16 +158,25 @@ export interface IProductOnPromotion extends ProductOnPromotion {
   promotion: IPromotion;
 }
 
+export interface ICollectionOnPromotion extends CollectionOnPromotion {
+  promotion: IPromotion;
+  collection: ICollection;
+}
+
+export interface IOrderOnPromotion extends OrderOnPromotion {
+  order: IOrder;
+  promotion: IPromotion;
+}
+
 export interface IPromotion extends Promotion {
   orders: IOrder[];
-  discountCodes: IDiscountCode[];
+  cartItems: ICartItem[];
   products: IProductOnPromotion[];
-  categories: IProductCategoryOnPromotion[];
+  collections: ICollectionOnPromotion[];
 }
 
 export interface IDiscountCode extends DiscountCode {
   orders: IOrder[];
-  promotion: IPromotion;
 }
 
 export interface IPaymentMethod extends PaymentMethod {
@@ -322,9 +350,9 @@ export interface IProductSearchParams {
   page?: number | string;
   limit?: number;
   orderBy?: object;
+  filters?: string;
   allData?: boolean;
   provider?: string;
-  category?: string;
   collection?: string;
   isForFavorites?: boolean;
   salePriceMXNTo?: number | string;
@@ -438,11 +466,6 @@ export interface IAddressesList {
 // OTHERS
 export type LanguageTypeForSchemas = "en" | "es";
 
-export type CollectionKeys =
-  | "game"
-  | "complementary_feeding"
-  | "blanket_and_quilt";
-
 export interface IBaseLangPage {
   params: {
     lng: string;
@@ -462,6 +485,9 @@ export interface ICartItemForFrontend {
   file: string;
   price: number;
   quantity: number;
+  finalPrice: number;
+  discount?: string | null;
+  promotionId?: string | null;
 }
 
 export interface IProductFromStripe extends ICartItemForFrontend {}

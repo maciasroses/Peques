@@ -9,14 +9,18 @@ datasource db {
 }
 
 model CartItem {
-  id       String @id @default(uuid())
-  quantity Int
-  priceMXN Float
+  id            String  @id @default(uuid())
+  quantity      Int
+  priceMXN      Float
+  discount      String?
+  finalPriceMXN Float
 
-  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  cartId    String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String
+  cart        Cart       @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId      String
+  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  promotion   Promotion? @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+  promotionId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,7 +29,8 @@ model CartItem {
 }
 
 model Cart {
-  id String @id @default(uuid())
+  id                     String  @id @default(uuid())
+  orderInfoDataForStripe String? @db.Text
 
   items CartItem[]
 
@@ -42,19 +47,18 @@ enum Role {
 }
 
 model User {
-  id                     String    @id @default(uuid())
-  role                   Role      @default(USER)
-  email                  String    @unique
-  image                  String?   @default("/assets/images/profilepic.webp")
-  password               String
-  username               String    @unique
-  lastName               String?
-  firstName              String?
-  wantsNewsletter        Boolean   @default(false)
-  stripeCustomerId       String?
-  resetPasswordToken     String?
-  resetPasswordExpires   DateTime?
-  orderInfoDataForStripe String?   @db.Text
+  id                   String    @id @default(uuid())
+  role                 Role      @default(USER)
+  email                String    @unique
+  image                String?   @default("/assets/images/profilepic.webp")
+  password             String
+  username             String    @unique
+  lastName             String?
+  firstName            String?
+  wantsNewsletter      Boolean   @default(false)
+  stripeCustomerId     String?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
 
   cart              Cart?
   orders            Order[]
@@ -63,6 +67,7 @@ model User {
   reviews           ProductReview[]
   paymentMethods    PaymentMethod[]
   stockReservations StockReservation[]
+  discountCodes     DiscountCodeOnUser[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -107,15 +112,40 @@ model Provider {
   updatedAt DateTime @updatedAt
 }
 
-model ProductCategory {
+model FilterGroup {
   id   String @id @default(uuid())
-  name String @unique
+  name String
+  key  String @unique
 
-  products   Product[]
-  promotions ProductCategoryOnPromotion[]
+  filters     ProductFilter[]
+  collections CollectionOnFilterGroup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ProductFilter {
+  id   String @id @default(uuid())
+  name String
+  key  String @unique
+
+  products ProductFilterOnProduct[]
+  group    FilterGroup              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductFilterOnProduct {
+  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  filter    ProductFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+  filterId  String
+
+  createdAt DateTime @default(now())
+
+  @@id([productId, filterId])
 }
 
 model Product {
@@ -137,11 +167,10 @@ model Product {
   promotions         ProductOnPromotion[]
   collections        ProductOnCollection[]
   transactions       InventoryTransaction[]
+  filters            ProductFilterOnProduct[]
 
-  provider   Provider         @relation(fields: [providerId], references: [id])
+  provider   Provider @relation(fields: [providerId], references: [id])
   providerId String
-  category   ProductCategory? @relation(fields: [categoryId], references: [id])
-  categoryId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -180,14 +209,27 @@ model ProductOnCollection {
   @@id([productId, collectionId])
 }
 
+model CollectionOnFilterGroup {
+  collection   Collection  @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+  group        FilterGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId      String
+
+  createdAt DateTime @default(now())
+
+  @@id([collectionId, groupId])
+}
+
 model Collection {
   id       String @id @default(uuid())
   name     String @unique
   link     String @unique
   imageUrl String
 
-  hero     Hero?
-  products ProductOnCollection[]
+  hero       Hero?
+  products   ProductOnCollection[]
+  promotions CollectionOnPromotion[]
+  filters    CollectionOnFilterGroup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -230,12 +272,14 @@ model ProductReview {
 model ProductOnOrder {
   quantity Int
   costMXN  Float
-  discount Float? @default(0)
+  discount Float? @default(0) //this value is a percentage
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
+
+  createdAt DateTime @default(now())
 
   @@id([productId, orderId])
 }
@@ -266,6 +310,7 @@ model Order {
   client         String // This is functional when the user is not logged in
   discount       Float?
   subtotal       Float
+  shippingCost   Float?
   total          Float
   shipmentType   String
   paymentMethod  String
@@ -273,7 +318,9 @@ model Order {
   deliveryStatus DeliveryStatus @default(PENDING)
   pendingPayment Float? // This is functional when the user is not logged in
 
-  products ProductOnOrder[]
+  products     ProductOnOrder[]
+  promotions   OrderOnPromotion[]
+  transactions InventoryTransaction[]
 
   user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String?
@@ -281,8 +328,6 @@ model Order {
   paymentId      String?
   address        Address?       @relation(fields: [addressId], references: [id], onDelete: SetNull)
   addressId      String?
-  promotion      Promotion?     @relation(fields: [promotionId], references: [id])
-  promotionId    String?
   discountCode   DiscountCode?  @relation(fields: [discountCodeId], references: [id])
   discountCodeId String?
 
@@ -298,22 +343,10 @@ model InventoryTransaction {
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
 
   createdAt DateTime @default(now())
-}
-
-enum DiscountType {
-  PERCENTAGE
-  FIXED
-}
-
-model ProductCategoryOnPromotion {
-  productCategory   ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
-  productCategoryId String
-  promotion         Promotion       @relation(fields: [promotionId], references: [id], onDelete: Cascade)
-  promotionId       String
-
-  @@id([productCategoryId, promotionId])
 }
 
 model ProductOnPromotion {
@@ -322,7 +355,36 @@ model ProductOnPromotion {
   promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
   promotionId String
 
+  createdAt DateTime @default(now())
+
   @@id([productId, promotionId])
+}
+
+model CollectionOnPromotion {
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+  promotion    Promotion  @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId  String
+
+  createdAt DateTime @default(now())
+
+  @@id([collectionId, promotionId])
+}
+
+model OrderOnPromotion {
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId String
+
+  createdAt DateTime @default(now())
+
+  @@id([orderId, promotionId])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
 }
 
 model Promotion {
@@ -335,29 +397,40 @@ model Promotion {
   discountType  DiscountType
   discountValue Float
 
-  orders        Order[]
+  cartItems     CartItem[]
   discountCodes DiscountCode[]
+  orders        OrderOnPromotion[]
   products      ProductOnPromotion[]
-  categories    ProductCategoryOnPromotion[]
+  collections   CollectionOnPromotion[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model DiscountCode {
-  id         String  @id @default(uuid())
-  code       String  @unique
-  isActive   Boolean @default(true)
-  timesUsed  Int     @default(0)
+  id         String @id @default(uuid())
+  code       String @unique
+  timesUsed  Int    @default(0)
   usageLimit Int?
 
-  orders Order[]
-
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  orders      Order[]
+  users       DiscountCodeOnUser[]
+  promotion   Promotion            @relation(fields: [promotionId], references: [id], onDelete: Cascade)
   promotionId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model DiscountCodeOnUser {
+  discountCode   DiscountCode @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
+  discountCodeId String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+
+  createdAt DateTime @default(now())
+
+  @@id([discountCodeId, userId])
 }
 
 model PaymentMethod {

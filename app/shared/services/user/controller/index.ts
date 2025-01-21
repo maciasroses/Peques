@@ -143,14 +143,12 @@ export async function passwordRecovery(formData: FormData) {
       },
     });
 
-    const { data, error } = await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: `Peques <${resend_email}>`,
       to: (user as IUser).email,
       subject: "Recuperación de contraseña",
       react: PasswordRecoveryEmail({ resetPasswordToken }),
     });
-
-    console.log(data, error);
 
     if (error) {
       console.error(error);
@@ -334,38 +332,6 @@ export async function addStripeCustomerIdToMe({
     });
   } catch (error) {
     console.error("Error getting user session:", error);
-    return null; // Retornar null si ocurre un error
-  }
-}
-
-export async function updateOrderInfoDataForStripe(products: string) {
-  try {
-    const session = await getSession();
-    if (!session || !session.userId) return null;
-    return await update({
-      id: session.userId as string,
-      data: {
-        orderInfoDataForStripe: products,
-      },
-    });
-  } catch (error) {
-    console.error("Error updating stripe order info data:", error);
-    return null; // Retornar null si ocurre un error
-  }
-}
-
-export async function clearOrderInfoDataForStripe() {
-  try {
-    const session = await getSession();
-    if (!session || !session.userId) return null;
-    return await update({
-      id: session.userId as string,
-      data: {
-        orderInfoDataForStripe: null,
-      },
-    });
-  } catch (error) {
-    console.error("Error clearing stripe order info data:", error);
     return null; // Retornar null si ocurre un error
   }
 }

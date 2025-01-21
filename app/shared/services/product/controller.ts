@@ -58,7 +58,7 @@ export async function getProducts({
 export async function getProductsForStore({
   q,
   page,
-  category,
+  filters,
   salePriceMXNTo,
   salePriceMXNFrom,
   isAdminRequest = false,
@@ -66,7 +66,7 @@ export async function getProductsForStore({
   try {
     return await read({
       q,
-      category,
+      filters,
       isAdminRequest,
       page: page ? Number(page) : undefined,
       salePriceMXNTo: salePriceMXNTo ? Number(salePriceMXNTo) : undefined,
@@ -132,11 +132,9 @@ export async function getTheBestReviews({
   }
 }
 
-export async function getSimilarProducts({ category }: IProductSearchParams) {
+export async function getSimilarProducts() {
   try {
-    return await read({
-      category,
-    });
+    return await read({});
   } catch (error) {
     console.error(error);
     return [];

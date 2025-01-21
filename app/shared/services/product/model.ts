@@ -39,10 +39,10 @@ export async function read({
   key,
   page = 1,
   limit = 12,
+  filters,
   allData = false,
   orderBy = { updatedAt: "desc" },
   provider,
-  category,
   collection,
   salePriceMXNTo,
   isAdminRequest = false,
@@ -69,7 +69,24 @@ export async function read({
       },
     },
     provider: true,
-    promotions: true,
+    promotions: {
+      include: {
+        promotion: true,
+      },
+    },
+    collections: {
+      include: {
+        collection: {
+          include: {
+            promotions: {
+              include: {
+                promotion: true,
+              },
+            },
+          },
+        },
+      },
+    },
     orders: isAdminRequest ? true : false,
     history: isAdminRequest ? true : false,
     _count: isAdminRequest
@@ -146,10 +163,18 @@ export async function read({
     });
   }
 
+  interface WhereCondition {
+    [key: string]:
+      | { contains: string; mode: "insensitive" }
+      | { equals: string }
+      | { in: string[] }
+      | { some: WhereCondition }
+      | WhereCondition[];
+  }
+
   interface Where {
-    OR?: {
-      [key: string]: { contains: string; mode: "insensitive" };
-    }[];
+    OR?: WhereCondition[];
+    AND?: WhereCondition[];
     provider?: object;
     category?: object;
     collections?: object;
@@ -159,9 +184,27 @@ export async function read({
 
   const where: Where = {};
 
-  if (provider) where.provider = { alias: provider };
+  if (filters) {
+    const filtersSplitted = filters.split(",").map((filter) => {
+      const [key, value] = filter.split("_");
+      return { group: key, filter: value };
+    });
 
-  if (category) where.category = { equals: category };
+    where.AND = filtersSplitted.map((filter) => ({
+      filters: {
+        some: {
+          filter: {
+            key: filter.filter,
+            group: {
+              key: filter.group,
+            },
+          },
+        },
+      },
+    })) as unknown as WhereCondition[];
+  }
+
+  if (provider) where.provider = { alias: provider };
 
   if (salePriceMXNFrom || salePriceMXNTo)
     where.salePriceMXN = { gte: salePriceMXNFrom, lte: salePriceMXNTo };

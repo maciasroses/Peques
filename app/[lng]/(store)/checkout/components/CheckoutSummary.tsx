@@ -6,9 +6,9 @@ import CartSummary from "./CartSummary";
 import CheckoutTab from "./CheckoutTab";
 import { cn } from "@/app/shared/utils/cn";
 import { DownChevron } from "@/app/shared/icons";
-import { IAddress, IUser } from "@/app/shared/interfaces";
 import { useCheckout, useResolvedTheme } from "@/app/shared/hooks";
 import { Loading, GenericBackToPage } from "@/app/shared/components";
+import type { IAddress, IUser } from "@/app/shared/interfaces";
 
 interface ICheckoutSummary {
   lng: string;
@@ -19,14 +19,17 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
   const theme = useResolvedTheme();
   const [activeTab, setActiveTab] = useState(1);
   const [finished, setFinished] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [address, setAddress] = useState<IAddress | null>(
     user.addresses.find((address) => address.isDefault) || null
   );
-
-  const { cart, isLoading, shippingCost } = useCheckout({
-    lng,
-    theme,
-  });
+  const { cart, isLoading, shippingCost, clientSecret, handleSetUpIntent } =
+    useCheckout({
+      lng,
+      theme,
+      addressId: address?.id,
+      paymentMethodId: selectedMethod ?? "",
+    });
 
   const toggleTab = (index: number) => {
     setActiveTab(activeTab === index ? 1 : index);
@@ -103,8 +106,13 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
               lng={lng}
               user={user}
               theme={theme}
+              isLoading={isLoading}
               address={address as IAddress}
+              clientSecret={clientSecret}
               handleFinish={handleFinish}
+              selectedMethod={selectedMethod}
+              handleSetUpIntent={handleSetUpIntent}
+              setSelectedMethod={setSelectedMethod}
             />
           )}
         </div>

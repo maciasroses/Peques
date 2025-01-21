@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { PlusCircle } from "@/app/shared/icons";
-import { useCheckout } from "@/app/shared/hooks";
 import { PaymentMethodCard } from "@/app/shared/components";
 import { loadStripe, StripeElementLocale } from "@stripe/stripe-js";
 import { updateBillingDetails } from "@/app/shared/services/stripe/payment";
@@ -26,7 +25,12 @@ interface ICheckoutTab {
   user: IUser;
   theme: string;
   address: IAddress;
+  isLoading: boolean;
+  clientSecret: string;
   handleFinish: () => void;
+  selectedMethod: string | null;
+  handleSetUpIntent: (value: boolean) => void;
+  setSelectedMethod: (method: string | null) => void;
 }
 
 const CheckoutTab = ({
@@ -34,16 +38,13 @@ const CheckoutTab = ({
   user,
   theme,
   address,
+  isLoading,
+  clientSecret,
   handleFinish,
+  selectedMethod,
+  handleSetUpIntent,
+  setSelectedMethod,
 }: ICheckoutTab) => {
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
-  const { isLoading, clientSecret, handleSetUpIntent } = useCheckout({
-    lng,
-    theme,
-    addressId: address.id,
-    paymentMethodId: selectedMethod ?? "",
-  });
-
   const appearance: {
     theme: "night" | "stripe";
   } = {

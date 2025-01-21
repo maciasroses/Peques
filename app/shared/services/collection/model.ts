@@ -28,6 +28,15 @@ export async function read({
         isActive: isAdminRequest ? undefined : true,
       },
     },
+    filters: {
+      include: {
+        group: {
+          include: {
+            filters: true,
+          },
+        },
+      },
+    },
     products: {
       include: {
         product: {

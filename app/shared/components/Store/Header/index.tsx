@@ -15,16 +15,22 @@ import HamburgerLinksMenu from "./HamburgerLinksMenu";
 import { cn } from "@/app/shared/utils/cn";
 import { Search, UserIcon } from "@/app/shared/icons";
 import { useScrollVisibility, useToggleMenu } from "@/app/shared/hooks";
-import type { IUser, IProduct, ICollection } from "@/app/shared/interfaces";
+import type {
+  IUser,
+  IProduct,
+  ICollection,
+  IFilterGroup,
+} from "@/app/shared/interfaces";
 
 interface IHeader {
   lng: string;
   user: IUser | null;
   products: IProduct[];
+  filters: IFilterGroup[];
   collections: ICollection[];
 }
 
-const Header = ({ lng, user, products, collections }: IHeader) => {
+const Header = ({ lng, user, products, filters, collections }: IHeader) => {
   const pathname = usePathname();
   const isAdmin = user?.role === "ADMIN";
 
@@ -138,7 +144,7 @@ const Header = ({ lng, user, products, collections }: IHeader) => {
             </li>
             {pathname === `/${lng}/search` && isSearchBarOpen && (
               <li className="md:hidden">
-                <FiltersMenu lng={lng} />
+                <FiltersMenu lng={lng} filters_available={filters} />
               </li>
             )}
           </ul>

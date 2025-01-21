@@ -6,10 +6,10 @@ import HeroSlider from "./HeroSlider";
 import StarRating from "./StarRating";
 import ReviewList from "./ReviewList";
 import ProductList from "./ProductList";
-import AddCustomList from "./CustomList";
 import ImageGallery from "./ImageGallery";
 import FullCollection from "./FullCollection";
 import CollectionsList from "./CollectionsList";
+import { AddToCustomList, DeleteFromCustomList } from "./CustomList";
 
 export {
   Header,
@@ -21,7 +21,8 @@ export {
   StarRating,
   ProductList,
   ImageGallery,
-  AddCustomList,
   FullCollection,
   CollectionsList,
+  AddToCustomList,
+  DeleteFromCustomList,
 };

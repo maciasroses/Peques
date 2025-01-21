@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Card404 } from "@/app/shared/components";
+import { Card404, ProductCard } from "@/app/shared/components";
 import { notFound } from "next/navigation";
 import { LeftArrow } from "@/app/shared/icons";
-import { ProductCard } from "./components";
+// import { ProductCard } from "./components";
 import { getMyListByName } from "@/app/shared/services/customList/controller";
 import type { ICustomList } from "@/app/shared/interfaces";
 
@@ -41,10 +41,11 @@ const ListPage = async ({ params: { lng, name } }: IListPage) => {
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {customList.products.map((product) => (
             <ProductCard
-              key={product.productId}
               lng={lng}
-              customListId={customList.id}
+              isForCustomList
+              key={product.productId}
               product={product.product}
+              customListId={customList.id}
             />
           ))}
         </div>

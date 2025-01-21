@@ -30,7 +30,19 @@ export async function read({
   const globalInclude = {
     orders: true,
     reviews: true,
-    customLists: true,
+    customLists: {
+      include: {
+        products: {
+          include: {
+            product: {
+              include: {
+                files: true,
+              },
+            },
+          },
+        },
+      },
+    },
     stockReservations: true,
     addresses: {
       where: {

@@ -1,23 +1,15 @@
 "use client";
 
 import { ProductCard } from "@/app/shared/components";
-import type { ICustomList, IProduct } from "@/app/shared/interfaces";
+import type { IProduct } from "@/app/shared/interfaces";
 
 interface IProductList {
   lng: string;
   title: string;
-  userId: string;
   products: IProduct[];
-  myLists: ICustomList[];
 }
 
-const ProductList = ({
-  lng,
-  title,
-  userId,
-  myLists,
-  products,
-}: IProductList) => {
+const ProductList = ({ lng, title, products }: IProductList) => {
   if (products.length === 0) return null;
   return (
     <section>
@@ -27,12 +19,7 @@ const ProductList = ({
       <ul className="flex pr-5 overflow-x-auto items-start w-full max-w-min mx-auto">
         {products.map((product, index) => (
           <li key={index} className="min-w-[250px] md:min-w-[500px] ml-5">
-            <ProductCard
-              lng={lng}
-              userId={userId}
-              myLists={myLists}
-              product={product}
-            />
+            <ProductCard lng={lng} product={product} />
           </li>
         ))}
       </ul>

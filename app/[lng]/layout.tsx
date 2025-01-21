@@ -19,7 +19,9 @@ import type {
   IProduct,
   ICollection,
   IBaseLangPage,
+  IFilterGroup,
 } from "@/app/shared/interfaces";
+import prisma from "../shared/services/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +48,20 @@ export default async function RootLayout({
   const me = (await getMe()) as IUser;
   const products = (await getAllProducts()) as IProduct[];
   const collections = (await getAllCollections()) as ICollection[];
+  const available_filters = (await prisma.filterGroup.findMany({
+    include: {
+      filters: true,
+      collections: {
+        select: {
+          collection: {
+            select: {
+              link: true,
+            },
+          },
+        },
+      },
+    },
+  })) as IFilterGroup[];
 
   return (
     <html lang={lng} dir={dir(lng)}>
@@ -62,6 +78,7 @@ export default async function RootLayout({
                 lng={lng}
                 products={products}
                 collections={collections}
+                filters={available_filters}
               />
               <main className="bg-white dark:bg-gray-900 w-full min-h-screen mx-auto">
                 {children}

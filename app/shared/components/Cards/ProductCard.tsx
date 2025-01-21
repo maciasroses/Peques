@@ -1,33 +1,38 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/app/shared/hooks";
 import formatCurrency from "@/app/shared/utils/format-currency";
-import { AddToCart, AddCustomList, StarRating } from "@/app/shared/components";
-import type {
-  ICustomList,
-  IProduct,
-  IPromotion,
-} from "@/app/shared/interfaces";
+import {
+  AddToCart,
+  AddToCustomList,
+  DeleteFromCustomList,
+  StarRating,
+} from "@/app/shared/components";
+import type { IProduct, IPromotion } from "@/app/shared/interfaces";
 
 interface IProductCard {
   lng: string;
-  userId: string;
   product: IProduct;
-  myLists: ICustomList[];
-  promotions?: IPromotion[];
+  customListId?: string;
+  isForCustomList?: boolean;
 }
 
 const ProductCard = ({
   lng,
-  userId,
   product,
-  myLists,
-  promotions,
+  customListId,
+  isForCustomList = false,
 }: IProductCard) => {
-  const isFavorite = myLists.some((list) => {
-    return list.products.some(
-      (myProduct) => myProduct.productId === product.id
-    );
-  });
+  const { user } = useAuth();
+
+  const isFavorite =
+    user?.customLists.some((list) => {
+      return list.products.some(
+        (myProduct) => myProduct.productId === product.id
+      );
+    }) || false;
 
   const averageRating = product.reviews.length
     ? Number(
@@ -38,28 +43,56 @@ const ProductCard = ({
       )
     : 0;
 
-  // Filtra las promociones aplicables al producto o a su categoría
-  const applicablePromotions = promotions?.filter(
-    (promotion) =>
-      promotion.products.some(
-        (promoProduct) => promoProduct.productId === product.id
-      ) ||
-      promotion.categories.some(
-        (promoCategory) =>
-          promoCategory.productCategoryId === product.categoryId
-      )
-  );
+  // Filter active promotions applicable to the product or its category
+  const applicablePromotions = [
+    ...product.promotions
+      .map((promotion) => promotion.promotion)
+      .filter(
+        (promo) =>
+          promo.isActive &&
+          new Date(promo.startDate) <= new Date() &&
+          new Date(promo.endDate) >= new Date()
+      ),
+    ...product.collections.flatMap((collection) =>
+      collection.collection.promotions
+        .map((promotion) => promotion.promotion)
+        .filter(
+          (promo) =>
+            promo.isActive &&
+            new Date(promo.startDate) <= new Date() &&
+            new Date(promo.endDate) >= new Date()
+        )
+    ),
+  ];
 
-  // Selecciona la promoción más relevante (por ejemplo, mayor descuento)
-  const selectedPromotion = applicablePromotions?.reduce<IPromotion | null>(
+  // Select the best promotion based on the total discount
+  const selectedPromotion = applicablePromotions.reduce<IPromotion | null>(
     (bestPromo, promo) => {
-      if (!bestPromo) return promo;
-      return promo.discountValue > bestPromo.discountValue ? promo : bestPromo;
+      const calculateEffectiveDiscount = (promotion: IPromotion) => {
+        if (promotion.discountType === "PERCENTAGE") {
+          return (promotion.discountValue / 100) * product.salePriceMXN;
+        }
+        if (promotion.discountType === "FIXED") {
+          return promotion.discountValue;
+        }
+        return 0; // No discount
+      };
+
+      const currentDiscount = calculateEffectiveDiscount(promo);
+      const bestDiscount = bestPromo
+        ? calculateEffectiveDiscount(bestPromo)
+        : 0;
+
+      if (!bestPromo || currentDiscount > bestDiscount) {
+        return promo;
+      }
+
+      return bestPromo;
     },
     null
   );
 
-  // Calcula el precio con descuento (si aplica)
+  // Calculate the price with discount (if applicable)
   const discountedPrice = selectedPromotion
     ? product.salePriceMXN -
       (selectedPromotion.discountType === "PERCENTAGE"
@@ -92,13 +125,20 @@ const ProductCard = ({
             rating={averageRating}
             totalReviews={product.reviews.length}
           />
-          <AddCustomList
-            lng={lng}
-            userId={userId}
-            myLists={myLists}
-            productId={product.id}
-            isFavorite={isFavorite}
-          />
+          {isForCustomList && customListId ? (
+            <DeleteFromCustomList
+              lng={lng}
+              product={product}
+              customListId={customListId}
+            />
+          ) : (
+            <AddToCustomList
+              lng={lng}
+              user={user}
+              productId={product.id}
+              isFavorite={isFavorite}
+            />
+          )}
         </div>
         <Link href={`/${lng}/${product.key}`}>
           <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
@@ -122,7 +162,12 @@ const ProductCard = ({
             )}
           </div>
         </Link>
-        <AddToCart product={product} />
+        <AddToCart
+          product={product}
+          price={discountedPrice}
+          discount={discountDescription}
+          promotionId={selectedPromotion?.id || null}
+        />
       </div>
     </div>
   );

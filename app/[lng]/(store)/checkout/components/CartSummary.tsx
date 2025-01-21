@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import { cn } from "@/app/shared/utils/cn";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import type { ICartItemForFrontend } from "@/app/shared/interfaces";
+import { GenericInput, SubmitButton } from "@/app/shared/components";
 
 interface ICartSummary {
   lng: string;
@@ -34,12 +37,24 @@ const CartSummary = ({ lng, cart, finished, shippingCost }: ICartSummary) => {
               </div>
               <p className="text-base sm:text-xl">{item.name}</p>
             </div>
-            <p className="text-sm sm:text-lg">
-              {item.quantity} x{" "}
-              <span className="font-semibold">
-                {formatCurrency(item.price, "MXN")}
-              </span>
-            </p>
+            <div className="flex flex-col items-end gap-2">
+              {item.discount && (
+                <>
+                  <p className="text-sm line-through text-gray-500 dark:text-gray-400">
+                    {formatCurrency(item.price, "MXN")}
+                  </p>
+                  <p className="text-sm text-green-600 dark:text-green-400 text-right">
+                    {item.discount}
+                  </p>
+                </>
+              )}
+              <p className="text-sm sm:text-lg">
+                {item.quantity} x{" "}
+                <span className="font-semibold">
+                  {formatCurrency(item.finalPrice, "MXN")}
+                </span>
+              </p>
+            </div>
           </li>
         ))}
       </ul>
@@ -53,7 +68,10 @@ const CartSummary = ({ lng, cart, finished, shippingCost }: ICartSummary) => {
         Subtotal:{" "}
         <span className="font-bold">
           {formatCurrency(
-            cart.reduce((acc, item) => acc + item.price * item.quantity, 0),
+            cart.reduce(
+              (acc, item) => acc + item.finalPrice * item.quantity,
+              0
+            ),
             "MXN"
           )}
         </span>
@@ -62,12 +80,27 @@ const CartSummary = ({ lng, cart, finished, shippingCost }: ICartSummary) => {
         Total:{" "}
         <span className="font-bold">
           {formatCurrency(
-            cart.reduce((acc, item) => acc + item.price * item.quantity, 0) +
-              99,
+            cart.reduce(
+              (acc, item) => acc + item.finalPrice * item.quantity,
+              0
+            ) +
+              shippingCost / 100,
             "MXN"
           )}
         </span>
       </p>
+      <form>
+        <div className="flex flex-col gap-2 my-2">
+          <GenericInput
+            id="code"
+            type="text"
+            ariaLabel="¿Tienes un cupón?"
+            placeholder="WELCOME10"
+            className="w-36"
+          />
+        </div>
+        <SubmitButton pending={false} title="Aplicar" color="primary" />
+      </form>
     </div>
   );
 };

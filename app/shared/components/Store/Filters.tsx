@@ -2,16 +2,17 @@
 
 import { cn } from "@/app/shared/utils/cn";
 import { useEffect, useState } from "react";
-import { NEW_FILTERS } from "@/app/shared/constants";
+import { LeftChevron } from "@/app/shared/icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CollectionKeys } from "../../interfaces";
+import type { IFilterGroup } from "@/app/shared/interfaces";
 
 interface IFiltersComp {
   lng?: string;
-  collection?: CollectionKeys;
+  collection?: string;
+  filters: IFilterGroup[];
 }
 
-const Filters = ({ lng, collection }: IFiltersComp) => {
+const Filters = ({ lng, filters, collection }: IFiltersComp) => {
   const pathname = usePathname();
   const { replace } = useRouter();
   const searchParams = useSearchParams();
@@ -51,10 +52,12 @@ const Filters = ({ lng, collection }: IFiltersComp) => {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  const [activeTab, setActiveTab] = useState(1);
-
-  const toggleTab = (index: number) => {
-    setActiveTab(activeTab === index ? 1 : index);
+  const handleClearPrice = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("page");
+    params.delete("salePriceMXNTo");
+    params.delete("salePriceMXNFrom");
+    replace(`${pathname}?${params.toString()}`);
   };
 
   const handleFilter = (filter: string, group: string) => {
@@ -78,64 +81,106 @@ const Filters = ({ lng, collection }: IFiltersComp) => {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  // const filteredByCollection = pathname.includes("collections")
-  //   ? (pathname.split("/")[2] as CollectionKeys)
-  //   : null;
+  const handleClearFilter = (group: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("page"); // Reset pagination when changing filters
 
-  const isValidCollection = collection && collection in NEW_FILTERS;
+    // Obtener los filtros actuales
+    const currentFilters = params.get("filters")?.split(",") || [];
 
-  const FILTERS = isValidCollection
-    ? NEW_FILTERS[collection]?.filters || []
-    : Object.values(NEW_FILTERS).flatMap((collection) => collection.filters);
+    // Filtrar solo el filtro del grupo actual si ya existe y eliminarlo
+    const updatedFilters = currentFilters.filter(
+      (f) => !f.startsWith(`${group}_`) // Eliminar cualquier filtro del grupo actual
+    );
+
+    const filtersEmpty = updatedFilters.length === 0;
+
+    if (filtersEmpty) {
+      params.delete("filters");
+    } else {
+      // Establecer los filtros actualizados en los parámetros de búsqueda
+      params.set("filters", updatedFilters.join(","));
+    }
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  const handleClearAllFilters = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("filters");
+    params.delete("salePriceMXNTo");
+    params.delete("salePriceMXNFrom");
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  const FILTERS = collection
+    ? filters.filter((filter) =>
+        filter.collections.some((col) => col.collection.link === collection)
+      )
+    : filters;
 
   return (
     <ul className="flex flex-col gap-4">
-      {FILTERS.map((filter, index) => (
-        <li key={filter.key} className="transition duration-200">
-          <button onClick={() => toggleTab(index + 1)}>
-            <p className="font-medium text-lg">{filter.group}</p>
-          </button>
-          <ul
-            className={cn(
-              "transition duration-200",
-              activeTab === index + 1 ? "block" : "hidden"
-            )}
-          >
-            {filter.options.map((option) => (
-              <li key={option}>
+      <li
+        className={cn(
+          "hidden",
+          (searchParams.get("filters") ||
+            searchParams.get("salePriceMXNTo") ||
+            searchParams.get("salePriceMXNFrom")) &&
+            "block text-lg text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-300"
+        )}
+      >
+        <button
+          title="Limpiar todos los filtros"
+          onClick={() => handleClearAllFilters()}
+          className="inline-flex items-center gap-1 mr-6"
+        >
+          <LeftChevron />
+          <span className="line-clamp-1 text-left">
+            Limpiar todos los filtros
+          </span>
+        </button>
+      </li>
+      {FILTERS.map((filter) => (
+        <li key={filter.key}>
+          <p className="font-medium text-lg">{filter.name}</p>
+          <ul>
+            {filter.filters.map((option) => (
+              <li key={option.id}>
                 <button
                   className={cn(
                     "text-sm text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-300 ml-5",
                     searchParams
                       .get("filters")
-                      ?.includes(
-                        `${filter.key}_${option.toLowerCase().replace(/\s+/g, "-")}`
-                      ) && "text-blue-600 dark:text-blue-300"
+                      ?.includes(`${filter.key}_${option.key}`) &&
+                      "text-blue-600 dark:text-blue-300"
                   )}
                   onClick={() => {
-                    handleFilter(option, filter.key);
+                    handleFilter(option.key, filter.key);
                   }}
                 >
-                  {option}
+                  {option.name}
                 </button>
               </li>
             ))}
-          </ul>
-
-          {/* <select
-                onChange={(e) => {
-                  // Usar handleFilter con el grupo y la opción seleccionada
-                  const selectedFilter = e.target.value;
-                  handleFilter(selectedFilter, filter.key);
-                }}
+            <li
+              className={cn(
+                "hidden",
+                searchParams.get("filters")?.includes(filter.key) &&
+                  "block mt-2 ml-5 text-sm text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-300"
+              )}
+            >
+              <button
+                title={`Limpiar filtro "${filter.name}"`}
+                onClick={() => handleClearFilter(filter.key)}
+                className="inline-flex items-center gap-1"
               >
-                <option value="">Seleccionar</option>
-                {filter.options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select> */}
+                <LeftChevron size="size-4" />
+                <span className="line-clamp-1 text-left">
+                  Limpiar filtro {`"${filter.name}"`}
+                </span>
+              </button>
+            </li>
+          </ul>
         </li>
       ))}
       <li>
@@ -158,6 +203,21 @@ const Filters = ({ lng, collection }: IFiltersComp) => {
           </div>
           <button type="submit" className="link-button-blue">
             Aplicar
+          </button>
+          <button
+            type="button"
+            onClick={() => handleClearPrice()}
+            className={cn(
+              "hidden",
+              (searchParams.get("salePriceMXNTo") ||
+                searchParams.get("salePriceMXNFrom")) &&
+                "block"
+            )}
+          >
+            <p className="inline-flex items-center gap-1 line-clamp-1 text-left text-sm mt-2">
+              <LeftChevron size="size-4" />
+              <span>Limpiar filtro precio</span>
+            </p>
           </button>
         </form>
       </li>

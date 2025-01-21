@@ -6,18 +6,24 @@ import { useCart, useResolvedTheme } from "@/app/shared/hooks";
 import type { IProduct } from "@/app/shared/interfaces";
 
 interface IAddToCart {
+  price: number;
   product: IProduct;
+  discount?: string | null;
+  promotionId?: string | null;
 }
 
-const AddToCart = ({ product }: IAddToCart) => {
+const AddToCart = ({ price, product, discount, promotionId }: IAddToCart) => {
   const theme = useResolvedTheme();
   const { cart, addToCart } = useCart();
 
   const handleAddToCart = () => {
     addToCart({
       quantity: 1,
+      promotionId,
       id: product.key,
+      finalPrice: price,
       name: product.name,
+      discount: discount,
       file: product.files[0].url,
       price: product.salePriceMXN,
     });

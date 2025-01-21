@@ -118,8 +118,19 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                         )}
                       </div>
                       <p className="font-semibold">{item.name}</p>
+                      {item.discount && (
+                        <>
+                          <p className="text-sm line-through text-gray-500 dark:text-gray-400">
+                            {formatCurrency(item.price, "MXN")}
+                          </p>
+                          <p className="text-sm text-green-600 dark:text-green-400">
+                            {item.discount}
+                          </p>
+                        </>
+                      )}
                       <p className="text-sm text-gray-800 dark:text-gray-200">
-                        {item.quantity} x {formatCurrency(item.price, "MXN")}
+                        {item.quantity} x{" "}
+                        {formatCurrency(item.finalPrice, "MXN")}
                       </p>
                       <button
                         className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500"
@@ -140,7 +151,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                 <span className="font-bold">
                   {formatCurrency(
                     cart.reduce(
-                      (acc, item) => acc + item.price * item.quantity,
+                      (acc, item) => acc + item.finalPrice * item.quantity,
                       0
                     ),
                     "MXN"

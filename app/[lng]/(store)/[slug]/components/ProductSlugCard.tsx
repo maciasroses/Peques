@@ -8,30 +8,27 @@ import { cn } from "@/app/shared/utils/cn";
 import { HandThumbUp } from "@/app/shared/icons";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
-import { useModal, useImageZoom, useDisableScroll } from "@/app/shared/hooks";
+import {
+  useModal,
+  useImageZoom,
+  useDisableScroll,
+  useAuth,
+} from "@/app/shared/hooks";
 import {
   AddToCart,
   StarRating,
   ImageGallery,
-  AddCustomList,
+  AddToCustomList,
 } from "@/app/shared/components";
-import type { IProduct, ICustomList } from "@/app/shared/interfaces";
+import type { IProduct, IPromotion } from "@/app/shared/interfaces";
 
 interface IProductSlugCard {
   lng: string;
-  userId: string;
   product: IProduct;
-  isFavorite: boolean;
-  myLists: ICustomList[];
 }
 
-const ProductSlugCard = ({
-  lng,
-  userId,
-  product,
-  myLists,
-  isFavorite,
-}: IProductSlugCard) => {
+const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
+  const { user } = useAuth();
   const { isOpen, onOpen, onClose } = useModal();
   const [selectedImageId, setSelectedImageId] = useState(product.files[0]?.id);
 
@@ -49,6 +46,13 @@ const ProductSlugCard = ({
     handleMouseLeave,
   } = useImageZoom();
 
+  const isFavorite =
+    user?.customLists.some((list) => {
+      return list.products.some(
+        (myProduct) => myProduct.productId === product.id
+      );
+    }) || false;
+
   const averageRating = product.reviews.length
     ? Number(
         (
@@ -65,6 +69,69 @@ const ProductSlugCard = ({
     },
     {}
   );
+
+  // Filter active promotions applicable to the product or its category
+  const applicablePromotions = [
+    ...product.promotions
+      .map((promotion) => promotion.promotion)
+      .filter(
+        (promo) =>
+          promo.isActive &&
+          new Date(promo.startDate) <= new Date() &&
+          new Date(promo.endDate) >= new Date()
+      ),
+    ...product.collections.flatMap((collection) =>
+      collection.collection.promotions
+        .map((promotion) => promotion.promotion)
+        .filter(
+          (promo) =>
+            promo.isActive &&
+            new Date(promo.startDate) <= new Date() &&
+            new Date(promo.endDate) >= new Date()
+        )
+    ),
+  ];
+
+  // Select the best promotion based on the total discount
+  const selectedPromotion = applicablePromotions.reduce<IPromotion | null>(
+    (bestPromo, promo) => {
+      const calculateEffectiveDiscount = (promotion: IPromotion) => {
+        if (promotion.discountType === "PERCENTAGE") {
+          return (promotion.discountValue / 100) * product.salePriceMXN;
+        }
+        if (promotion.discountType === "FIXED") {
+          return promotion.discountValue;
+        }
+        return 0; // No discount
+      };
+
+      const currentDiscount = calculateEffectiveDiscount(promo);
+      const bestDiscount = bestPromo
+        ? calculateEffectiveDiscount(bestPromo)
+        : 0;
+
+      if (!bestPromo || currentDiscount > bestDiscount) {
+        return promo;
+      }
+
+      return bestPromo;
+    },
+    null
+  );
+
+  // Calculate the price with discount (if applicable)
+  const discountedPrice = selectedPromotion
+    ? product.salePriceMXN -
+      (selectedPromotion.discountType === "PERCENTAGE"
+        ? (selectedPromotion.discountValue / 100) * product.salePriceMXN
+        : selectedPromotion.discountValue)
+    : product.salePriceMXN;
+
+  const discountDescription = selectedPromotion
+    ? selectedPromotion.discountType === "PERCENTAGE"
+      ? `${selectedPromotion.discountValue}% de descuento`
+      : `Descuento de ${formatCurrency(selectedPromotion.discountValue, "MXN")}`
+    : null;
 
   return (
     <>
@@ -134,10 +201,9 @@ const ProductSlugCard = ({
               <h1 className="text-2xl md:text-5xl lg:text-9xl font-bold truncate">
                 {product.name}
               </h1>
-              <AddCustomList
+              <AddToCustomList
                 lng={lng}
-                userId={userId}
-                myLists={myLists}
+                user={user}
                 productId={product.id}
                 isFavorite={isFavorite}
               />
@@ -147,13 +213,32 @@ const ProductSlugCard = ({
                 rating={averageRating}
                 totalReviews={product.reviews.length}
               />
-              <p className="text-lg md:text-2xl lg:text-5xl">
-                {formatCurrency(product.salePriceMXN, "MXN")}
-              </p>
+              <div className="flex flex-col">
+                <div className="flex items-baseline gap-2">
+                  {selectedPromotion && (
+                    <span className="text-sm md:text-lg lg:text-3xl font-semibold line-through text-gray-500 dark:text-gray-400">
+                      {formatCurrency(product.salePriceMXN, "MXN")}
+                    </span>
+                  )}
+                  <span className="text-lg md:text-2xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+                    {formatCurrency(discountedPrice, "MXN")}
+                  </span>
+                </div>
+                {discountDescription && (
+                  <span className="text-sm md:text-lg lg:text-3xl font-medium text-green-600 dark:text-green-400">
+                    {discountDescription}
+                  </span>
+                )}
+              </div>
               <p className="text-base md:text-xl lg:text-4xl">
                 {product.description}
               </p>
-              <AddToCart product={product} />
+              <AddToCart
+                product={product}
+                price={discountedPrice}
+                discount={discountDescription}
+                promotionId={selectedPromotion?.id || null}
+              />
             </div>
           </div>
           <div

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
 import { useCart } from "@/app/shared/hooks";
 import { Toast } from "@/app/shared/components";
+import { useState, useEffect, useRef } from "react";
+import { createMyNewCart } from "../services/cart/controller";
 import {
   reserverStock,
   checkNUpdateStock,
@@ -24,6 +25,7 @@ export const useCheckout = ({
   addressId,
   paymentMethodId,
 }: UseCheckoutProps) => {
+  const hasCheckedStock = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const { cart, clearCart, addToCart } = useCart();
   const [clientSecret, setClientSecret] = useState("");
@@ -32,21 +34,28 @@ export const useCheckout = ({
   const [isStockChecked, setIsStockChecked] = useState(false);
   const [updatedCart, setUpdatedCart] = useState<ICartItemForFrontend[]>([]);
 
-  const shippingCost = 99 * 100; // Change this to a dynamic value, and it is multiplied by 100 for cents
+  const shippingCost = 190 * 100; // Change this to a dynamic value, and it is multiplied by 100 for cents
 
   // Step 1: Check and update stock
   useEffect(() => {
     const handleStockCheck = async () => {
+      if (hasCheckedStock.current) return;
+      hasCheckedStock.current = true;
+
       const newCart = await checkNUpdateStock(cart);
       const hasChanges = newCart.some(
         (item, i) =>
           !cart[i] ||
           cart[i].id !== item.id ||
-          cart[i].quantity !== item.quantity
+          cart[i].quantity !== item.quantity ||
+          cart[i].discount !== item.discount ||
+          cart[i].finalPrice !== item.finalPrice ||
+          cart[i].promotionId !== item.promotionId
       );
 
       if (hasChanges) {
         clearCart();
+        await createMyNewCart();
         newCart.forEach(addToCart);
         setChangesInCart(true);
       }

@@ -1,22 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { TrashIcon } from "@/app/shared/icons";
+import { Modal, Toast } from "@/app/shared/components";
 import { useResolvedTheme } from "@/app/shared/hooks";
-import formatCurrency from "@/app/shared/utils/format-currency";
-import { AddToCart, Modal, Toast } from "@/app/shared/components";
 import { deleteProductFromCustomList } from "@/app/shared/services/customList/controller";
 import type { IProduct } from "@/app/shared/interfaces";
 
-interface IProductCard {
+interface IDeleteFromCustomList {
   lng: string;
   product: IProduct;
   customListId: string;
 }
 
-const ProductCard = ({ lng, product, customListId }: IProductCard) => {
+const DeleteFromCustomList = ({
+  lng,
+  product,
+  customListId,
+}: IDeleteFromCustomList) => {
   const theme = useResolvedTheme();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -48,6 +49,13 @@ const ProductCard = ({ lng, product, customListId }: IProductCard) => {
 
   return (
     <>
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className="text-red-600 dark:text-red-300 hover:text-red-700 dark:hover:text-red-400"
+      >
+        <TrashIcon />
+      </button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <div className="flex flex-col gap-4">
           <h1 className="text-xl md:text-4xl">
@@ -68,42 +76,8 @@ const ProductCard = ({ lng, product, customListId }: IProductCard) => {
           </div>
         </div>
       </Modal>
-      <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-        <Link
-          href={`/${lng}/${product.key}`}
-          className="flex justify-center p-8"
-        >
-          <Image
-            className="size-auto"
-            alt={product.name}
-            src={product.files[0].url}
-            width={500}
-            height={300}
-          />
-        </Link>
-        <div className="flex flex-col gap-2 px-5 pb-5 relative">
-          <div className="absolute top-0 right-5">
-            <button
-              type="button"
-              onClick={() => setIsOpen(true)}
-              className="text-red-600 dark:text-red-300 hover:text-red-700 dark:hover:text-red-400"
-            >
-              <TrashIcon />
-            </button>
-          </div>
-          <Link href={`/${lng}/${product.key}`}>
-            <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-              {product.name}
-            </h1>
-            <span className="text-3xl font-bold text-gray-900 dark:text-white">
-              {formatCurrency(product.salePriceMXN, "MXN")}
-            </span>
-          </Link>
-          <AddToCart product={product} />
-        </div>
-      </div>
     </>
   );
 };
 
-export default ProductCard;
+export default DeleteFromCustomList;

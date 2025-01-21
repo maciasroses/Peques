@@ -3,8 +3,9 @@
 import { getSession } from "@/app/shared/services/auth";
 import { getProductByKey } from "@/app/shared/services/product/controller";
 import {
-  readCart,
   createCart,
+  readCart,
+  updateCart,
   deleteCart,
   createCartItem,
   deleteCartItem,
@@ -58,6 +59,10 @@ export async function addToMyCart(item: ICartItemForFrontend) {
     const totalQuantity =
       (existingItem ? existingItem.quantity : 0) + item.quantity;
 
+    const promotionCreation = item.promotionId
+      ? { promotion: { connect: { id: item.promotionId } } }
+      : {};
+
     if (existingItem) {
       await updateCartItem({
         where: { id: existingItem.id },
@@ -66,9 +71,12 @@ export async function addToMyCart(item: ICartItemForFrontend) {
     } else {
       await createCartItem({
         data: {
+          ...promotionCreation,
           cart: { connect: { id: cart.id } },
           product: { connect: { id: productItem.id } },
           quantity: item.quantity,
+          discount: item.discount,
+          finalPriceMXN: item.finalPrice, // convert to cents in the checkout page for Stripe
           priceMXN: item.price, // convert to cents in the checkout page for Stripe
         },
       });
@@ -140,6 +148,10 @@ export async function mergeCarts(localCart: ICartItemForFrontend[]) {
       const totalQuantity =
         (remoteItem ? remoteItem.quantity : 0) + localItem.quantity;
 
+      const promotionCreation = localItem.promotionId
+        ? { promotion: { connect: { id: localItem.promotionId } } }
+        : {};
+
       if (remoteItem) {
         await updateCartItem({
           where: { id: remoteItem.id },
@@ -148,10 +160,13 @@ export async function mergeCarts(localCart: ICartItemForFrontend[]) {
       } else {
         await createCartItem({
           data: {
+            ...promotionCreation,
             cart: { connect: { id: remoteCart.id } },
             product: { connect: { id: product.id } },
             quantity: localItem.quantity,
             priceMXN: product.salePriceMXN, // convert to cents in the checkout page for Stripe
+            finalPriceMXN: localItem.finalPrice, // convert to cents in the checkout page for Stripe
+            discount: localItem.discount,
           },
         });
       }
@@ -159,5 +174,41 @@ export async function mergeCarts(localCart: ICartItemForFrontend[]) {
   } catch (error) {
     console.error("Error al fusionar el carrito:", error);
     return null;
+  }
+}
+
+export async function updateOrderInfoDataForStripe(products: string) {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) return null;
+    return await updateCart({
+      where: {
+        userId: session.userId as string,
+      },
+      data: {
+        orderInfoDataForStripe: products,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating stripe order info data:", error);
+    return null; // Retornar null si ocurre un error
+  }
+}
+
+export async function clearOrderInfoDataForStripe() {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) return null;
+    return await updateCart({
+      where: {
+        userId: session.userId as string,
+      },
+      data: {
+        orderInfoDataForStripe: null,
+      },
+    });
+  } catch (error) {
+    console.error("Error clearing stripe order info data:", error);
+    return null; // Retornar null si ocurre un error
   }
 }

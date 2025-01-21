@@ -14,7 +14,7 @@ import {
 } from "@/app/shared/services/stock/model";
 import { createInventoryTransactionThroughStripeWebHook } from "@/app/shared/services/inventoryTrans/controller";
 import type {
-  IUser,
+  ICart,
   IOrder,
   IStockReservation,
   IOrderInfoForEmail,
@@ -111,28 +111,41 @@ export async function POST(req: NextRequest) {
 
       try {
         await prisma.$transaction(async () => {
-          const me = (await prisma.user.findUnique({
-            where: { id: userId },
-          })) as IUser;
+          const cart = (await prisma.cart.findUnique({
+            where: { userId },
+          })) as ICart;
 
-          if (!me || !me.orderInfoDataForStripe) {
-            console.error("❌ Missing order info data for Stripe");
-            return new NextResponse("Missing order info data for Stripe", {
+          if (!cart || !cart.orderInfoDataForStripe) {
+            console.error("❌ Missing cart order info data for Stripe");
+            return new NextResponse("Missing cart order info data for Stripe", {
               status: 400,
             });
           }
 
           const parsedProducts = genericParseJSON<IProductFromStripe[]>(
-            me.orderInfoDataForStripe
+            cart.orderInfoDataForStripe
           );
+
+          const uniquePromotionIds = [
+            ...new Set(
+              parsedProducts
+                .map((product) => product.promotionId)
+                .filter((id) => id !== null)
+            ),
+          ];
 
           const order = (await createOrderThroughStripeWebHook({
             userId,
+            promotionsIds: uniquePromotionIds,
+            shippingCost: Number(shippingCost),
             amount: Number(charge.amount / 100),
             addressId,
             stripePaymentMethodId: charge.payment_method as string,
             productsIds: parsedProducts.map((product) => product.id),
             productsPrices: parsedProducts.map((product) => product.price),
+            productsFinalPrices: parsedProducts.map(
+              (product) => product.finalPrice
+            ),
             productsQuantities: parsedProducts.map(
               (product) => product.quantity
             ),
@@ -153,8 +166,9 @@ export async function POST(req: NextRequest) {
             if (reservation) {
               await createInventoryTransactionThroughStripeWebHook({
                 productId,
+                orderId: order.id,
                 quantity: reservation.quantity,
-                description: `Product ${productId} sold in order ${order.id}`,
+                description: `Producto ${product.name} vendido ${product.discount ? `con la promoción ${product.discount}` : ""} por el precio de ${product.finalPrice}`,
               });
               await deleteStockReservation(reservation.id);
             }

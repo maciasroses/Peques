@@ -54,7 +54,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
               name: item.product.name,
               quantity: item.quantity,
               price: item.priceMXN,
+              finalPrice: item.finalPriceMXN,
+              discount: item.discount,
               file: item.product.files[0]?.url || "",
+              promotionId: item.promotionId,
             }))
           );
         } else {

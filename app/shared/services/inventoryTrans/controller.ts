@@ -3,12 +3,14 @@
 import { create } from "./model";
 
 interface ICreateInventoryTransaction {
+  orderId: string;
   quantity: number;
   productId: string;
   description: string;
 }
 
 export async function createInventoryTransactionThroughStripeWebHook({
+  orderId,
   quantity,
   productId,
   description,
@@ -16,6 +18,7 @@ export async function createInventoryTransactionThroughStripeWebHook({
   try {
     return await create({
       data: {
+        orderId,
         quantity,
         productId,
         description,

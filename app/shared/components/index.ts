@@ -25,9 +25,10 @@ import {
   HeroSlider,
   ProductList,
   ImageGallery,
-  AddCustomList,
   FullCollection,
+  AddToCustomList,
   CollectionsList,
+  DeleteFromCustomList,
 } from "./Store";
 import {
   CardSkeleton,
@@ -73,7 +74,8 @@ export {
   SubmitButton,
   CartComponent,
   AuthComponent,
-  AddCustomList,
+  AddToCustomList,
+  DeleteFromCustomList,
   AddressCard,
   PaymentMethodCard,
   ThemeComponent,

@@ -5,28 +5,26 @@ import { Heart } from "@/app/shared/icons";
 import { Modal, Toast } from "@/app/shared/components";
 import { useModal, useResolvedTheme } from "@/app/shared/hooks";
 import { deleteProductFromAllCustomLists } from "@/app/shared/services/customList/controller";
-import type { ICustomList } from "@/app/shared/interfaces";
+import type { IUser } from "@/app/shared/interfaces";
 
-interface IAddCustomList {
+interface IAddToCustomList {
   lng: string;
-  userId: string;
+  user: IUser | null;
   productId: string;
   isFavorite: boolean;
-  myLists: ICustomList[];
 }
 
-const AddCustomList = ({
+const AddToCustomList = ({
   lng,
-  userId,
-  myLists,
+  user,
   productId,
   isFavorite,
-}: IAddCustomList) => {
+}: IAddToCustomList) => {
   const theme = useResolvedTheme();
   const { isOpen, onOpen, onClose } = useModal();
 
   const handleFavorite = async () => {
-    if (userId) {
+    if (user) {
       if (isFavorite) {
         await deleteProductFromAllCustomLists(productId);
         Toast({
@@ -54,16 +52,18 @@ const AddCustomList = ({
           <Heart size="size-7 md:size-10" />
         )}
       </button>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <Form
-          lng={lng}
-          myLists={myLists}
-          productId={productId}
-          handleClose={onClose}
-        />
+      <Modal isOpen={isOpen && user !== null} onClose={onClose}>
+        {user && (
+          <Form
+            lng={lng}
+            myLists={user.customLists}
+            productId={productId}
+            handleClose={onClose}
+          />
+        )}
       </Modal>
     </>
   );
 };
 
-export default AddCustomList;
+export default AddToCustomList;
