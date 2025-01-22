@@ -11,22 +11,23 @@ import type {
   CustomList,
   Collection,
   ProductFile,
+  FilterGroup,
   DiscountCode,
   PaymentMethod,
   ProductReview,
+  ProductFilter,
   ProductHistory,
   ProductOnOrder,
   StockReservation,
+  OrderOnPromotion,
   CustomProductList,
+  DiscountCodeOnUser,
   ProductOnPromotion,
   ProductOnCollection,
   InventoryTransaction,
-  ProductFilter,
-  ProductFilterOnProduct,
   CollectionOnPromotion,
-  FilterGroup,
+  ProductFilterOnProduct,
   CollectionOnFilterGroup,
-  OrderOnPromotion,
 } from "@prisma/client";
 
 // MODELS
@@ -38,21 +39,25 @@ export interface ICartItem extends CartItem {
 
 export interface ICart extends Cart {
   user: IUser;
+
   items: ICartItem[];
 }
 
 export interface IUser extends User {
   cart?: ICart;
+
   orders: IOrder[];
   addresses: IAddress[];
   reviews: IProductReview[];
   customLists: ICustomList[];
   paymentMethods: IPaymentMethod[];
+  discountCodes: IDiscountCodeOnUser[];
   stockReservations: IStockReservation[];
 }
 
 export interface ICustomList extends CustomList {
   user: IUser;
+
   products: ICustomProductList[];
 }
 
@@ -63,6 +68,7 @@ export interface ICustomProductList extends CustomProductList {
 
 export interface IProvider extends Provider {
   _count?: object;
+
   products: IProduct[];
 }
 
@@ -73,6 +79,7 @@ export interface IFilterGroup extends FilterGroup {
 
 export interface IProductFilter extends ProductFilter {
   group: IFilterGroup;
+
   products: IProductFilterOnProduct[];
 }
 
@@ -83,14 +90,16 @@ export interface IProductFilterOnProduct extends ProductFilterOnProduct {
 
 export interface IProduct extends Product {
   _count?: object;
+
   provider: IProvider;
+
   files: IProductFile[];
   cartItems: ICartItem[];
-  filters: IProductFilter[];
   reviews: IProductReview[];
   orders: IProductOnOrder[];
   history: IProductHistory[];
   promotions: IProductOnPromotion[];
+  filters: IProductFilterOnProduct[];
   collections: IProductOnCollection[];
   transactions: IInventoryTransaction[];
   stockReservations: IStockReservation[];
@@ -113,6 +122,7 @@ export interface ICollectionOnFilterGroup extends CollectionOnFilterGroup {
 
 export interface ICollection extends Collection {
   hero?: IHero;
+
   products: IProductOnCollection[];
   filters: ICollectionOnFilterGroup[];
   promotions: ICollectionOnPromotion[];
@@ -141,7 +151,6 @@ export interface IOrder extends Order {
   user?: IUser;
   address?: IAddress;
   payment?: IPaymentMethod;
-  discountCode?: IDiscountCode;
 
   products: IProductOnOrder[];
   promotions: IOrderOnPromotion[];
@@ -169,23 +178,33 @@ export interface IOrderOnPromotion extends OrderOnPromotion {
 }
 
 export interface IPromotion extends Promotion {
-  orders: IOrder[];
   cartItems: ICartItem[];
+  orders: IOrderOnPromotion[];
+  discountCodes: IDiscountCode[];
   products: IProductOnPromotion[];
   collections: ICollectionOnPromotion[];
 }
 
 export interface IDiscountCode extends DiscountCode {
-  orders: IOrder[];
+  promotion: IPromotion;
+
+  users: IDiscountCodeOnUser[];
+}
+
+export interface IDiscountCodeOnUser extends DiscountCodeOnUser {
+  user: IUser;
+  discountCode: IDiscountCode;
 }
 
 export interface IPaymentMethod extends PaymentMethod {
   user: IUser;
+
   orders: IOrder[];
 }
 
 export interface IAddress extends Address {
   user: IUser;
+
   orders: IOrder[];
 }
 
@@ -340,6 +359,10 @@ export interface IAddressState extends ISharedState {
     phoneNumber?: string;
     additionalInfo?: string;
   };
+}
+
+export interface IDiscountCodeState extends ISharedState {
+  discountCode?: IDiscountCode;
 }
 
 // SEARCH PARAMS

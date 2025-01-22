@@ -60,7 +60,8 @@ model User {
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
 
-  cart              Cart?
+  cart Cart?
+
   orders            Order[]
   addresses         Address[]
   customLists       CustomList[]
@@ -130,8 +131,9 @@ model ProductFilter {
   key  String @unique
 
   products ProductFilterOnProduct[]
-  group    FilterGroup              @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId  String
+
+  group   FilterGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -226,7 +228,8 @@ model Collection {
   link     String @unique
   imageUrl String
 
-  hero       Hero?
+  hero Hero?
+
   products   ProductOnCollection[]
   promotions CollectionOnPromotion[]
   filters    CollectionOnFilterGroup[]
@@ -306,30 +309,29 @@ enum DeliveryStatus {
 }
 
 model Order {
-  id             String         @id @default(uuid())
-  client         String // This is functional when the user is not logged in
-  discount       Float?
-  subtotal       Float
-  shippingCost   Float?
-  total          Float
-  shipmentType   String
-  paymentMethod  String
-  isPaid         Boolean        @default(false) // This is functional when the user is not logged in
-  deliveryStatus DeliveryStatus @default(PENDING)
-  pendingPayment Float? // This is functional when the user is not logged in
+  id              String         @id @default(uuid())
+  client          String // This is functional when the user is not logged in
+  discount        Float?
+  subtotal        Float
+  shippingCost    Float?
+  total           Float
+  shipmentType    String
+  paymentMethod   String
+  isPaid          Boolean        @default(false) // This is functional when the user is not logged in
+  deliveryStatus  DeliveryStatus @default(PENDING)
+  pendingPayment  Float? // This is functional when the user is not logged in
+  paymentIntentId String?
 
   products     ProductOnOrder[]
   promotions   OrderOnPromotion[]
   transactions InventoryTransaction[]
 
-  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String?
-  payment        PaymentMethod? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
-  paymentId      String?
-  address        Address?       @relation(fields: [addressId], references: [id], onDelete: SetNull)
-  addressId      String?
-  discountCode   DiscountCode?  @relation(fields: [discountCodeId], references: [id])
-  discountCodeId String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  payment   PaymentMethod? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  paymentId String?
+  address   Address?       @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  addressId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -413,9 +415,9 @@ model DiscountCode {
   timesUsed  Int    @default(0)
   usageLimit Int?
 
-  orders      Order[]
-  users       DiscountCodeOnUser[]
-  promotion   Promotion            @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  users DiscountCodeOnUser[]
+
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
   promotionId String
 
   createdAt DateTime @default(now())

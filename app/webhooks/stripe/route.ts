@@ -102,7 +102,8 @@ export async function POST(req: NextRequest) {
       const charge = event.data.object;
       console.log(`Charge id: ${charge.id}`);
 
-      const { userId, addressId, shippingCost } = charge.metadata;
+      const { userId, addressId, shippingCost, discountCodeId } =
+        charge.metadata;
 
       if (!userId || !addressId || !shippingCost) {
         console.error("❌ Missing metadata");
@@ -136,10 +137,12 @@ export async function POST(req: NextRequest) {
 
           const order = (await createOrderThroughStripeWebHook({
             userId,
+            addressId,
+            discountCodeId,
             promotionsIds: uniquePromotionIds,
             shippingCost: Number(shippingCost),
             amount: Number(charge.amount / 100),
-            addressId,
+            paymentIntentId: charge.payment_intent as string,
             stripePaymentMethodId: charge.payment_method as string,
             productsIds: parsedProducts.map((product) => product.id),
             productsPrices: parsedProducts.map((product) => product.price),

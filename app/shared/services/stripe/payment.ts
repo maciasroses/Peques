@@ -5,7 +5,11 @@ import {
   getMe,
   addStripeCustomerIdToMe,
 } from "@/app/shared/services/user/controller";
-import type { IUser, ICartItemForFrontend } from "@/app/shared/interfaces";
+import type {
+  IUser,
+  IDiscountCode,
+  ICartItemForFrontend,
+} from "@/app/shared/interfaces";
 import {
   clearOrderInfoDataForStripe,
   updateOrderInfoDataForStripe,
@@ -17,7 +21,8 @@ export async function createPaymentIntent(
   addressId: string,
   shippingCost: number,
   paymentMethodId: string,
-  cart: ICartItemForFrontend[]
+  cart: ICartItemForFrontend[],
+  discountCode?: IDiscountCode | null
 ) {
   try {
     const me = (await getMe()) as IUser;
@@ -42,20 +47,27 @@ export async function createPaymentIntent(
 
     await updateOrderInfoDataForStripe(productsForStripeOrderInfoData);
 
+    // amount multiplied by 100 because stripe uses cents
+    const amount = cart.reduce(
+      (acc, item) => acc + item.finalPrice * 100 * item.quantity,
+      0
+    );
+
+    const possibleDiscount =
+      discountCode && discountCode.promotion.discountType === "PERCENTAGE"
+        ? (amount * discountCode.promotion?.discountValue) / 100
+        : (discountCode?.promotion?.discountValue ?? 0) * 100;
+
     const paymentIntent = await stripe.paymentIntents.create({
       currency: "MXN",
       payment_method: paymentMethodId,
       customer: me.stripeCustomerId || undefined,
-      // amount multiplied by 100 because stripe uses cents
-      amount:
-        cart.reduce(
-          (acc, item) => acc + item.finalPrice * 100 * item.quantity,
-          0
-        ) + shippingCost,
+      amount: amount + shippingCost - possibleDiscount,
       metadata: {
         userId: me.id,
         addressId,
         shippingCost,
+        discountCodeId: discountCode?.id || "",
       },
     });
 

@@ -20,14 +20,22 @@ import {
 } from "./model";
 import { getProducts } from "../product/controller";
 import type {
+  IDiscountCode,
   IOrderSearchParams,
   IPaymentMethod,
   IProduct,
+  IPromotion,
   IUser,
 } from "@/app/shared/interfaces";
 import { getSession } from "../auth";
 import { getUserById } from "../user/controller/admin";
 import { getPaymentMethodByStripeId } from "../paymentMethod/controller";
+import { getPromotionById } from "../promotion/controller";
+import {
+  createDiscountCodeToUser,
+  getDiscountCodeById,
+  updateUsagesOfDiscountCode,
+} from "../discountCode/controller";
 
 // interface ISearchParams {
 //   client?: string;
@@ -773,6 +781,8 @@ interface ICreateOrderThroughStripWebHook {
   addressId: string;
   shippingCost: number;
   productsIds: string[];
+  discountCodeId: string;
+  paymentIntentId: string;
   productsPrices: number[];
   productsQuantities: number[];
   productsFinalPrices: number[];
@@ -789,6 +799,8 @@ export async function createOrderThroughStripeWebHook({
   shippingCost,
   promotionsIds,
   productsPrices,
+  discountCodeId,
+  paymentIntentId,
   productsQuantities,
   productsFinalPrices,
   stripePaymentMethodId,
@@ -809,6 +821,24 @@ export async function createOrderThroughStripeWebHook({
     const promotionsIdsForConnection = promotionsIds.filter(
       (promotionId) => promotionId !== undefined
     );
+
+    if (discountCodeId) {
+      const discountCodeForValidation = (await getDiscountCodeById(
+        discountCodeId
+      )) as IDiscountCode;
+
+      if (!discountCodeForValidation) {
+        throw new Error("Discount code promotion not found");
+      }
+
+      if (discountCodeForValidation.usageLimit !== null) {
+        await updateUsagesOfDiscountCode(discountCodeId);
+      }
+
+      await createDiscountCodeToUser(userId, discountCodeId);
+
+      promotionsIdsForConnection.push(discountCodeForValidation.promotionId);
+    }
 
     const finalPromotionsIds =
       promotionsIdsForConnection.length > 0
@@ -865,6 +895,7 @@ export async function createOrderThroughStripeWebHook({
         userId,
         paymentId: paymentMethod.id,
         addressId,
+        paymentIntentId,
       },
     });
   } catch (error) {

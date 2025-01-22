@@ -12,6 +12,16 @@ export async function create({
   });
 }
 
+export async function createUserOnDiscount({
+  data,
+}: {
+  data: (typeof prisma.discountCodeOnUser.create)["arguments"]["data"];
+}) {
+  return await prisma.discountCodeOnUser.create({
+    data,
+  });
+}
+
 interface IRead {
   id?: string;
   code?: string;
@@ -20,7 +30,6 @@ interface IRead {
 
 export async function read({ id, code, userId }: IRead) {
   const globalInclude = {
-    orders: true,
     promotion: true,
     users: {
       include: {

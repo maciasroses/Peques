@@ -10,19 +10,24 @@ import {
   createSetUpIntent,
   createPaymentIntent,
 } from "@/app/shared/services/stripe/payment";
-import type { ICartItemForFrontend } from "@/app/shared/interfaces";
+import type {
+  ICartItemForFrontend,
+  IDiscountCode,
+} from "@/app/shared/interfaces";
 
 interface UseCheckoutProps {
   lng: string;
   theme: string;
   addressId?: string;
   paymentMethodId?: string;
+  discountCode?: IDiscountCode | null;
 }
 
 export const useCheckout = ({
   lng,
   theme,
   addressId,
+  discountCode,
   paymentMethodId,
 }: UseCheckoutProps) => {
   const hasCheckedStock = useRef(false);
@@ -113,7 +118,8 @@ export const useCheckout = ({
             addressId as string,
             shippingCost,
             paymentMethodId as string,
-            updatedCart
+            updatedCart,
+            discountCode
           )) as string;
         }
         setClientSecret(clientSecret as string);
@@ -133,6 +139,7 @@ export const useCheckout = ({
     paymentMethodId,
     shippingCost,
     addressId,
+    discountCode,
   ]);
 
   const handleSetUpIntent = (value: boolean) => {

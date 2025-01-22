@@ -269,7 +269,8 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
             />
           </div>
           <div className="w-full md:w-2/3">
-            {product.reviews.length ? (
+            {product.reviews.length &&
+            product.reviews.some((review) => review.content !== "") ? (
               <div className="flex flex-col gap-6">
                 {product.reviews
                   .filter(

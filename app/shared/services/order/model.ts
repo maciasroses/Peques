@@ -67,6 +67,24 @@ export async function read({
         product: {
           include: {
             files: true,
+            reviews: true,
+          },
+        },
+      },
+    },
+    promotions: {
+      include: {
+        promotion: {
+          include: {
+            discountCodes: {
+              include: {
+                users: {
+                  include: {
+                    user: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

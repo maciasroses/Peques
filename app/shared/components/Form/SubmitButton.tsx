@@ -17,17 +17,19 @@ interface ISubmitButton {
   title: string;
   pending: boolean;
   color?: string;
+  finish?: boolean;
 }
 
 const SubmitButton: React.FC<ISubmitButton> = ({
   title,
   pending,
+  finish,
   color = "blue",
 }) => {
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || finish}
       className={clsx(
         "px-4 py-2 rounded-md w-auto transition-colors duration-300 border",
         pending ? `${colorMap[color]}/50` : colorMap[color]

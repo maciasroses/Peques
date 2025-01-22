@@ -3,17 +3,69 @@
 import Image from "next/image";
 import { cn } from "@/app/shared/utils/cn";
 import formatCurrency from "@/app/shared/utils/format-currency";
-import type { ICartItemForFrontend } from "@/app/shared/interfaces";
 import { GenericInput, SubmitButton } from "@/app/shared/components";
+import type {
+  IDiscountCode,
+  IDiscountCodeState,
+  ICartItemForFrontend,
+} from "@/app/shared/interfaces";
+import { useState } from "react";
+import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
+import { validateDiscountCodeForUser } from "@/app/shared/services/discountCode/controller";
 
 interface ICartSummary {
   lng: string;
   finished: boolean;
   shippingCost: number;
   cart: ICartItemForFrontend[];
+  discountCode: IDiscountCode | null;
+  setDiscountCode: (code: IDiscountCode | null) => void;
 }
 
-const CartSummary = ({ lng, cart, finished, shippingCost }: ICartSummary) => {
+const CartSummary = ({
+  lng,
+  cart,
+  finished,
+  shippingCost,
+  discountCode,
+  setDiscountCode,
+}: ICartSummary) => {
+  const [isPending, setIsPending] = useState(false);
+  const [badResponse, setBadResponse] = useState<IDiscountCodeState>(
+    INITIAL_STATE_RESPONSE
+  );
+
+  const submitAction: React.FormEventHandler<HTMLFormElement> = async (
+    event
+  ) => {
+    setIsPending(true);
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const res = await validateDiscountCodeForUser(formData);
+    if (res && res.success) {
+      setDiscountCode(res.discountCode as IDiscountCode);
+      setBadResponse(INITIAL_STATE_RESPONSE);
+    } else {
+      setBadResponse(res);
+    }
+    setIsPending(false);
+  };
+
+  const subTotal = cart.reduce(
+    (acc, item) => acc + item.finalPrice * item.quantity,
+    0
+  );
+
+  let subTotalWithDiscount;
+  if (discountCode) {
+    if (discountCode.promotion.discountType === "PERCENTAGE") {
+      subTotalWithDiscount =
+        subTotal - (subTotal * discountCode.promotion.discountValue) / 100;
+    } else {
+      subTotalWithDiscount = subTotal - discountCode.promotion.discountValue;
+    }
+  }
+
   return (
     <div className={cn("w-full md:w-2/3", finished && "opacity-50")}>
       <h1 className="text-2xl font-bold">
@@ -66,19 +118,18 @@ const CartSummary = ({ lng, cart, finished, shippingCost }: ICartSummary) => {
       </p>
       <p className="text-sm sm:text-lg text-right">
         Subtotal:{" "}
-        <span className="font-bold">
-          {formatCurrency(
-            cart.reduce(
-              (acc, item) => acc + item.finalPrice * item.quantity,
-              0
-            ),
-            "MXN"
-          )}
+        <span className={cn("font-bold", discountCode && "line-through")}>
+          {formatCurrency(subTotal, "MXN")}
         </span>
+        {discountCode && subTotalWithDiscount && (
+          <span className="ml-2 font-bold text-green-600 dark:text-green-400">
+            {formatCurrency(subTotalWithDiscount, "MXN")}
+          </span>
+        )}
       </p>
       <p className="text-lg sm:text-2xl text-right mt-2">
         Total:{" "}
-        <span className="font-bold">
+        <span className={cn("font-bold", discountCode && "line-through")}>
           {formatCurrency(
             cart.reduce(
               (acc, item) => acc + item.finalPrice * item.quantity,
@@ -88,19 +139,55 @@ const CartSummary = ({ lng, cart, finished, shippingCost }: ICartSummary) => {
             "MXN"
           )}
         </span>
+        {discountCode && subTotalWithDiscount && (
+          <span className="ml-2 font-bold text-green-600 dark:text-green-400">
+            {formatCurrency(subTotalWithDiscount + shippingCost / 100, "MXN")}
+          </span>
+        )}
       </p>
-      <form>
+      {!discountCode ? (
+        <form onSubmit={submitAction}>
+          <fieldset
+            disabled={isPending}
+            className={cn(isPending && "opacity-50")}
+          >
+            {badResponse.message && (
+              <p className="text-red-600">{badResponse.message}</p>
+            )}
+            <div className="flex flex-col gap-2 my-2">
+              <GenericInput
+                id="code"
+                type="text"
+                ariaLabel="¿Tienes un cupón?"
+                placeholder="WELCOME10"
+                className="w-36"
+              />
+            </div>
+            <SubmitButton
+              title="Aplicar"
+              color="primary"
+              finish={finished}
+              pending={isPending}
+            />
+          </fieldset>
+        </form>
+      ) : (
         <div className="flex flex-col gap-2 my-2">
-          <GenericInput
-            id="code"
-            type="text"
-            ariaLabel="¿Tienes un cupón?"
-            placeholder="WELCOME10"
-            className="w-36"
-          />
+          <p className="text-lg">Código de descuento aplicado: </p>
+          <p className="text-xl">{discountCode.promotion.title}</p>
+          <p className="text-lg">{discountCode.promotion.description}</p>
+          <div>
+            <button
+              type="button"
+              disabled={finished}
+              onClick={() => setDiscountCode(null)}
+              className="text-sm link-button-red"
+            >
+              Eliminar
+            </button>
+          </div>
         </div>
-        <SubmitButton pending={false} title="Aplicar" color="primary" />
-      </form>
+      )}
     </div>
   );
 };

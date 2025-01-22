@@ -8,7 +8,7 @@ import { cn } from "@/app/shared/utils/cn";
 import { DownChevron } from "@/app/shared/icons";
 import { useCheckout, useResolvedTheme } from "@/app/shared/hooks";
 import { Loading, GenericBackToPage } from "@/app/shared/components";
-import type { IAddress, IUser } from "@/app/shared/interfaces";
+import type { IAddress, IDiscountCode, IUser } from "@/app/shared/interfaces";
 
 interface ICheckoutSummary {
   lng: string;
@@ -19,6 +19,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
   const theme = useResolvedTheme();
   const [activeTab, setActiveTab] = useState(1);
   const [finished, setFinished] = useState(false);
+  const [discountCode, setDiscountCode] = useState<IDiscountCode | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [address, setAddress] = useState<IAddress | null>(
     user.addresses.find((address) => address.isDefault) || null
@@ -27,6 +28,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
     useCheckout({
       lng,
       theme,
+      discountCode,
       addressId: address?.id,
       paymentMethodId: selectedMethod ?? "",
     });
@@ -47,8 +49,10 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
       <CartSummary
         lng={lng}
         cart={cart}
-        shippingCost={shippingCost}
         finished={finished}
+        shippingCost={shippingCost}
+        discountCode={discountCode}
+        setDiscountCode={setDiscountCode}
       />
       <div className="w-full md:w-1/3 flex flex-col gap-4 h-full md:sticky md:top-24">
         <div
