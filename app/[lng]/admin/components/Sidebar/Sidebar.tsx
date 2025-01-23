@@ -13,9 +13,6 @@ const Sidebar = ({ lng }: ISidebar) => {
             <LinkComp icon="home" span="Inicio" to={`/${lng}/admin/home`} />
           </li>
           <li>
-            <LinkComp icon="hero" span="Hero" to={`/${lng}/admin/hero`} />
-          </li>
-          <li>
             <LinkComp icon="sales" span="Ventas" to={`/${lng}/admin/sales`} />
           </li>
           <li>
@@ -37,6 +34,16 @@ const Sidebar = ({ lng }: ISidebar) => {
           </li>
           <li>
             <LinkComp
+              icon="filters"
+              span="Filtros"
+              to={`/${lng}/admin/filters`}
+            />
+          </li>
+          <li>
+            <LinkComp icon="hero" span="Hero" to={`/${lng}/admin/hero`} />
+          </li>
+          <li>
+            <LinkComp
               icon="collections"
               span="Colecciones"
               to={`/${lng}/admin/collections`}
@@ -47,6 +54,13 @@ const Sidebar = ({ lng }: ISidebar) => {
               icon="providers"
               span="Proveedores"
               to={`/${lng}/admin/providers`}
+            />
+          </li>
+          <li>
+            <LinkComp
+              icon="promotions"
+              span="Promociones"
+              to={`/${lng}/admin/promotions`}
             />
           </li>
         </ul>

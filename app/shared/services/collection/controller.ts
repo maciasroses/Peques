@@ -1,6 +1,5 @@
 "use server";
 
-import prisma from "../prisma";
 import { cookies } from "next/headers";
 import { del, put } from "@vercel/blob";
 import { validateSchema } from "./schema";
@@ -8,6 +7,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
 import { create, deleteById, deleteMassive, read, update } from "./model";
+import { getProductIdsByKeys } from "@/app/shared/services/product/controller";
 import type {
   ICollection,
   ICollectionSearchParams,
@@ -128,14 +128,7 @@ export async function createCollection(formData: FormData) {
       }
     );
 
-    const productIds = await prisma.product.findMany({
-      where: {
-        key: {
-          in: products,
-        },
-      },
-      select: { id: true },
-    });
+    const productIds = await getProductIdsByKeys(products);
 
     if (productIds.length !== products.length) {
       return {
@@ -149,7 +142,7 @@ export async function createCollection(formData: FormData) {
       imageUrl: url,
       products: {
         create: productIds.map((product) => ({
-          productId: product.id,
+          productId: product,
         })),
       },
     };
@@ -282,16 +275,9 @@ export async function addProductsToCollection({
       throw new Error("Colección no encontrada");
     }
 
-    const productsIds = await prisma.product.findMany({
-      where: {
-        key: {
-          in: products,
-        },
-      },
-      select: { id: true },
-    });
+    const productIds = await getProductIdsByKeys(products);
 
-    if (productsIds.length !== products.length) {
+    if (productIds.length !== products.length) {
       return {
         success: false,
         message: "Algunos productos no se encontraron",
@@ -302,8 +288,8 @@ export async function addProductsToCollection({
       id,
       data: {
         products: {
-          create: productsIds.map((product) => ({
-            productId: product.id,
+          create: productIds.map((product) => ({
+            productId: product,
           })),
         },
       },
@@ -350,16 +336,9 @@ export async function removeProductsFromCollection({
       throw new Error("Colección no encontrada");
     }
 
-    const productsIds = await prisma.product.findMany({
-      where: {
-        key: {
-          in: products,
-        },
-      },
-      select: { id: true },
-    });
+    const productIds = await getProductIdsByKeys(products);
 
-    if (productsIds.length !== products.length) {
+    if (productIds.length !== products.length) {
       return {
         success: false,
         message: "Algunos productos no se encontraron",
@@ -370,8 +349,8 @@ export async function removeProductsFromCollection({
       id,
       data: {
         products: {
-          deleteMany: productsIds.map((product) => ({
-            productId: product.id,
+          deleteMany: productIds.map((product) => ({
+            productId: product,
           })),
         },
       },
@@ -417,22 +396,17 @@ export async function deleteMassiveCollections({ ids }: { ids: string[] }) {
   try {
     await isAdmin();
 
-    const collections = await prisma.collection.findMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
-      select: { imageUrl: true },
-    });
+    const collectionImages: string[] = [];
+
+    for (const id of ids) {
+      const { imageUrl } = (await read({ id })) as ICollection;
+      collectionImages.push(imageUrl);
+    }
 
     await deleteMassive({ ids });
-    await Promise.all(
-      collections.map((collection) => del(collection.imageUrl))
-    );
+    await Promise.all(collectionImages.map((image) => del(image)));
   } catch (error) {
     console.error(error);
-    // throw new Error("Failed to delete massive collections");
     return {
       success: false,
       message: "Ha ocurrido un error al eliminar las colecciones",

@@ -1,24 +1,13 @@
 "use server";
 
 import { validateSchema } from "./schema";
-// import { revalidatePath } from "next/cache";
 import { getSession } from "@/app/shared/services/auth";
-import {
-  readAddress,
-  createAddress,
-  updateManyAddresses,
-  //   updateAddress,
-  //   deleteAddress,
-} from "./model";
+import { readAddress, createAddress, updateManyAddresses } from "./model";
 import type {
   IAddress,
-  IAddressSearchParams,
-  // IAddress,
   IAddressState,
+  IAddressSearchParams,
 } from "@/app/shared/interfaces";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 
 export async function getMyAddresses({ page }: IAddressSearchParams) {
   try {
@@ -62,18 +51,17 @@ export async function createNewAddress({
   if (!session || !session.userId) return { success: false };
 
   const data = {
+    country: "MX",
     userId: session.userId as string,
-    fullName: formData.get("fullName") as string,
-    address1: formData.get("address1") as string,
-    address2: formData.get("address2") as string,
     city: formData.get("city") as string,
     state: formData.get("state") as string,
     zipCode: Number(formData.get("zipCode")),
-    // country: formData.get("country") as string,
-    country: "MX",
+    fullName: formData.get("fullName") as string,
+    address1: formData.get("address1") as string,
+    address2: formData.get("address2") as string,
+    isDefault: formData.get("isDefault") === "on",
     phoneNumber: formData.get("phoneNumber") as string,
     additionalInfo: formData.get("additionalInfo") as string,
-    isDefault: formData.get("isDefault") === "on",
   };
 
   const errors = validateSchema("create", data);

@@ -5,7 +5,7 @@ import { createMyNewCart } from "../services/cart/controller";
 import {
   reserverStock,
   checkNUpdateStock,
-} from "@/app/shared/services/stock/controller";
+} from "@/app/shared/services/stockReservation/controller";
 import {
   createSetUpIntent,
   createPaymentIntent,

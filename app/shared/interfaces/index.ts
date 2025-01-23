@@ -28,6 +28,7 @@ import type {
   CollectionOnPromotion,
   ProductFilterOnProduct,
   CollectionOnFilterGroup,
+  ProductReviewLikeOnUser,
 } from "@prisma/client";
 
 // MODELS
@@ -51,6 +52,7 @@ export interface IUser extends User {
   reviews: IProductReview[];
   customLists: ICustomList[];
   paymentMethods: IPaymentMethod[];
+  likes: IProductReviewLikeOnUser[];
   discountCodes: IDiscountCodeOnUser[];
   stockReservations: IStockReservation[];
 }
@@ -135,6 +137,12 @@ export interface IProductFile extends ProductFile {
 export interface IProductReview extends ProductReview {
   user: IUser;
   product: IProduct;
+  likes: IProductReviewLikeOnUser[];
+}
+
+export interface IProductReviewLikeOnUser extends ProductReviewLikeOnUser {
+  user: IUser;
+  review: IProductReview;
 }
 
 export interface IProductOnOrder extends ProductOnOrder {
@@ -363,6 +371,19 @@ export interface IAddressState extends ISharedState {
 
 export interface IDiscountCodeState extends ISharedState {
   discountCode?: IDiscountCode;
+}
+
+export interface IPromotionState extends ISharedState {
+  errors?: {
+    title?: string;
+    endDate?: string;
+    startDate?: string;
+    description?: string;
+    discountType?: string;
+    discountValue?: string;
+    discountCodeCode?: string;
+    discountCodeUsageLimit?: string;
+  };
 }
 
 // SEARCH PARAMS

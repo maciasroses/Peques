@@ -3,14 +3,14 @@
 import { getSession } from "@/app/shared/services/auth";
 import { getProductByKey } from "@/app/shared/services/product/controller";
 import {
-  createCart,
   readCart,
+  createCart,
   updateCart,
   deleteCart,
   createCartItem,
   deleteCartItem,
   updateCartItem,
-} from "../model";
+} from "./model";
 import type { ICartItemForFrontend, IProduct } from "@/app/shared/interfaces";
 
 export async function getMyCart() {
@@ -21,8 +21,8 @@ export async function getMyCart() {
       userId: session.userId as string,
     });
   } catch (error) {
-    console.error(error);
-    return null;
+    console.error("Error getting cart:", error);
+    throw new Error("Error getting cart");
   }
 }
 
@@ -36,8 +36,8 @@ export async function createMyNewCart() {
       },
     });
   } catch (error) {
-    console.error(error);
-    return null;
+    console.error("Error creating cart:", error);
+    throw new Error("Error creating cart");
   }
 }
 
@@ -72,18 +72,18 @@ export async function addToMyCart(item: ICartItemForFrontend) {
       await createCartItem({
         data: {
           ...promotionCreation,
-          cart: { connect: { id: cart.id } },
-          product: { connect: { id: productItem.id } },
+          priceMXN: item.price,
           quantity: item.quantity,
           discount: item.discount,
-          finalPriceMXN: item.finalPrice, // convert to cents in the checkout page for Stripe
-          priceMXN: item.price, // convert to cents in the checkout page for Stripe
+          finalPriceMXN: item.finalPrice,
+          cart: { connect: { id: cart.id } },
+          product: { connect: { id: productItem.id } },
         },
       });
     }
   } catch (error) {
-    console.error("Error al agregar al carrito:", error);
-    return null;
+    console.error("Error adding to cart:", error);
+    throw new Error("Error adding to cart");
   }
 }
 
@@ -101,14 +101,14 @@ export async function deleteFromMyCart(itemId: string) {
     await deleteCartItem({
       where: {
         productId_cartId: {
-          productId: productItem.id,
           cartId: cart.id,
+          productId: productItem.id,
         },
       },
     });
   } catch (error) {
-    console.error("Error al eliminar del carrito:", error);
-    return null;
+    console.error("Error deleting from cart:", error);
+    throw new Error("Error deleting from cart");
   }
 }
 
@@ -121,8 +121,8 @@ export async function clearMyCart() {
       where: { userId: session.userId as string },
     });
   } catch (error) {
-    console.error("Error al limpiar el carrito:", error);
-    return null;
+    console.error("Error clearing cart:", error);
+    throw new Error("Error clearing cart");
   }
 }
 
@@ -161,19 +161,19 @@ export async function mergeCarts(localCart: ICartItemForFrontend[]) {
         await createCartItem({
           data: {
             ...promotionCreation,
+            quantity: localItem.quantity,
+            discount: localItem.discount,
+            priceMXN: product.salePriceMXN,
+            finalPriceMXN: localItem.finalPrice,
             cart: { connect: { id: remoteCart.id } },
             product: { connect: { id: product.id } },
-            quantity: localItem.quantity,
-            priceMXN: product.salePriceMXN, // convert to cents in the checkout page for Stripe
-            finalPriceMXN: localItem.finalPrice, // convert to cents in the checkout page for Stripe
-            discount: localItem.discount,
           },
         });
       }
     }
   } catch (error) {
-    console.error("Error al fusionar el carrito:", error);
-    return null;
+    console.error("Error fusing carts:", error);
+    throw new Error("Error fusing carts");
   }
 }
 
@@ -191,7 +191,7 @@ export async function updateOrderInfoDataForStripe(products: string) {
     });
   } catch (error) {
     console.error("Error updating stripe order info data:", error);
-    return null; // Retornar null si ocurre un error
+    throw new Error("Error updating stripe order info data");
   }
 }
 
@@ -209,6 +209,6 @@ export async function clearOrderInfoDataForStripe() {
     });
   } catch (error) {
     console.error("Error clearing stripe order info data:", error);
-    return null; // Retornar null si ocurre un error
+    throw new Error("Error clearing stripe order info data");
   }
 }

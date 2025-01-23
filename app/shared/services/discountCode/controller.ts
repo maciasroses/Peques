@@ -1,8 +1,8 @@
 "use server";
 
-import { getSession } from "../auth";
-import { createUserOnDiscount, read, update } from "./model";
 import { validateSchema } from "./schema";
+import { getSession, isAdmin } from "@/app/shared/services/auth";
+import { create, createUserOnDiscount, read, update } from "./model";
 import type {
   IDiscountCode,
   IDiscountCodeState,
@@ -14,6 +14,15 @@ export async function getDiscountCodeById(id: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get discount code by id");
+  }
+}
+
+export async function getDiscountCodeByCode(code: string) {
+  try {
+    return await read({ code });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get discount code by code");
   }
 }
 
@@ -126,5 +135,34 @@ export async function updateUsagesOfDiscountCode(discountCodeId: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to update discount code usage");
+  }
+}
+
+export async function createDiscountCodeByAdmin({
+  code,
+  usageLimit,
+  promotionId,
+}: {
+  code: string;
+  usageLimit?: number;
+  promotionId: string;
+}) {
+  try {
+    await isAdmin();
+
+    if (!code) {
+      throw new Error("Discount code is required");
+    }
+
+    await create({
+      data: {
+        code,
+        usageLimit,
+        promotionId,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to create discount code");
   }
 }

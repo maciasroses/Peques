@@ -5,15 +5,15 @@ import {
   getMe,
   addStripeCustomerIdToMe,
 } from "@/app/shared/services/user/controller";
+import {
+  clearOrderInfoDataForStripe,
+  updateOrderInfoDataForStripe,
+} from "@/app/shared/services/cart/controller";
 import type {
   IUser,
   IDiscountCode,
   ICartItemForFrontend,
 } from "@/app/shared/interfaces";
-import {
-  clearOrderInfoDataForStripe,
-  updateOrderInfoDataForStripe,
-} from "../cart/controller";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 

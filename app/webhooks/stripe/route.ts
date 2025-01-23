@@ -9,10 +9,10 @@ import { genericParseJSON } from "@/app/shared/utils/genericParseJSON";
 import { getProductByKey } from "@/app/shared/services/product/controller";
 import { createOrderThroughStripeWebHook } from "@/app/shared/services/order/controller";
 import {
-  readStockReservation,
-  deleteStockReservation,
-} from "@/app/shared/services/stock/model";
-import { createInventoryTransactionThroughStripeWebHook } from "@/app/shared/services/inventoryTrans/controller";
+  deleteStockReservationById,
+  getStockReservationByUserIdNProductId,
+} from "@/app/shared/services/stockReservation/controller";
+import { createInventoryTransactionThroughStripeWebHook } from "@/app/shared/services/inventoryTransaction/controller";
 import type {
   ICart,
   IOrder,
@@ -41,6 +41,18 @@ export async function POST(req: NextRequest) {
   console.log("✅ Event constructed successfully:", event.id);
 
   switch (event.type) {
+    case "customer.created": {
+      console.log("👤 Customer created");
+      const customer = event.data.object;
+      console.log(`Customer id: ${customer.id}`);
+      break;
+    }
+    case "customer.updated": {
+      console.log("👤🔄 Customer updated");
+      const customer = event.data.object;
+      console.log(`Customer id: ${customer.id}`);
+      break;
+    }
     case "setup_intent.created": {
       console.log("🟡 SetupIntent created");
       const setupIntent = event.data.object;
@@ -160,10 +172,9 @@ export async function POST(req: NextRequest) {
               key: product.id,
             })) as { id: string };
 
-            const reservation = (await readStockReservation({
+            const reservation = (await getStockReservationByUserIdNProductId({
               userId,
-              productId: productId,
-              isForSripeWebHook: true,
+              productId,
             })) as IStockReservation;
 
             if (reservation) {
@@ -173,7 +184,7 @@ export async function POST(req: NextRequest) {
                 quantity: reservation.quantity,
                 description: `Producto ${product.name} vendido ${product.discount ? `con la promoción ${product.discount}` : ""} por el precio de ${product.finalPrice}`,
               });
-              await deleteStockReservation(reservation.id);
+              await deleteStockReservationById(reservation.id);
             }
           }
 

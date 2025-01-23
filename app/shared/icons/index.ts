@@ -11,7 +11,9 @@ import BarsII from "./BarsII";
 import Upload from "./Upload";
 import USFlag from "./USFlag";
 import Puzzle from "./Puzzle";
+import Ticket from "./Ticket";
 import Dollar from "./Dollar";
+import Funnel from "./Funnel";
 import Search from "./Search";
 import HomeIcon from "./Home";
 import DarkIcon from "./Dark";
@@ -64,6 +66,7 @@ export {
   HandThumbUp,
   PlayIcon,
   SmileFace,
+  Ticket,
   Check,
   TrashIcon,
   LightIcon,
@@ -82,4 +85,5 @@ export {
   RightChevron,
   EyeSlashIcon,
   ElipsisList,
+  Funnel,
 };

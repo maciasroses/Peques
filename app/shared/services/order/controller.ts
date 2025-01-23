@@ -4,12 +4,16 @@ import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/app/shared/services/auth";
 import { read as xlsxRead, utils as xlsxUtils } from "xlsx";
+import { getUserById } from "@/app/shared/services/user/controller";
 import { COMFORT_SET, SET_IDEAL, SET_INTEGRAL } from "@/app/shared/constants";
+import { getPaymentMethodByStripeId } from "@/app/shared/services/paymentMethod/controller";
 import {
-  read as readProduct,
-  update as updateProduct,
-} from "@/app/shared/services/product/model";
+  getProducts,
+  getProductByKey,
+  updateAvailableQuantityProductByKey,
+} from "@/app/shared/services/product/controller";
 import {
   read,
   create,
@@ -18,39 +22,18 @@ import {
   updateMassive,
   deleteMassive,
 } from "./model";
-import { getProducts } from "../product/controller";
-import type {
-  IDiscountCode,
-  IOrderSearchParams,
-  IPaymentMethod,
-  IProduct,
-  IPromotion,
-  IUser,
-} from "@/app/shared/interfaces";
-import { getSession } from "../auth";
-import { getUserById } from "../user/controller/admin";
-import { getPaymentMethodByStripeId } from "../paymentMethod/controller";
-import { getPromotionById } from "../promotion/controller";
 import {
-  createDiscountCodeToUser,
   getDiscountCodeById,
+  createDiscountCodeToUser,
   updateUsagesOfDiscountCode,
-} from "../discountCode/controller";
-
-// interface ISearchParams {
-//   client?: string;
-//   deliveryStatus?: string;
-//   paymentMethod?: string;
-//   discountFrom?: string;
-//   discountTo?: string;
-//   subtotalFrom?: string;
-//   subtotalTo?: string;
-//   totalFrom?: string;
-//   totalTo?: string;
-//   isForGraph?: boolean;
-//   orderBy?: object;
-//   yearOfData?: string;
-// }
+} from "@/app/shared/services/discountCode/controller";
+import type {
+  IUser,
+  IProduct,
+  IDiscountCode,
+  IPaymentMethod,
+  IOrderSearchParams,
+} from "@/app/shared/interfaces";
 
 export async function getOrders({
   client,
@@ -217,9 +200,9 @@ export async function createOrder(formData: FormData) {
         quantity: Number(productsQuantity[i]),
       };
 
-      const { availableQuantity } = (await readProduct({
+      const { availableQuantity } = (await getProductByKey({
         key: products[i] as string,
-      })) as unknown as IProduct;
+      })) as IProduct;
 
       if (Number(productsQuantity[i]) > availableQuantity) {
         orderErrors.products[i] = {
@@ -255,19 +238,17 @@ export async function createOrder(formData: FormData) {
     }[] = [];
 
     const productPromise = orderProducts.map(async (product) => {
-      const { salePriceMXN, availableQuantity } = (await readProduct({
+      const { salePriceMXN, availableQuantity } = (await getProductByKey({
         key: product.productKey as string,
-      })) as unknown as IProduct;
+      })) as IProduct;
 
       const preTotal = Number(product.quantity) * salePriceMXN;
       total += preTotal;
       productsTotal += preTotal - (preTotal * product.discount) / 100;
 
-      await updateProduct({
+      await updateAvailableQuantityProductByKey({
         key: product.productKey as string,
-        data: {
-          availableQuantity: availableQuantity - product.quantity,
-        },
+        availableQuantity: availableQuantity - product.quantity,
       });
 
       finalProducts.push({
@@ -474,9 +455,9 @@ export async function createMassiveOrder(formData: FormData) {
 
           processedProducts.add(currentProduct);
 
-          const product = (await readProduct({
+          const product = (await getProductByKey({
             key: validatedProducts[i] as string,
-          })) as unknown as IProduct;
+          })) as IProduct;
 
           if (!product) {
             errors[`Fila ${index + 2} - Producto ${i + 1}`] =
@@ -541,12 +522,10 @@ export async function createMassiveOrder(formData: FormData) {
 
     validData.forEach(async (data) => {
       data.products.create.forEach(async (product) => {
-        await updateProduct({
+        await updateAvailableQuantityProductByKey({
           key: product.product.connect.key,
-          data: {
-            availableQuantity:
-              localQuantitiesPerProduct[product.product.connect.key],
-          },
+          availableQuantity:
+            localQuantitiesPerProduct[product.product.connect.key],
         });
       });
       await create({ data });
@@ -601,12 +580,10 @@ export async function updateDeliveryStatus(
         isAdminRequest: true,
       })) as IOrderForUpdateDeliveryStatus;
       order.products.forEach(async (product) => {
-        await updateProduct({
+        await updateAvailableQuantityProductByKey({
           key: product.product.key,
-          data: {
-            availableQuantity:
-              product.product.availableQuantity + product.quantity,
-          },
+          availableQuantity:
+            product.product.availableQuantity + product.quantity,
         });
       });
     }
@@ -637,12 +614,10 @@ export async function updateMassiveDeliveryStatus(
           isAdminRequest: true,
         })) as IOrderForUpdateDeliveryStatus;
         order.products.forEach(async (product) => {
-          await updateProduct({
+          await updateAvailableQuantityProductByKey({
             key: product.product.key,
-            data: {
-              availableQuantity:
-                product.product.availableQuantity + product.quantity,
-            },
+            availableQuantity:
+              product.product.availableQuantity + product.quantity,
           });
         });
       }
@@ -698,12 +673,10 @@ export async function deleteOrder(id: string, _pathname: string) {
     })) as IOrderForUpdateDeliveryStatus;
     if (order.deliveryStatus !== "CANCELLED") {
       order.products.forEach(async (product) => {
-        await updateProduct({
+        await updateAvailableQuantityProductByKey({
           key: product.product.key,
-          data: {
-            availableQuantity:
-              product.product.availableQuantity + product.quantity,
-          },
+          availableQuantity:
+            product.product.availableQuantity + product.quantity,
         });
       });
     }
@@ -727,12 +700,10 @@ export async function deleteMassiveOrder(ids: string[]) {
       })) as IOrderForUpdateDeliveryStatus;
       if (order.deliveryStatus !== "CANCELLED") {
         order.products.forEach(async (product) => {
-          await updateProduct({
+          await updateAvailableQuantityProductByKey({
             key: product.product.key,
-            data: {
-              availableQuantity:
-                product.product.availableQuantity + product.quantity,
-            },
+            availableQuantity:
+              product.product.availableQuantity + product.quantity,
           });
         });
       }

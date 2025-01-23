@@ -20,10 +20,6 @@ export async function readAddress({
   limit = 6,
   allData,
 }: IAddressSearchParams) {
-  // const globalInclude = {
-  //     // CONSIDER INCLUDE ORDERS AND USERS FOR ADMIN PANEL
-  // }
-
   if (allData) {
     return await prisma.address.findMany();
   }

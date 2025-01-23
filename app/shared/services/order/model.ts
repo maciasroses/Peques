@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/app/shared/services/prisma";
-import { IOrderSearchParams } from "../../interfaces";
+import type { IOrderSearchParams } from "@/app/shared/interfaces";
 
 export async function create({
   data,
@@ -12,33 +12,6 @@ export async function create({
     data,
   });
 }
-
-// export async function createMassive({
-//   data,
-// }: {
-//   data: (typeof prisma.order.createMany)["arguments"]["data"];
-// }) {
-//   return await prisma.order.createMany({
-//     data,
-//   });
-// }
-
-// interface ISearchParams {
-//   id?: string;
-//   isPaid?: boolean;
-//   client?: string;
-//   deliveryStatus?: string;
-//   paymentMethod?: string;
-//   discountFrom?: number;
-//   discountTo?: number;
-//   subtotalFrom?: number;
-//   subtotalTo?: number;
-//   totalFrom?: number;
-//   totalTo?: number;
-//   isForGraph?: boolean;
-//   orderBy?: object;
-//   yearOfData?: number;
-// }
 
 export async function read({
   id,

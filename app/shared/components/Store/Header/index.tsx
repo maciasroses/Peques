@@ -21,6 +21,7 @@ import type {
   ICollection,
   IFilterGroup,
 } from "@/app/shared/interfaces";
+import { useRef } from "react";
 
 interface IHeader {
   lng: string;
@@ -33,6 +34,7 @@ interface IHeader {
 const Header = ({ lng, user, products, filters, collections }: IHeader) => {
   const pathname = usePathname();
   const isAdmin = user?.role === "ADMIN";
+  const mainSearchRef = useRef<{ focusInput: () => void }>(null);
 
   const {
     ref: searchBarRef,
@@ -52,6 +54,15 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
     pathname.startsWith(`/${lng}/admin`) ||
     pathname.startsWith(`/${lng}/checkout`);
   const shouldShowMenus = !isAdmin && !isAuthPage && !isCheckoutOrAdmin;
+
+  const handleToggleAndFocus = () => {
+    toggleSearchBar();
+    if (!isSearchBarOpen) {
+      setTimeout(() => {
+        mainSearchRef.current?.focusInput();
+      }, 500);
+    }
+  };
 
   return (
     <header
@@ -94,7 +105,10 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                     <CollectionsMenu lng={lng} collections={collections} />
                   </li>
                   <li className="flex items-center">
-                    <button data-ignore-outside-click onClick={toggleSearchBar}>
+                    <button
+                      data-ignore-outside-click
+                      onClick={handleToggleAndFocus}
+                    >
                       <Search size="size-5" />
                     </button>
                   </li>
@@ -137,8 +151,9 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
           >
             <li className="w-full max-w-2xl mx-auto">
               <MainSearch
-                id="main-search-bar"
                 lng={lng}
+                ref={mainSearchRef}
+                id="main-search-bar"
                 onParentClose={toggleSearchBar}
               />
             </li>
@@ -150,7 +165,6 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
           </ul>
         )}
       </nav>
-      {/* {isSearchBarOpen && <div className="bg-black/50 w-full h-screen"></div>} */}
     </header>
   );
 };

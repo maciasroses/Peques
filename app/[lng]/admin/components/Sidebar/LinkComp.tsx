@@ -11,6 +11,8 @@ import {
   ShoppingBag,
   PhotoIcon,
   TagIcon,
+  Ticket,
+  Funnel,
 } from "@/app/shared/icons";
 import { usePathname } from "next/navigation";
 
@@ -46,6 +48,10 @@ const LinkComp = ({ to, span, icon }: ILinkComp) => {
         <UserGroup strokeWidth={2} />
       ) : icon === "hero" ? (
         <PhotoIcon strokeWidth={2.5} />
+      ) : icon === "promotions" ? (
+        <Ticket strokeWidth={2.5} />
+      ) : icon === "filters" ? (
+        <Funnel strokeWidth={2.5} />
       ) : (
         icon === "collections" && <TagIcon strokeWidth={2.5} />
       )}

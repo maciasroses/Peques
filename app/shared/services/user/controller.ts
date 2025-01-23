@@ -4,12 +4,13 @@ import bcrypt from "bcrypt";
 import { Resend } from "resend";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
+import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
-import { validateSchema } from "../schema";
-import { create, read, update } from "../model";
+import { create, read, update } from "./model";
 import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
-import type { IUser } from "@/app/shared/interfaces";
+import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
+import { createMyNewCart } from "../cart/controller";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const resend_email = process.env.RESEND_EMAIL as string;
@@ -90,6 +91,8 @@ export async function register(formData: FormData) {
     const { confirmPassword, ...data } = dataToValidate;
 
     const newUser = await create({ data });
+
+    await createMyNewCart();
 
     await createUserSession((newUser as IUser).id, (newUser as IUser).role);
     // return { message: "Successfully registered", success: true };
@@ -313,6 +316,45 @@ export async function getMe() {
   } catch (error) {
     console.error("Error getting user session:", error);
     return null; // Retornar null si ocurre un error
+  }
+}
+
+export async function getUsers({ q, wantsNewsletter }: IUserSearchParams) {
+  try {
+    return await read({
+      q,
+      wantsNewsletter: wantsNewsletter == "true" ? true : undefined,
+      isAdminRequest: true,
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get users");
+  }
+}
+
+export async function getUserById({ id }: { id: string }) {
+  try {
+    const user = await read({ id });
+    if (!user) {
+      return null;
+    }
+    return user;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get user");
+  }
+}
+
+export async function getUserByEmail({ email }: { email: string }) {
+  try {
+    const user = await read({ email });
+    if (!user) {
+      return null;
+    }
+    return user;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get user");
   }
 }
 

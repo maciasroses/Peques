@@ -35,6 +35,7 @@ const CreateReview = ({ lng, onClose, productSelected }: ICreateReview) => {
         message: "La calificación debe ser de 1 a 5 estrellas",
         success: false,
       });
+      setIsPending(false);
       return;
     }
     const formData = new FormData(event.currentTarget);

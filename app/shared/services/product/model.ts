@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/app/shared/services/prisma";
-import { IProductSearchParams } from "../../interfaces";
+import type { IProductSearchParams } from "@/app/shared/interfaces";
 
 export async function create({
   data,
@@ -66,6 +66,11 @@ export async function read({
       take: isForBestReviews ? 1 : undefined,
       include: {
         user: true,
+        likes: {
+          include: {
+            user: true,
+          },
+        },
       },
     },
     provider: true,
@@ -219,7 +224,7 @@ export async function read({
     where.collections = {
       some: {
         collection: {
-          name: collection,
+          link: collection,
         },
       },
     };

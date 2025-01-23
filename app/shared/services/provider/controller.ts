@@ -15,6 +15,15 @@ export async function getProviders({ q }: { q?: string }) {
   }
 }
 
+export async function getProviderByAlias(alias: string) {
+  try {
+    return await read({ alias });
+  } catch (error) {
+    console.error(error);
+    throw new Error("An internal error occurred");
+  }
+}
+
 export async function createProvider(formData: FormData) {
   const data = {
     name: formData.get("name"),

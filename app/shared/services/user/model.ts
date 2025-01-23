@@ -2,7 +2,7 @@
 
 import prisma from "@/app/shared/services/prisma";
 import hashPassword from "@/app/shared/utils/hash-password";
-import { IUserSearchParams } from "../../interfaces";
+import type { IUserSearchParams } from "@/app/shared/interfaces";
 
 export async function create({
   data,

@@ -2,6 +2,7 @@
 
 import Stripe from "stripe";
 import { getSession } from "@/app/shared/services/auth";
+import { getMe } from "@/app/shared/services/user/controller";
 import {
   readPaymentMethod,
   createPaymentMethod,
@@ -12,7 +13,6 @@ import type {
   IPaymentMethod,
   IPaymentMethodSearchParams,
 } from "@/app/shared/interfaces";
-import { getMe } from "../user/controller";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 

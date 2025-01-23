@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "../prisma";
+import prisma from "@/app/shared/services/prisma";
 
 export async function create({
   data,
@@ -13,10 +13,12 @@ export async function create({
 }
 
 interface IRead {
+  q?: string;
   id?: string;
+  orderBy?: object;
 }
 
-export async function read({ id }: IRead) {
+export async function read({ q, id, orderBy = { createdAt: "desc" } }: IRead) {
   const globalInclude = {
     cartItems: {
       include: {
@@ -30,7 +32,6 @@ export async function read({ id }: IRead) {
     },
     discountCodes: {
       include: {
-        orders: true,
         users: {
           include: {
             user: true,
@@ -62,7 +63,24 @@ export async function read({ id }: IRead) {
     });
   }
 
+  interface Where {
+    OR?: {
+      [key: string]: { contains: string; mode: "insensitive" };
+    }[];
+  }
+
+  const where: Where = {};
+
+  if (q) {
+    where.OR = [
+      { title: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
+    ];
+  }
+
   return await prisma.promotion.findMany({
+    where,
+    orderBy,
     include: globalInclude,
   });
 }

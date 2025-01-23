@@ -41,6 +41,26 @@ export async function read({
       include: {
         product: {
           include: {
+            files: true,
+            collections: {
+              include: {
+                collection: {
+                  include: {
+                    promotions: {
+                      include: {
+                        promotion: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            reviews: true,
+            promotions: {
+              include: {
+                promotion: true,
+              },
+            },
             provider: isAdminRequest ? true : false,
           },
         },

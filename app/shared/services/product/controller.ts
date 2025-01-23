@@ -5,8 +5,8 @@ import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { read as readProvider } from "@/app/shared/services/provider/model";
 import formatdateExcel from "@/app/shared/utils/formatdate-excel";
+import { getProviderByAlias } from "@/app/shared/services/provider/controller";
 import {
   read,
   update,
@@ -79,6 +79,29 @@ export async function getProductsForStore({
   }
 }
 
+export async function getProductsByCollection({
+  q,
+  page,
+  filters,
+  collection,
+  salePriceMXNTo,
+  salePriceMXNFrom,
+}: IProductSearchParams) {
+  try {
+    return await read({
+      q,
+      filters,
+      collection,
+      page: page ? Number(page) : undefined,
+      salePriceMXNTo: salePriceMXNTo ? Number(salePriceMXNTo) : undefined,
+      salePriceMXNFrom: salePriceMXNFrom ? Number(salePriceMXNFrom) : undefined,
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 export async function getAllProducts() {
   try {
     return await read({
@@ -97,6 +120,7 @@ export async function getTheNewestProducts({
     return await read({
       allData: true,
       takeFromRequest,
+      orderBy: { createdAt: "desc" },
     });
   } catch (error) {
     console.error(error);
@@ -132,9 +156,15 @@ export async function getTheBestReviews({
   }
 }
 
-export async function getSimilarProducts() {
+export async function getSimilarProducts({
+  collectionLink,
+}: {
+  collectionLink: string;
+}) {
   try {
-    return await read({});
+    return await read({
+      collection: collectionLink,
+    });
   } catch (error) {
     console.error(error);
     return [];
@@ -274,10 +304,10 @@ export async function createMassiveProduct(formData: FormData) {
           continue;
         }
 
-        // Buscar el proveedor por su alias
-        const provider = (await readProvider({
-          alias: data.providerAlias,
-        })) as IProvider;
+        const provider = (await getProviderByAlias(
+          data.providerAlias
+        )) as IProvider;
+
         if (!provider) {
           errors[`Fila ${index + 2}`] = `Proveedor no encontrado`;
           continue;
@@ -587,5 +617,76 @@ export async function deleteMassiveProductsHistory(
     console.error(error);
     // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
+  }
+}
+
+export async function updateAvailableQuantityProductById({
+  id,
+  availableQuantity,
+}: {
+  id: string;
+  availableQuantity: number;
+}) {
+  try {
+    const product = (await read({ id })) as IProduct;
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    await update({
+      id,
+      data: {
+        availableQuantity,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("An internal error occurred");
+  }
+}
+
+export async function updateAvailableQuantityProductByKey({
+  key,
+  availableQuantity,
+}: {
+  key: string;
+  availableQuantity: number;
+}) {
+  try {
+    const product = (await read({ key })) as IProduct;
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    await update({
+      id: product.id,
+      data: {
+        availableQuantity,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("An internal error occurred");
+  }
+}
+
+export async function getProductIdsByKeys(keys: string[]) {
+  try {
+    const productIds: string[] = [];
+
+    for (const key of keys) {
+      const product = (await read({ key })) as IProduct;
+
+      if (product) {
+        productIds.push(product.id);
+      }
+    }
+
+    return productIds;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 }

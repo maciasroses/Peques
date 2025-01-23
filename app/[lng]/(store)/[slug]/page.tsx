@@ -19,10 +19,14 @@ interface ISlugPage {
 
 const SlugPage = async ({ params: { lng, slug } }: ISlugPage) => {
   const product = (await getProductByKey({ key: slug })) as IProduct;
-
   if (!product) notFound();
 
-  const { products } = (await getSimilarProducts()) as IProductListInterface;
+  const randomCollection =
+    product.collections[Math.floor(Math.random() * product.collections.length)];
+
+  const { products } = (await getSimilarProducts({
+    collectionLink: randomCollection && randomCollection.collection.link,
+  })) as IProductListInterface;
 
   const similarProductsWithoutCurrent = products.filter(
     (item) => item.id !== product.id

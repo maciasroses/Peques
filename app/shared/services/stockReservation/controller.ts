@@ -2,24 +2,25 @@
 
 import prisma from "@/app/shared/services/prisma";
 import { getMe } from "@/app/shared/services/user/controller";
-import {
-  read as readProduct,
-  update as updateProduct,
-} from "@/app/shared/services/product/model";
+import formatCurrency from "@/app/shared/utils/format-currency";
 import {
   readStockReservation,
   createStockReservation,
   deleteStockReservation,
   updateStockReservation,
 } from "./model";
+import {
+  getProductById,
+  getProductByKey,
+  updateAvailableQuantityProductById,
+} from "@/app/shared/services/product/controller";
 import type {
   IUser,
   IProduct,
+  IPromotion,
   ICartItemForFrontend,
   IStockReservation,
-  IPromotion,
 } from "@/app/shared/interfaces";
-import formatCurrency from "../../utils/format-currency";
 
 export async function checkNUpdateStock(cart: ICartItemForFrontend[]) {
   try {
@@ -30,13 +31,14 @@ export async function checkNUpdateStock(cart: ICartItemForFrontend[]) {
 
     for (const reservation of expiredReservations) {
       await deleteStockReservation(reservation.id);
-      await updateProduct({
+
+      const { availableQuantity } = (await getProductById({
         id: reservation.productId,
-        data: {
-          availableQuantity: {
-            increment: reservation.quantity,
-          },
-        },
+      })) as IProduct;
+
+      await updateAvailableQuantityProductById({
+        id: reservation.productId,
+        availableQuantity: availableQuantity + reservation.quantity,
       });
     }
 
@@ -46,7 +48,7 @@ export async function checkNUpdateStock(cart: ICartItemForFrontend[]) {
     }
 
     for (const item of cart) {
-      const product = (await readProduct({ key: item.id })) as IProduct;
+      const product = (await getProductByKey({ key: item.id })) as IProduct;
 
       const reservation = (await readStockReservation({
         userId: me.id,
@@ -188,7 +190,7 @@ export async function reserverStock(cart: ICartItemForFrontend[]) {
       const stockReservations = [];
 
       for (const item of cart) {
-        const { id } = (await readProduct({ key: item.id })) as IProduct;
+        const { id } = (await getProductByKey({ key: item.id })) as IProduct;
 
         const existingReservation = (await readStockReservation({
           userId: me.id,
@@ -204,13 +206,15 @@ export async function reserverStock(cart: ICartItemForFrontend[]) {
             },
           });
 
-          await updateProduct({
+          const { availableQuantity } = (await getProductById({
             id,
-            data: {
-              availableQuantity: {
-                decrement: item.quantity - existingReservation.quantity,
-              },
-            },
+          })) as IProduct;
+
+          await updateAvailableQuantityProductById({
+            id,
+            availableQuantity:
+              availableQuantity -
+              (item.quantity - existingReservation.quantity),
           });
 
           stockReservations.push(updatedReservation);
@@ -221,13 +225,13 @@ export async function reserverStock(cart: ICartItemForFrontend[]) {
             quantity: item.quantity,
           });
 
-          await updateProduct({
+          const { availableQuantity } = (await getProductById({
             id,
-            data: {
-              availableQuantity: {
-                decrement: item.quantity,
-              },
-            },
+          })) as IProduct;
+
+          await updateAvailableQuantityProductById({
+            id,
+            availableQuantity: availableQuantity - item.quantity,
           });
 
           stockReservations.push(reservation);
@@ -239,5 +243,33 @@ export async function reserverStock(cart: ICartItemForFrontend[]) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to reserve stock");
+  }
+}
+
+export async function getStockReservationByUserIdNProductId({
+  userId,
+  productId,
+}: {
+  userId: string;
+  productId: string;
+}) {
+  try {
+    return await readStockReservation({
+      userId,
+      productId,
+      isForSripeWebHook: true,
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get stock reservation by user and product id");
+  }
+}
+
+export async function deleteStockReservationById(id: string) {
+  try {
+    return await deleteStockReservation(id);
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to delete stock reservation by id");
   }
 }

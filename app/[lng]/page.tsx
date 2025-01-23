@@ -1,6 +1,4 @@
-import { getMe } from "@/app/shared/services/user/controller";
 import { getHeroes } from "@/app/shared/services/hero/controller";
-import { getMyLists } from "@/app/shared/services/customList/controller";
 import { getAllCollections } from "@/app/shared/services/collection/controller";
 import {
   getTheBestReviews,
@@ -15,22 +13,18 @@ import {
   CollectionsList,
 } from "@/app/shared/components";
 import type {
-  IUser,
   IHero,
   IProduct,
-  ICustomList,
   ICollection,
   IBaseLangPage,
 } from "@/app/shared/interfaces";
 
 export default async function Home({ params: { lng } }: IBaseLangPage) {
-  const me = (await getMe()) as IUser;
   const heroes = (await getHeroes({})) as IHero[];
   const bestReviews = (await getTheBestReviews({})) as IProduct[];
   const collections = (await getAllCollections()) as ICollection[];
   const { selected, part1, part2 } = splitCollections(collections);
   const newestProducts = (await getTheNewestProducts({})) as IProduct[];
-  const myLists = (await getMyLists({ isForFav: true })) as ICustomList[];
   const favoriteProducts = (await getTheFavoritesProducts({})) as IProduct[];
 
   return (
@@ -38,19 +32,15 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
       <HeroSlider lng={lng} heroes={heroes} />
       <CollectionsList lng={lng} collections={part1} layDown />
       <ProductList
-        title="Nuevos productos"
         lng={lng}
-        myLists={myLists}
+        title="Nuevos productos"
         products={newestProducts}
-        userId={me?.id}
       />
       <FullCollection lng={lng} collection={selected[0]} imageSide="left" />
       <ProductList
-        title="Los favoritos"
         lng={lng}
-        myLists={myLists}
+        title="Los favoritos"
         products={favoriteProducts}
-        userId={me?.id}
       />
       <CollectionsList lng={lng} collections={part2} />
       <ReviewList lng={lng} title="Testimonios" products={bestReviews} />
