@@ -17,6 +17,9 @@ const baseSchema = z.object({
   discountValue: z.number().positive({
     message: "El valor de descuento debe ser un número positivo",
   }),
+});
+
+const createSchema = baseSchema.extend({
   promotionType: z.enum(["product", "collection", "discountCode"], {
     message:
       "El tipo de promoción debe ser producto, colección o código de descuento",
@@ -25,11 +28,21 @@ const baseSchema = z.object({
   discountCodeUsageLimit: z.number().int().optional(),
 });
 
-const createNUpdateProductSchema = baseSchema.extend({});
+const addToPromotion = z.object({
+  promotionType: z.enum(["product", "collection", "discountCode"], {
+    message:
+      "El tipo de promoción debe ser producto, colección o código de descuento",
+  }),
+  discountCodeCode: z.string().nullable().optional(),
+  discountCodeUsageLimit: z.number().int().optional(),
+});
+
+const updateSchema = baseSchema.extend({});
 
 const schemas: { [key: string]: z.ZodObject<ZodRawShape, UnknownKeysParam> } = {
-  create: createNUpdateProductSchema,
-  update: createNUpdateProductSchema,
+  create: createSchema,
+  update: updateSchema,
+  addToPromotion: addToPromotion,
 };
 
 export function validateSchema(action: string, data: unknown) {

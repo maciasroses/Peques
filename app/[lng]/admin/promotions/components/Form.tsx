@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/app/shared/utils/cn";
 import { ReactNode, useState } from "react";
 import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
 import { GenericInput, SubmitButton } from "@/app/shared/components";
@@ -8,20 +9,17 @@ import {
   DynamicItemManager,
 } from "@/app/shared/components/Form";
 import {
-  createCollection,
-  deleteCollection,
-  updateCollection,
-  deleteMassiveCollections,
-} from "@/app/shared/services/collection/controller";
+  createPromotion,
+  deletePromotion,
+  updatePromotion,
+  deleteMassivePromotions,
+} from "@/app/shared/services/promotion/controller";
 import type {
   IProduct,
-  ICollection,
   IPromotion,
-  ISharedState,
+  ICollection,
   IPromotionState,
 } from "@/app/shared/interfaces";
-import { createPromotion } from "@/app/shared/services/promotion/controller";
-import { cn } from "@/app/shared/utils/cn";
 
 interface IForm {
   onClose: () => void;
@@ -47,7 +45,17 @@ const Form = ({ onClose, products, collections, promotion, action }: IForm) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     formData.set("promotionType", tab);
-    const res = action === "create" ? await createPromotion(formData) : null;
+    const res =
+      action === "create"
+        ? await createPromotion(formData)
+        : action === "update"
+          ? await updatePromotion((promotion as IPromotion).id, formData)
+          : action === "delete"
+            ? await deletePromotion((promotion as IPromotion).id)
+            : action === "massiveDelete" &&
+              (await deleteMassivePromotions(
+                (promotion as IPromotion[]).map((p) => p.id)
+              ));
     if (res && !res.success) {
       setBadResponse(res);
     } else {

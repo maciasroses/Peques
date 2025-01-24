@@ -46,7 +46,11 @@ export async function read({ q, id, orderBy = { createdAt: "desc" } }: IRead) {
     },
     products: {
       include: {
-        product: true,
+        product: {
+          include: {
+            provider: true,
+          },
+        },
       },
     },
     collections: {

@@ -3,7 +3,7 @@ import { Form, DataFetch, Searchbar } from "./components";
 import { Action, DatatableSkeleton } from "@/app/shared/components";
 import { getPromotions } from "@/app/shared/services/promotion/controller";
 import type { Metadata } from "next";
-import { IPromotion } from "@/app/shared/interfaces";
+import { ICollection, IProduct, IPromotion } from "@/app/shared/interfaces";
 import { getAllProducts } from "@/app/shared/services/product/controller";
 import { getAllCollections } from "@/app/shared/services/collection/controller";
 
@@ -22,8 +22,8 @@ const AdminPromotionsPage = async ({ searchParams }: IAdminPromotionsPage) => {
 
   const searchParamsForDatatable = { q };
 
-  const products = await getAllProducts();
-  const collections = await getAllCollections();
+  const products = (await getAllProducts()) as IProduct[];
+  const collections = (await getAllCollections()) as ICollection[];
 
   return (
     <>
@@ -35,7 +35,11 @@ const AdminPromotionsPage = async ({ searchParams }: IAdminPromotionsPage) => {
       </div>
       <Searchbar />
       <Suspense key={q} fallback={<DatatableSkeleton />}>
-        <DataFetch searchParams={searchParamsForDatatable} />
+        <DataFetch
+          products={products}
+          collections={collections}
+          searchParams={searchParamsForDatatable}
+        />
       </Suspense>
     </>
   );

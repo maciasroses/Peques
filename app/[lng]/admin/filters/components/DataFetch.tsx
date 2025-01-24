@@ -1,11 +1,10 @@
 import Datatable from "./Datatable";
-import { getCollections } from "@/app/shared/services/collection/controller";
 import type {
   ICollection,
+  IFilterGroup,
   IProduct,
-  IPromotion,
 } from "@/app/shared/interfaces";
-import { getPromotions } from "@/app/shared/services/promotion/controller";
+import { getFilters } from "@/app/shared/services/filter/controller";
 
 interface IDatatable {
   searchParams: {
@@ -16,16 +15,16 @@ interface IDatatable {
 }
 
 const DataFetch = async ({
+  searchParams,
   products,
   collections,
-  searchParams,
 }: IDatatable) => {
-  const promotions = (await getPromotions(searchParams)) as IPromotion[];
+  const filters = (await getFilters(searchParams)) as IFilterGroup[];
 
   return (
     <Datatable
+      filters={filters}
       products={products}
-      promotions={promotions}
       collections={collections}
     />
   );

@@ -26,9 +26,10 @@ interface IRead {
   id?: string;
   code?: string;
   userId?: string;
+  promotionId?: string;
 }
 
-export async function read({ id, code, userId }: IRead) {
+export async function read({ id, code, userId, promotionId }: IRead) {
   const globalInclude = {
     promotion: true,
     users: {
@@ -45,6 +46,17 @@ export async function read({ id, code, userId }: IRead) {
           discountCodeId: id,
           userId,
         },
+      },
+    });
+  }
+
+  if (id && promotionId) {
+    return await prisma.discountCode.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        promotion: true,
       },
     });
   }
