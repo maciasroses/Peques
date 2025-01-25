@@ -33,9 +33,13 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
   const { isOpen, onOpen, onClose } = useModal();
   const [selectedImageId, setSelectedImageId] = useState(product.files[0]?.id);
 
-  const selectedImage =
-    product.files.find((file) => file.id === selectedImageId) ??
-    product.files[0];
+  const selectedImage = product.files.find(
+    (file) => file.id === selectedImageId
+  ) ??
+    product.files[0] ?? {
+      type: "IMAGE",
+      url: "/assets/images/landscape-placeholder.webp",
+    };
 
   useDisableScroll(isOpen);
 
@@ -125,7 +129,9 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
     ? product.salePriceMXN -
       (selectedPromotion.discountType === "PERCENTAGE"
         ? (selectedPromotion.discountValue / 100) * product.salePriceMXN
-        : selectedPromotion.discountValue)
+        : selectedPromotion.discountValue <= 0
+          ? 0
+          : selectedPromotion.discountValue)
     : product.salePriceMXN;
 
   const discountDescription = selectedPromotion

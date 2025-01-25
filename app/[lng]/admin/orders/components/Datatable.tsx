@@ -23,6 +23,7 @@ import {
 } from "@/app/shared/components";
 import type { IOrder } from "@/app/shared/interfaces";
 import OrderSummary from "./OrderSummary";
+import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
 
 interface IDataTable {
   lng: string;
@@ -203,13 +204,15 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       cell: (row: { products: IProductInOrder[] }) => (
         <span>
           {formatCurrency(
-            row.products.reduce(
-              (acc, product) =>
-                acc +
-                product.costMXN *
-                  product.quantity *
-                  (1 - product.discount / 100),
-              0
+            roundUpNumber(
+              row.products.reduce(
+                (acc, product) =>
+                  acc +
+                  product.costMXN *
+                    product.quantity *
+                    (1 - product.discount / 100),
+                0
+              )
             ),
             "MXN"
           )}

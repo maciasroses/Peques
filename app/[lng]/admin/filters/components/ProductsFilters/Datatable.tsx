@@ -1,6 +1,6 @@
 "use client";
 
-import Form from "./Form";
+// import Form from "./Form";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRowSelection } from "@/app/shared/hooks";
@@ -11,108 +11,67 @@ import {
   DatatableSkeleton,
   Datatable as CustomDatatable,
 } from "@/app/shared/components";
+import { Datatable as ProductDatatable } from "./Products";
 import type { ExpanderComponentProps } from "react-data-table-component";
 import type {
   IProduct,
   ICollection,
   IProductOnCollection,
   IFilterGroup,
+  IProductFilter,
 } from "@/app/shared/interfaces";
-import { Datatable as CollectionsDatatable } from "./Collections";
-import { Datatable as ProductsFiltersDatatable } from "./ProductsFilters";
 import { cn } from "@/app/shared/utils/cn";
-import SharedForm from "./SharedForm";
+import Form from "./Form";
+
+const ExpandedComponent: React.FC<ExpanderComponentProps<IProductFilter>> = ({
+  data,
+}) => {
+  return (
+    <div className="pl-12 py-4 dark:bg-black dark:text-white">
+      <h1 className="text-2xl">
+        Productos del filtro de producto: {`"${data.name}"`}
+      </h1>
+      <ProductDatatable
+        productFilterId={data.id}
+        products={data.products.map((product) => product.product)}
+      />
+    </div>
+  );
+};
 
 interface IDatatable {
+  filterId: string;
   products: IProduct[];
-  filters: IFilterGroup[];
-  collections: ICollection[];
+  productsFilters: IProductFilter[];
 }
 
-const Datatable = ({ filters, collections, products }: IDatatable) => {
-  const ExpandedComponent: React.FC<ExpanderComponentProps<IFilterGroup>> = ({
-    data,
-  }) => {
-    const [tab, setTab] = useState<"productsFilters" | "collections">(
-      "productsFilters"
-    );
-
-    return (
-      <div className="pl-12 py-4 dark:bg-black dark:text-white">
-        <ul className="flex flex-row gap-4">
-          <li>
-            <button
-              onClick={() => setTab("productsFilters")}
-              className={cn(
-                "px-4 py-2 rounded-md",
-                tab === "productsFilters"
-                  ? "bg-primary dark:bg-primary-dark"
-                  : "bg-gray-200 text-gray-700"
-              )}
-            >
-              Filtros de Productos
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => setTab("collections")}
-              className={cn(
-                "px-4 py-2 rounded-md",
-                tab === "collections"
-                  ? "bg-primary dark:bg-primary-dark"
-                  : "bg-gray-200 text-gray-700"
-              )}
-            >
-              Colecciones
-            </button>
-          </li>
-        </ul>
-        {tab === "productsFilters" && (
-          <ProductsFiltersDatatable
-            filterId={data.id}
-            products={products}
-            productsFilters={data.filters}
-          />
-        )}
-        {tab === "collections" && (
-          <CollectionsDatatable
-            filterId={data.id}
-            collections={data.collections.map(
-              (collection) => collection.collection
-            )}
-          />
-        )}
-      </div>
-    );
-  };
-
+const Datatable = ({ filterId, products, productsFilters }: IDatatable) => {
   const columns = [
     {
       name: "Acciones",
       width: "200px",
-      cell: (row: IFilterGroup) => (
+      cell: (row: IProductFilter) => (
         <div className="flex justify-center gap-2">
           <Action action="create">
             {/* @ts-ignore */}
-            <SharedForm
-              filterGroupId={row.id}
-              products={products}
-              collections={collections.filter(
-                (collection) =>
-                  !row.collections.some(
-                    (collectionOnPromotion) =>
-                      collectionOnPromotion.collection.id === collection.id
+            <Form
+              products={products.filter(
+                (product) =>
+                  !row.products.some(
+                    (productOnFilter) =>
+                      productOnFilter.product.id === product.id
                   )
               )}
+              productFilter={row}
             />
           </Action>
           <Action action="update">
             {/* @ts-ignore */}
-            <Form filter={row} />
+            <Form productFilter={row} />
           </Action>
           <Action action="delete">
             {/* @ts-ignore */}
-            <Form filter={row} />
+            <Form productFilter={row} />
           </Action>
         </div>
       ),
@@ -156,25 +115,25 @@ const Datatable = ({ filters, collections, products }: IDatatable) => {
   // react-hydration-error SOLUTION
 
   const { selectedRows, showMultiActions, handleSelectRows } =
-    useRowSelection<IFilterGroup>();
+    useRowSelection<IProductFilter>();
 
   return (
     <>
-      {filters.length > 0 ? (
+      {productsFilters.length > 0 ? (
         <>
           {isClient ? (
             <>
               {showMultiActions && (
-                <div className="flex justify-end gap-2 mb-4">
+                <div className="flex justify-start gap-2 mb-4">
                   <Action action="massiveDelete">
                     {/* @ts-ignore */}
-                    <Form filter={selectedRows} />
+                    <Form productFilter={selectedRows} />
                   </Action>
                 </div>
               )}
               <CustomDatatable
                 columns={columns}
-                data={filters}
+                data={productsFilters}
                 onSelectedRowsChange={handleSelectRows}
                 isExapandable
                 expandableRowsComponent={(props) => (
@@ -188,8 +147,8 @@ const Datatable = ({ filters, collections, products }: IDatatable) => {
         </>
       ) : (
         <Card404
-          title="No se encontraron filtros"
-          description="Agrega un filtro para verlo aquí"
+          title="No se encontraron filtros de producto"
+          description="Agrega un filtro de producto para verlo aquí"
         />
       )}
     </>

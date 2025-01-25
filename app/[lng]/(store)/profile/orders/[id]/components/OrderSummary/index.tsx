@@ -3,6 +3,7 @@
 import ProductList from "./ProductList";
 import { cn } from "@/app/shared/utils/cn";
 import formatCurrency from "@/app/shared/utils/format-currency";
+import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
 import type { IOrder } from "@/app/shared/interfaces";
 
@@ -12,17 +13,14 @@ interface IOrderSummary {
 }
 
 const OrderSummary = ({ lng, order }: IOrderSummary) => {
-  const hasGlobalDiscount = order.promotions.find(
-    (promo) => promo.promotion.discountCodes.length > 0
+  const hasGlobalDiscount = order.discount !== 0;
+
+  const subtotal = order.products.reduce(
+    (acc, product) =>
+      acc +
+      product.costMXN * product.quantity * (1 - (product.discount ?? 0) / 100),
+    0
   );
-
-  const subtotal = order.total - (order.shippingCost ?? 190);
-
-  const finalSubtotal =
-    hasGlobalDiscount &&
-    hasGlobalDiscount.promotion.discountType === "PERCENTAGE"
-      ? subtotal + (subtotal * hasGlobalDiscount.promotion.discountValue) / 100
-      : subtotal + (hasGlobalDiscount?.promotion.discountValue ?? 0);
 
   return (
     <div className="flex flex-col md:flex-row gap-4 mt-2">
@@ -39,7 +37,7 @@ const OrderSummary = ({ lng, order }: IOrderSummary) => {
           <span
             className={cn("font-bold", hasGlobalDiscount && "line-through")}
           >
-            {formatCurrency(finalSubtotal, "MXN")}
+            {formatCurrency(roundUpNumber(subtotal), "MXN")}
           </span>
           {hasGlobalDiscount && (
             <span className="ml-2 font-bold text-green-600 dark:text-green-400">
@@ -52,7 +50,10 @@ const OrderSummary = ({ lng, order }: IOrderSummary) => {
           <span
             className={cn("font-bold", hasGlobalDiscount && "line-through")}
           >
-            {formatCurrency(finalSubtotal + (order.shippingCost ?? 190), "MXN")}
+            {formatCurrency(
+              roundUpNumber(subtotal) + (order.shippingCost ?? 190),
+              "MXN"
+            )}
           </span>
           {hasGlobalDiscount && (
             <span className="ml-2 font-bold text-green-600 dark:text-green-400">
@@ -66,7 +67,9 @@ const OrderSummary = ({ lng, order }: IOrderSummary) => {
               Descuento aplicado
             </p>
             <p className="text-base sm:text-xl">
-              {hasGlobalDiscount.promotion.title}
+              {order.promotions.find(
+                (promo) => promo.promotion.discountCodes.length > 0
+              )?.promotion.title ?? ""}
             </p>
           </div>
         )}

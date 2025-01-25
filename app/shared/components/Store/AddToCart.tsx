@@ -24,7 +24,8 @@ const AddToCart = ({ price, product, discount, promotionId }: IAddToCart) => {
       finalPrice: price,
       name: product.name,
       discount: discount,
-      file: product.files[0].url,
+      file:
+        product.files[0]?.url ?? "/assets/images/landscape-placeholder.webp",
       price: product.salePriceMXN,
     });
     Toast({

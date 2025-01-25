@@ -68,7 +68,10 @@ const CreateReview = ({ lng, onClose, productSelected }: ICreateReview) => {
         <div className="flex items-center justify-center gap-2">
           <div className="size-24">
             <Image
-              src={productSelected.files[0].url}
+              src={
+                productSelected.files[0]?.url ??
+                "/assets/images/landscape-placeholder.webp"
+              }
               alt={productSelected.name}
               width={500}
               height={300}

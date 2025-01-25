@@ -1,5 +1,6 @@
 import formatCurrency from "@/app/shared/utils/format-currency";
 import type { IProductInOrder } from "./Datatable";
+import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
 
 interface IOrderSummary {
   order: {
@@ -41,9 +42,11 @@ const OrderSummary = ({ order }: IOrderSummary) => {
               </td>
               <td className="p-1">
                 {formatCurrency(
-                  product.costMXN *
-                    product.quantity *
-                    (1 - product.discount / 100),
+                  roundUpNumber(
+                    product.costMXN *
+                      product.quantity *
+                      (1 - product.discount / 100)
+                  ),
                   "MXN"
                 )}
               </td>
@@ -87,13 +90,15 @@ const OrderSummary = ({ order }: IOrderSummary) => {
             <td className="p-1">
               <span className="font-semibold">
                 {formatCurrency(
-                  order.products.reduce(
-                    (acc, product) =>
-                      acc +
-                      product.costMXN *
-                        product.quantity *
-                        (1 - product.discount / 100),
-                    0
+                  roundUpNumber(
+                    order.products.reduce(
+                      (acc, product) =>
+                        acc +
+                        product.costMXN *
+                          product.quantity *
+                          (1 - product.discount / 100),
+                      0
+                    )
                   ),
                   "MXN"
                 )}

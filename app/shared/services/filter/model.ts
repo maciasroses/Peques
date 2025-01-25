@@ -40,7 +40,12 @@ export async function read({
       include: {
         products: {
           include: {
-            product: true,
+            product: {
+              include: {
+                files: true,
+                provider: true,
+              },
+            },
           },
         },
       },

@@ -62,7 +62,10 @@ export async function createPaymentIntent(
       currency: "MXN",
       payment_method: paymentMethodId,
       customer: me.stripeCustomerId || undefined,
-      amount: amount + shippingCost - possibleDiscount,
+      amount:
+        amount +
+        shippingCost -
+        (possibleDiscount > amount ? amount : possibleDiscount),
       metadata: {
         userId: me.id,
         addressId,

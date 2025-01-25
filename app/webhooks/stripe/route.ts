@@ -191,7 +191,6 @@ export async function POST(req: NextRequest) {
           const orderInfoForEmail: IOrderInfoForEmail = {
             order,
             products: parsedProducts,
-            totalInCents: charge.amount,
             email: charge.billing_details.email as string,
           };
 

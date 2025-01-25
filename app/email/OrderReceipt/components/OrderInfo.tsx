@@ -2,8 +2,19 @@ import formatCurrency from "@/app/shared/utils/format-currency";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
 import { Img, Row, Column, Section, Text } from "@react-email/components";
 import type { IOrderInfoForEmail } from "@/app/shared/interfaces";
+import { cn } from "@/app/shared/utils/cn";
+import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
 
 const OrderInfo = ({ order }: { order: IOrderInfoForEmail }) => {
+  const hasGlobalDiscount = order.order.discount !== 0;
+
+  const subtotal = order.order.products.reduce(
+    (acc, product) =>
+      acc +
+      product.costMXN * product.quantity * (1 - (product.discount ?? 0) / 100),
+    0
+  );
+
   return (
     <>
       <Section className="bg-gray-50 rounded-md px-4">
@@ -64,21 +75,56 @@ const OrderInfo = ({ order }: { order: IOrderInfoForEmail }) => {
           </div>
           <div className="w-full text-right">
             <Text className="text-xl">
-              Envío: <span className="font-bold">$99.00</span>
+              Envío:{" "}
+              <span className="font-bold">
+                {formatCurrency(order.order.shippingCost ?? 190, "MXN")}
+              </span>
               <br />
               Subtotal:{" "}
-              <span className="font-bold">
-                {formatCurrency(order.totalInCents / 100 - 99, "MXN")}
+              <span
+                className={cn("font-bold", hasGlobalDiscount && "line-through")}
+              >
+                {formatCurrency(roundUpNumber(subtotal), "MXN")}
               </span>
+              {hasGlobalDiscount && (
+                <span className="ml-2 font-bold text-green-600">
+                  {formatCurrency(
+                    order.order.total - (order.order.shippingCost ?? 190),
+                    "MXN"
+                  )}
+                </span>
+              )}
             </Text>
             <hr />
             <Text className="text-2xl">
               Total:{" "}
-              <span className="font-bold">
-                {formatCurrency(order.totalInCents / 100, "MXN")}
+              <span
+                className={cn("font-bold", hasGlobalDiscount && "line-through")}
+              >
+                {formatCurrency(
+                  roundUpNumber(subtotal) + (order.order.shippingCost ?? 190),
+                  "MXN"
+                )}
               </span>
+              {hasGlobalDiscount && (
+                <span className="ml-2 font-bold text-green-600">
+                  {formatCurrency(order.order.total, "MXN")}
+                </span>
+              )}
             </Text>
           </div>
+          {hasGlobalDiscount && (
+            <div className="w-full">
+              <Text className="text-lg">
+                <span className="font-extrabold">Descuento aplicado: </span>
+                <span className="font-medium">
+                  {order.order.promotions.find(
+                    (promo) => promo.promotion.discountCodes.length > 0
+                  )?.promotion.title ?? ""}
+                </span>
+              </Text>
+            </div>
+          )}
         </Text>
       </Section>
       <Section>

@@ -10,6 +10,24 @@ export async function create({
 }) {
   return await prisma.order.create({
     data,
+    include: {
+      products: {
+        include: {
+          product: true, // Incluye los datos del producto relacionado.
+        },
+      },
+      promotions: {
+        include: {
+          promotion: {
+            include: {
+              discountCodes: true, // Incluye los códigos de descuento de la promoción.
+            },
+          },
+        },
+      },
+      address: true, // Incluye los detalles de la dirección.
+      payment: true, // Incluye los detalles del pago.
+    },
   });
 }
 

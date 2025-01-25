@@ -56,13 +56,16 @@ const CartSummary = ({
     0
   );
 
-  let subTotalWithDiscount;
+  let subTotalWithDiscount = 0;
   if (discountCode) {
     if (discountCode.promotion.discountType === "PERCENTAGE") {
       subTotalWithDiscount =
         subTotal - (subTotal * discountCode.promotion.discountValue) / 100;
     } else {
-      subTotalWithDiscount = subTotal - discountCode.promotion.discountValue;
+      subTotalWithDiscount =
+        subTotal - discountCode.promotion.discountValue <= 0
+          ? 0
+          : subTotal - discountCode.promotion.discountValue;
     }
   }
 
@@ -121,7 +124,7 @@ const CartSummary = ({
         <span className={cn("font-bold", discountCode && "line-through")}>
           {formatCurrency(subTotal, "MXN")}
         </span>
-        {discountCode && subTotalWithDiscount && (
+        {discountCode && (
           <span className="ml-2 font-bold text-green-600 dark:text-green-400">
             {formatCurrency(subTotalWithDiscount, "MXN")}
           </span>
@@ -139,7 +142,7 @@ const CartSummary = ({
             "MXN"
           )}
         </span>
-        {discountCode && subTotalWithDiscount && (
+        {discountCode && (
           <span className="ml-2 font-bold text-green-600 dark:text-green-400">
             {formatCurrency(subTotalWithDiscount + shippingCost / 100, "MXN")}
           </span>

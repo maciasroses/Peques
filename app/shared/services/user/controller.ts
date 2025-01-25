@@ -92,9 +92,9 @@ export async function register(formData: FormData) {
 
     const newUser = await create({ data });
 
-    await createMyNewCart();
-
     await createUserSession((newUser as IUser).id, (newUser as IUser).role);
+
+    await createMyNewCart();
     // return { message: "Successfully registered", success: true };
   } catch (error) {
     console.error(error);

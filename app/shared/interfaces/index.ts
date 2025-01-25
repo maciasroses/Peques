@@ -551,15 +551,18 @@ export interface IBillingDetails {
 }
 
 export interface IProductForEmail {
+  id: string;
   name: string;
   file: string;
   price: number;
   quantity: number;
+  finalPrice: number;
+  discount?: string | null;
+  promotionId?: string | null;
 }
 
 export interface IOrderInfoForEmail {
   email: string;
   order: IOrder;
   products: IProductForEmail[];
-  totalInCents: number;
 }

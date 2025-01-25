@@ -16,7 +16,10 @@ const OrderProductCard = ({ order, product }: IOrderProductCard) => {
         <div className="size-16 sm:size-24 md:size-32">
           <Image
             alt={product.name}
-            src={product.files[0].url}
+            src={
+              product.files[0]?.url ??
+              "/assets/images/landscape-placeholder.webp"
+            }
             width={50}
             height={50}
             className="size-full object-contain"

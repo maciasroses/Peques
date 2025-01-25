@@ -1,9 +1,8 @@
 "use client";
 
-import Form from "./Form";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRowSelection } from "@/app/shared/hooks";
-import formatCurrency from "@/app/shared/utils/format-currency";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
 import {
   Action,
@@ -11,23 +10,47 @@ import {
   DatatableSkeleton,
   Datatable as CustomDatatable,
 } from "@/app/shared/components";
-import type { IProduct } from "@/app/shared/interfaces";
+import type { ExpanderComponentProps } from "react-data-table-component";
+import type {
+  IProduct,
+  ICollection,
+  IProductOnCollection,
+} from "@/app/shared/interfaces";
+import Form from "./Form";
 
 interface IDatatable {
-  products: IProduct[];
-  collectionId: string;
+  filterId: string;
+  collections: ICollection[];
 }
 
-const Datatable = ({ products, collectionId }: IDatatable) => {
+const Datatable = ({ filterId, collections }: IDatatable) => {
   const columns = [
     {
       name: "Acciones",
       width: "100px",
-      cell: (row: IProduct) => (
-        <Action action="delete">
-          {/* @ts-ignore */}
-          <Form product={row} collectionId={collectionId} />
-        </Action>
+      cell: (row: ICollection) => (
+        <div className="flex justify-center gap-2">
+          <Action action="delete">
+            {/* @ts-ignore */}
+            <Form collection={row} filterId={filterId} />
+          </Action>
+        </div>
+      ),
+    },
+    {
+      name: "Imagen",
+      maxwidth: "150px",
+      selector: (row: { imageUrl: string }) => row.imageUrl,
+      cell: (row: { imageUrl: string }) => (
+        <div className="w-full h-[100px] relative rounded-md text-center p-2 m-2">
+          <Image
+            fill
+            sizes="100px"
+            alt="Imagen de la colección"
+            src={row.imageUrl}
+            className="object-contain size-full"
+          />
+        </div>
       ),
     },
     {
@@ -38,33 +61,10 @@ const Datatable = ({ products, collectionId }: IDatatable) => {
       cell: (row: { name: string }) => row.name,
     },
     {
-      name: "Clave",
-      selector: (row: { key: string }) => row.key,
-      sortable: true,
-      cell: (row: { key: string }) => row.key,
-    },
-    {
-      name: "Cantidad Disponible",
-      selector: (row: { availableQuantity: number }) => row.availableQuantity,
-      sortable: true,
-    },
-    {
-      name: "Cantidad mínima Aceptable",
-      selector: (row: { minimumAcceptableQuantity: number }) =>
-        row.minimumAcceptableQuantity,
-      sortable: true,
-    },
-    {
-      name: "Precio de Venta",
-      selector: (row: { salePriceMXN: number }) => row.salePriceMXN,
-      sortable: true,
-      format: (row: { salePriceMXN: number }) =>
-        formatCurrency(row.salePriceMXN, "MXN"),
-    },
-    {
-      name: "Proveedor",
-      selector: (row: { provider: { name: string } }) => row.provider.name,
-      sortable: true,
+      name: "Link",
+      maxwidth: "200px",
+      selector: (row: { link: string }) => row.link,
+      cell: (row: { link: string }) => row.link,
     },
     {
       name: "Creado en",
@@ -91,25 +91,25 @@ const Datatable = ({ products, collectionId }: IDatatable) => {
   // react-hydration-error SOLUTION
 
   const { selectedRows, showMultiActions, handleSelectRows } =
-    useRowSelection<IProduct>();
+    useRowSelection<ICollection>();
 
   return (
     <>
-      {products.length > 0 ? (
+      {collections.length > 0 ? (
         <>
           {isClient ? (
             <>
               {showMultiActions && (
-                <div className="flex justify-start gap-2 my-4">
+                <div className="flex justify-start gap-2 mb-4">
                   <Action action="massiveDelete">
                     {/* @ts-ignore */}
-                    <Form product={selectedRows} collectionId={collectionId} />
+                    <Form collection={selectedRows} filterId={filterId} />
                   </Action>
                 </div>
               )}
               <CustomDatatable
                 columns={columns}
-                data={products}
+                data={collections}
                 onSelectedRowsChange={handleSelectRows}
               />
             </>
@@ -119,8 +119,8 @@ const Datatable = ({ products, collectionId }: IDatatable) => {
         </>
       ) : (
         <Card404
-          title="No se encontraron productos"
-          description="Agrega un producto a la colección para comenzar"
+          title="No se encontraron colecciones"
+          description="Agrega una colección para verla aquí"
         />
       )}
     </>

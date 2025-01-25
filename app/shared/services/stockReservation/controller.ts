@@ -153,7 +153,9 @@ export async function checkNUpdateStock(cart: ICartItemForFrontend[]) {
           ? product.salePriceMXN -
             (selectedPromotion.discountType === "PERCENTAGE"
               ? (selectedPromotion.discountValue / 100) * product.salePriceMXN
-              : selectedPromotion.discountValue)
+              : selectedPromotion.discountValue <= 0
+                ? 0
+                : selectedPromotion.discountValue)
           : product.salePriceMXN;
 
         const discountDescription = selectedPromotion

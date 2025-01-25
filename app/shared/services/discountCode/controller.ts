@@ -6,7 +6,9 @@ import { create, createUserOnDiscount, read, remove, update } from "./model";
 import type {
   IDiscountCode,
   IDiscountCodeState,
+  IUser,
 } from "@/app/shared/interfaces";
+import { getMe } from "../user/controller";
 
 export async function getDiscountCodeById(id: string) {
   try {
@@ -70,6 +72,19 @@ export async function validateDiscountCodeForUser(
     ) {
       return {
         message: "Código de descuento alcanzó su límite de uso",
+        success: false,
+      };
+    }
+
+    const me = (await getMe()) as IUser;
+
+    if (
+      me.cart?.items.some(
+        (item) => item.promotionId === discountCode.promotionId
+      )
+    ) {
+      return {
+        message: "Código de descuento ya utilizado en el carrito",
         success: false,
       };
     }

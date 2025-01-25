@@ -802,9 +802,7 @@ export async function createOrderThroughStripeWebHook({
         throw new Error("Discount code promotion not found");
       }
 
-      if (discountCodeForValidation.usageLimit !== null) {
-        await updateUsagesOfDiscountCode(discountCodeId);
-      }
+      await updateUsagesOfDiscountCode(discountCodeId);
 
       await createDiscountCodeToUser(userId, discountCodeId);
 
@@ -837,6 +835,21 @@ export async function createOrderThroughStripeWebHook({
       }
     );
 
+    let discount = 0;
+    if (discountCodeId) {
+      discount = calculateDiscountPercentage(
+        productsIds.reduce((acc, _, index) => {
+          return (
+            acc +
+            productsPrices[index] *
+              productsQuantities[index] *
+              (1 - percentagesDiscounts[index] / 100)
+          );
+        }, 0),
+        amount - shippingCost / 100
+      );
+    }
+
     return await create({
       data: {
         ...finalPromotionsIds,
@@ -844,7 +857,7 @@ export async function createOrderThroughStripeWebHook({
           user.firstName || user.lastName
             ? `${user.firstName} ${user.lastName}`
             : user.username,
-        discount: 0, // TODO: CHANGE THIS TO REQUESTED VALUE
+        discount,
         subtotal,
         shippingCost: shippingCost / 100,
         total: amount,
@@ -876,9 +889,17 @@ export async function createOrderThroughStripeWebHook({
 }
 
 function calculateDiscountPercentage(price: number, finalPrice: number) {
-  if (price <= 0 || finalPrice < 0) {
-    throw new Error("Los valores de precio deben ser positivos y válidos.");
+  if (price <= 0 && finalPrice <= 0) {
+    return 0;
   }
+
+  if (price <= 0 && finalPrice !== 0) {
+    return 100;
+  }
+
+  // if (price <= 0 || finalPrice < 0) {
+  //   throw new Error("Los valores de precio deben ser positivos y válidos.");
+  // }
 
   const discount = ((price - finalPrice) / price) * 100;
   return Math.round(discount * 100) / 100; // Redondea a 2 decimales

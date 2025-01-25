@@ -6,6 +6,7 @@ import CreateReview from "../CreateReview";
 import { useModal } from "@/app/shared/hooks";
 import { Modal } from "@/app/shared/components";
 import formatCurrency from "@/app/shared/utils/format-currency";
+import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
 import type { IOrder, IProduct } from "@/app/shared/interfaces";
 
 interface IProductList {
@@ -38,7 +39,10 @@ const ProductList = ({ lng, order }: IProductList) => {
               <div className="flex items-center gap-2">
                 <div className="size-24">
                   <Image
-                    src={product.product.files[0].url}
+                    src={
+                      product.product.files[0]?.url ??
+                      "/assets/images/landscape-placeholder.webp"
+                    }
                     alt={product.product.name}
                     width={500}
                     height={300}
@@ -57,10 +61,12 @@ const ProductList = ({ lng, order }: IProductList) => {
                   {product.quantity} x{" "}
                   <span className="font-semibold">
                     {formatCurrency(
-                      product.discount
-                        ? product.costMXN -
-                            (product.costMXN * product.discount) / 100
-                        : product.costMXN,
+                      roundUpNumber(
+                        product.discount
+                          ? product.costMXN -
+                              (product.costMXN * product.discount) / 100
+                          : product.costMXN
+                      ),
                       "MXN"
                     )}
                   </span>

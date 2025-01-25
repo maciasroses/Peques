@@ -14,6 +14,10 @@ OrderReceipt.PreviewProps = {
   order: {
     email: "test@test.com",
     order: {
+      paymentIntentId: "",
+      promotions: [],
+      shippingCost: 0,
+      transactions: [],
       id: "123",
       client: "",
       discount: 0,
@@ -24,7 +28,6 @@ OrderReceipt.PreviewProps = {
       isPaid: false,
       pendingPayment: 0,
       deliveryStatus: "PENDING",
-
       user: {
         id: "",
         email: "",
@@ -32,13 +35,14 @@ OrderReceipt.PreviewProps = {
         username: "",
         firstName: "",
         lastName: "",
+        discountCodes: [],
+        likes: [],
         role: "USER",
         image: "",
         wantsNewsletter: false,
         stripeCustomerId: "",
         resetPasswordToken: "",
         resetPasswordExpires: new Date(),
-        orderInfoDataForStripe: "",
         orders: [],
         reviews: [],
         addresses: [],
@@ -52,26 +56,19 @@ OrderReceipt.PreviewProps = {
       userId: "",
       addressId: "",
       paymentId: "",
-      promotionId: "",
-      discountCodeId: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     },
     products: [
       {
-        name: "Product 1",
-        file: "https://via.placeholder.com/100",
-        price: 1234,
-        quantity: 1,
-      },
-      {
-        name: "Product 2",
-        file: "https://via.placeholder.com/100",
-        price: 5678,
-        quantity: 1,
+        id: "",
+        name: "",
+        file: "",
+        price: 0,
+        quantity: 0,
+        finalPrice: 0,
       },
     ],
-    totalInCents: 6912 + 9900,
   },
 } satisfies { order: IOrderInfoForEmail };
 
