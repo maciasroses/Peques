@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProductList } from "./components";
-import prisma from "@/app/shared/services/prisma";
+import { getFilters } from "@/app/shared/services/filter/controller";
 import { Filters, ListSkeleton, Pagination } from "@/app/shared/components";
 import { getCollectionByLink } from "@/app/shared/services/collection/controller";
 import { getProductsByCollection } from "@/app/shared/services/product/controller";
+import type { Metadata } from "next";
 import type {
+  ICollection,
   IFilterGroup,
   IProductList,
   IProductSearchParams,
@@ -17,6 +19,29 @@ interface ICollectionNamePage {
     link: string;
   };
   searchParams?: IProductSearchParams;
+}
+
+export async function generateMetadata({
+  params: { link },
+  searchParams,
+}: ICollectionNamePage): Promise<Metadata> {
+  try {
+    const collection = (await getCollectionByLink({
+      link,
+    })) as ICollection;
+
+    if (!collection) notFound();
+
+    const q = searchParams?.q || "";
+
+    return {
+      title: q || collection.name,
+    };
+  } catch {
+    return {
+      title: "Colección",
+    };
+  }
 }
 
 const CollectionNamePage = async ({
@@ -45,32 +70,28 @@ const CollectionNamePage = async ({
     salePriceMXNFrom,
   };
 
-  const { totalPages } = (await getProductsByCollection({
+  const { totalPages, totalCount } = (await getProductsByCollection({
     ...searchParamsForList,
     collection: link,
   })) as IProductList;
 
-  const available_filters = (await prisma.filterGroup.findMany({
-    include: {
-      filters: true,
-      collections: {
-        select: {
-          collection: {
-            select: {
-              link: true,
-            },
-          },
-        },
-      },
-    },
-  })) as IFilterGroup[];
+  const available_filters = (await getFilters({})) as IFilterGroup[];
 
   return (
     <article className="pt-24 px-4 pb-4 flex md:gap-4">
       <aside className="hidden md:block md:w-1/4 lg:w-1/5 z-20">
-        <Filters lng={lng} filters={available_filters} collection={link} />
+        <Filters collection={link} filters={available_filters} />
       </aside>
       <section className="w-full md:w-3/4 lg:w-4/5">
+        <div className="mb-4">
+          <p className="font-medium text-lg md:text-2xl">
+            {q ? `Buscando: ${q}` : `Todos los productos`}
+          </p>
+          <p className="text-sm md:text-lg text-gray-800 dark:text-gray-200">
+            {totalCount} resultado
+            {totalCount > 1 || totalCount === 0 ? "s" : ""}
+          </p>
+        </div>
         <Suspense
           key={q + page + filters + salePriceMXNTo + salePriceMXNFrom}
           fallback={<ListSkeleton />}

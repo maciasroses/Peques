@@ -5,14 +5,13 @@ import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { useDisableScroll } from "@/app/shared/hooks";
 import { Filters as FiltersIcon, XMark } from "@/app/shared/icons";
-import { IFilterGroup } from "@/app/shared/interfaces";
+import type { IFilterGroup } from "@/app/shared/interfaces";
 
 interface IFiltersMenu {
-  lng: string;
   filters_available: IFilterGroup[];
 }
 
-const FiltersMenu = ({ lng, filters_available }: IFiltersMenu) => {
+const FiltersMenu = ({ filters_available }: IFiltersMenu) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useDisableScroll(isOpen);
@@ -43,7 +42,7 @@ const FiltersMenu = ({ lng, filters_available }: IFiltersMenu) => {
           <XMark />
         </button>
         <div className="p-4">
-          <Filters lng={lng} filters={filters_available} />
+          <Filters filters={filters_available} />
         </div>
       </div>
       {isOpen && (

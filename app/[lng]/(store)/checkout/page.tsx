@@ -1,6 +1,11 @@
-import { getMe } from "@/app/shared/services/user/controller";
 import { CheckoutSummary } from "./components";
+import { getMe } from "@/app/shared/services/user/controller";
+import type { Metadata } from "next";
 import type { IBaseLangPage, IUser } from "@/app/shared/interfaces";
+
+export const metadata: Metadata = {
+  title: "Checkout",
+};
 
 interface ICheckoutPage extends IBaseLangPage {}
 

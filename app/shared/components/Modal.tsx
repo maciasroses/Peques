@@ -1,8 +1,8 @@
 "use client";
 
 import { XMark } from "@/app/shared/icons";
+import { useDisableScroll } from "@/app/shared/hooks";
 import { useCallback, useEffect, useRef } from "react";
-import { useDisableScroll } from "../hooks";
 
 interface ModalProps {
   isOpen: boolean;

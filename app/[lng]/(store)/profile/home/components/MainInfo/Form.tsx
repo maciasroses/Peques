@@ -133,6 +133,7 @@ const CustomBtn = ({
   return (
     <button
       onClick={onClick}
+      aria-label="Editar"
       type={isEditing ? "submit" : "button"}
       className={cn(
         "absolute top-0 hover:bg-black/10 dark:hover:bg-white/10 p-2 rounded-full",

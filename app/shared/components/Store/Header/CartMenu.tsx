@@ -132,6 +132,36 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                         {item.quantity} x{" "}
                         {formatCurrency(item.finalPrice, "MXN")}
                       </p>
+                      {item.customRequest && (
+                        <>
+                          <p className="font-semibold">
+                            Producto personalizado
+                          </p>
+                          <div className="flex flex-col gap-0">
+                            <p className="inline-flex gap-2">
+                              Nombre:
+                              <span>{JSON.parse(item.customRequest).name}</span>
+                            </p>
+                            <p className="inline-flex gap-2">
+                              Fuente:
+                              <span>{JSON.parse(item.customRequest).font}</span>
+                            </p>
+                            <div className="inline-flex gap-2">
+                              Color:
+                              <div
+                                style={{
+                                  backgroundColor: JSON.parse(
+                                    item.customRequest
+                                  ).color,
+                                  width: "20px",
+                                  height: "20px",
+                                  borderRadius: "100%",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
                       <button
                         className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500"
                         onClick={() => removeFromCart(item.id)}

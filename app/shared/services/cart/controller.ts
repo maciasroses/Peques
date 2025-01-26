@@ -6,7 +6,6 @@ import {
   readCart,
   createCart,
   updateCart,
-  deleteCart,
   createCartItem,
   deleteCartItem,
   updateCartItem,
@@ -76,6 +75,7 @@ export async function addToMyCart(item: ICartItemForFrontend) {
           quantity: item.quantity,
           discount: item.discount,
           finalPriceMXN: item.finalPrice,
+          customRequest: item.customRequest,
           cart: { connect: { id: cart.id } },
           product: { connect: { id: productItem.id } },
         },
@@ -117,9 +117,17 @@ export async function clearMyCart() {
     const session = await getSession();
     if (!session) throw new Error("Usuario no autenticado");
 
-    await deleteCart({
-      where: { userId: session.userId as string },
-    });
+    const cart = await getMyCart();
+
+    if (!cart) throw new Error("Carrito no encontrado");
+
+    await Promise.all(
+      cart.items.map((item) =>
+        deleteCartItem({
+          where: { id: item.id },
+        })
+      )
+    );
   } catch (error) {
     console.error("Error clearing cart:", error);
     throw new Error("Error clearing cart");
@@ -165,6 +173,7 @@ export async function mergeCarts(localCart: ICartItemForFrontend[]) {
             discount: localItem.discount,
             priceMXN: product.salePriceMXN,
             finalPriceMXN: localItem.finalPrice,
+            customRequest: localItem.customRequest,
             cart: { connect: { id: remoteCart.id } },
             product: { connect: { id: product.id } },
           },

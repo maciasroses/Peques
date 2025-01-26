@@ -1,5 +1,5 @@
 import { cn } from "@/app/shared/utils/cn";
-import { Upload } from "../../icons";
+import { Upload } from "@/app/shared/icons";
 
 interface IGenericInput {
   id: string;

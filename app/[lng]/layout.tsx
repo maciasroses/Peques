@@ -4,6 +4,7 @@ import { dir } from "i18next";
 import { languages } from "@/app/i18n/settings";
 import { ToastContainer } from "react-toastify";
 import { getMe } from "@/app/shared/services/user/controller";
+import { getFilters } from "@/app/shared/services/filter/controller";
 import { getAllProducts } from "@/app/shared/services/product/controller";
 import { getAllCollections } from "@/app/shared/services/collection/controller";
 import {
@@ -21,7 +22,6 @@ import type {
   IBaseLangPage,
   IFilterGroup,
 } from "@/app/shared/interfaces";
-import prisma from "../shared/services/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -48,20 +48,7 @@ export default async function RootLayout({
   const me = (await getMe()) as IUser;
   const products = (await getAllProducts()) as IProduct[];
   const collections = (await getAllCollections()) as ICollection[];
-  const available_filters = (await prisma.filterGroup.findMany({
-    include: {
-      filters: true,
-      collections: {
-        select: {
-          collection: {
-            select: {
-              link: true,
-            },
-          },
-        },
-      },
-    },
-  })) as IFilterGroup[];
+  const available_filters = (await getFilters({})) as IFilterGroup[];
 
   return (
     <html lang={lng} dir={dir(lng)}>

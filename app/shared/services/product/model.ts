@@ -259,6 +259,7 @@ export async function read({
     return {
       products,
       totalPages,
+      totalCount,
     };
   }
 }

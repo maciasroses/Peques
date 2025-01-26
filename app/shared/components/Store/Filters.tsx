@@ -7,12 +7,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { IFilterGroup } from "@/app/shared/interfaces";
 
 interface IFiltersComp {
-  lng?: string;
   collection?: string;
   filters: IFilterGroup[];
 }
 
-const Filters = ({ lng, filters, collection }: IFiltersComp) => {
+const Filters = ({ filters, collection }: IFiltersComp) => {
   const pathname = usePathname();
   const { replace } = useRouter();
   const searchParams = useSearchParams();
@@ -225,6 +224,8 @@ const Filters = ({ lng, filters, collection }: IFiltersComp) => {
   );
 };
 
+export default Filters;
+
 const InputField = ({
   name,
   placeholder,
@@ -248,5 +249,3 @@ const InputField = ({
     className="w-full p-2 rounded-lg focus:outline-none border bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white dark:placeholder-gray-400 border-gray-300 focus:border-gray-500 dark:focus:border-gray-100"
   />
 );
-
-export default Filters;

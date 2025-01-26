@@ -1,11 +1,16 @@
 import Image from "next/image";
 import { ProductCard } from "@/app/shared/components";
 import { getAllCollections } from "@/app/shared/services/collection/controller";
+import type { Metadata } from "next";
 import type {
   ICollection,
   IBaseLangPage,
   IProductOnCollection,
 } from "@/app/shared/interfaces";
+
+export const metadata: Metadata = {
+  title: "Colecciones",
+};
 
 interface ICollectionsPage extends IBaseLangPage {}
 

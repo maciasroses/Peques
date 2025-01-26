@@ -14,6 +14,7 @@ model CartItem {
   priceMXN      Float
   discount      String?
   finalPriceMXN Float
+  customRequest String?
 
   cart        Cart       @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId      String

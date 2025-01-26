@@ -10,9 +10,16 @@ interface IAddToCart {
   product: IProduct;
   discount?: string | null;
   promotionId?: string | null;
+  customRequest?: string | null;
 }
 
-const AddToCart = ({ price, product, discount, promotionId }: IAddToCart) => {
+const AddToCart = ({
+  price,
+  product,
+  discount,
+  promotionId,
+  customRequest,
+}: IAddToCart) => {
   const theme = useResolvedTheme();
   const { cart, addToCart } = useCart();
 
@@ -20,6 +27,7 @@ const AddToCart = ({ price, product, discount, promotionId }: IAddToCart) => {
     addToCart({
       quantity: 1,
       promotionId,
+      customRequest,
       id: product.key,
       finalPrice: price,
       name: product.name,

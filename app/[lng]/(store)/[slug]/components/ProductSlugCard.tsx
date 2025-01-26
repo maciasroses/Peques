@@ -19,9 +19,19 @@ import {
   StarRating,
   ImageGallery,
   AddToCustomList,
+  GenericInput,
 } from "@/app/shared/components";
 import type { IProduct, IPromotion } from "@/app/shared/interfaces";
 import { likeOrDislikeReview } from "@/app/shared/services/productReview/controller";
+
+const COLORS_CUSTOM = [
+  "#F478AF",
+  "#A2466E",
+  "#DBBA0D",
+  "#FDEAD4",
+  "#1D1489",
+  "#32620E",
+];
 
 interface IProductSlugCard {
   lng: string;
@@ -140,6 +150,18 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
       : `Descuento de ${formatCurrency(selectedPromotion.discountValue, "MXN")}`
     : null;
 
+  const handleLikeComment = async (reviewId: string) => {
+    if (user) {
+      await likeOrDislikeReview(reviewId);
+    } else {
+      window.location.href = `/${lng}/login`;
+    }
+  };
+
+  const [customName, setCustomName] = useState("");
+  const [customFont, setCustomFont] = useState("");
+  const [customColor, setCustomColor] = useState("");
+
   return (
     <>
       {isOpen && (
@@ -243,12 +265,98 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   dangerouslySetInnerHTML={{ __html: product.description }}
                 />
               )}
-              <AddToCart
-                product={product}
-                price={discountedPrice}
-                discount={discountDescription}
-                promotionId={selectedPromotion?.id || null}
-              />
+              {product.isCustomizable && (
+                <div className="border border-gray-300 dark:border-gray-600 p-4">
+                  <p>
+                    Al ser un producto personalizado, esta pieza tiene un tiempo
+                    de elaboración de 7 días.
+                  </p>
+                  <div className="flex flex-col gap-2 mt-2">
+                    <GenericInput
+                      type="text"
+                      id="customName"
+                      placeholder="Regina"
+                      ariaLabel="Nombre"
+                      onChange={(e) => setCustomName(e.target.value)}
+                    />
+                    <p className="text-right">
+                      (El nombre se bordará tal y como lo escribas, por favor
+                      revisa mayúsculas o acentos)
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <GenericInput
+                      type="select"
+                      id="customFont"
+                      ariaLabel="Fuente"
+                      placeholder="Selecciona una fuente"
+                      onChange={(e) => setCustomFont(e.target.value)}
+                      options={[
+                        {
+                          value: "Karin Script",
+                          label: "Karin Script",
+                        },
+                        {
+                          value: "'Script 2', cursive",
+                          label: "Script 2",
+                        },
+                        { value: "Krone", label: "Krone" },
+                      ]}
+                    />
+                  </div>
+                  <p className="my-4">Elige un color</p>
+                  <div className="my-4 grid grid-cols-3 lg:grid-cols-6 gap-2">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <button
+                        key={index}
+                        aria-label="Color"
+                        style={{ backgroundColor: COLORS_CUSTOM[index] }}
+                        onClick={() => setCustomColor(COLORS_CUSTOM[index])}
+                        className={cn(
+                          "rounded-full size-20",
+                          customColor === COLORS_CUSTOM[index] &&
+                            `border-4 border-black`
+                        )}
+                      ></button>
+                    ))}
+                  </div>
+                  {customName && customFont && customColor && (
+                    <div>
+                      <p className="text-xl">Resultado:</p>
+                      <p
+                        className="text-4xl text-center"
+                        style={{
+                          color: customColor,
+                          fontFamily: customFont,
+                        }}
+                      >
+                        {customName}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              {(!product.isCustomizable ||
+                (customName && customFont && customColor)) && (
+                <AddToCart
+                  product={product}
+                  price={discountedPrice}
+                  discount={discountDescription}
+                  promotionId={selectedPromotion?.id || null}
+                  customRequest={
+                    customName && customFont && customColor
+                      ? JSON.stringify({
+                          name: customName,
+                          font:
+                            customFont === "'Script 2', cursive"
+                              ? "Script 2"
+                              : customFont,
+                          color: customColor,
+                        })
+                      : null
+                  }
+                />
+              )}
             </div>
           </div>
           <div
@@ -301,14 +409,14 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                         <div className="flex gap-2 items-center">
                           <div className="size-5">
                             <Image
-                              width={50}
-                              height={50}
+                              width={20}
+                              height={20}
+                              alt={review.user.username}
+                              className="size-full rounded-full"
                               src={
                                 review.user.image ??
                                 "/assets/images/profilepic.webp"
                               }
-                              alt={review.user.username}
-                              className="size-full rounded-full"
                             />
                           </div>
                           <p>
@@ -326,9 +434,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                       <div>
                         <button
                           disabled={review.userId === user?.id}
-                          onClick={async () => {
-                            await likeOrDislikeReview(review.id);
-                          }}
+                          onClick={() => handleLikeComment(review.id)}
                           className={cn(
                             "px-4 py-2 inline-flex items-center gap-2 rounded-full border",
                             review.userId === user?.id

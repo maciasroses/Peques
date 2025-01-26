@@ -1,19 +1,19 @@
 "use server";
 
-import { ICollection, IProduct } from "../../interfaces";
 import { isAdmin } from "../auth";
-import { getCollectionByName } from "../collection/controller";
-import { getProductByKey } from "../product/controller";
+import { validateSchema } from "./schema";
+import { getProductByKey } from "@/app/shared/services/product/controller";
+import { getCollectionByName } from "@/app/shared/services/collection/controller";
 import {
-  create,
-  createProductFilter,
   read,
+  create,
   remove,
-  removeProductFilter,
   update,
+  createProductFilter,
+  removeProductFilter,
   updateProductFilter,
 } from "./model";
-import { validateSchema } from "./schema";
+import type { ICollection, IProduct } from "@/app/shared/interfaces";
 
 interface IGetFilters {
   q?: string;

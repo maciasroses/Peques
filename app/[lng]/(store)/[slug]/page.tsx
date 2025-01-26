@@ -5,6 +5,7 @@ import {
   getProductByKey,
   getSimilarProducts,
 } from "@/app/shared/services/product/controller";
+import type { Metadata } from "next";
 import type {
   IProduct,
   IProductList as IProductListInterface,
@@ -15,6 +16,24 @@ interface ISlugPage {
     lng: string;
     slug: string;
   };
+}
+
+export async function generateMetadata({
+  params: { slug },
+}: ISlugPage): Promise<Metadata> {
+  try {
+    const product = (await getProductByKey({ key: slug })) as IProduct;
+
+    if (!product) notFound();
+
+    return {
+      title: product.name,
+    };
+  } catch {
+    return {
+      title: "Producto",
+    };
+  }
 }
 
 const SlugPage = async ({ params: { lng, slug } }: ISlugPage) => {

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { LeftChevron, RightChevron } from "@/app/shared/icons";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 interface IPagination {
   totalPages: number;

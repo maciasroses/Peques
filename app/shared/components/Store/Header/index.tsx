@@ -2,17 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-
+import { useRef } from "react";
 import CartMenu from "./CartMenu";
 import MainSearch from "./MainSearch";
 import ProfileMenu from "./ProfileMenu";
 import FiltersMenu from "./FiltersMenu";
+import { cn } from "@/app/shared/utils/cn";
 import ThemeSelector from "./ThemeSelector";
+import { usePathname } from "next/navigation";
 import CollectionsMenu from "./CollectionsMenu";
 import HamburgerLinksMenu from "./HamburgerLinksMenu";
-
-import { cn } from "@/app/shared/utils/cn";
 import { Search, UserIcon } from "@/app/shared/icons";
 import { useScrollVisibility, useToggleMenu } from "@/app/shared/hooks";
 import type {
@@ -21,7 +20,6 @@ import type {
   ICollection,
   IFilterGroup,
 } from "@/app/shared/interfaces";
-import { useRef } from "react";
 
 interface IHeader {
   lng: string;
@@ -106,6 +104,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                   </li>
                   <li className="flex items-center">
                     <button
+                      aria-label="Search"
                       data-ignore-outside-click
                       onClick={handleToggleAndFocus}
                     >
@@ -125,7 +124,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                 !isAuthPage &&
                 !isCheckoutOrAdmin && (
                   <li className="text-gray-600 dark:text-white">
-                    <Link href={`/${lng}/login`}>
+                    <Link href={`/${lng}/login`} aria-label="Login">
                       <UserIcon strokeWidth={1} />
                     </Link>
                   </li>
@@ -157,11 +156,13 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                 onParentClose={toggleSearchBar}
               />
             </li>
-            {pathname === `/${lng}/search` && isSearchBarOpen && (
-              <li className="md:hidden">
-                <FiltersMenu lng={lng} filters_available={filters} />
-              </li>
-            )}
+            {(pathname === `/${lng}/search` ||
+              new RegExp(`^/${lng}/collections/[a-z-]+$`).test(pathname)) &&
+              isSearchBarOpen && (
+                <li className="md:hidden">
+                  <FiltersMenu filters_available={filters} />
+                </li>
+              )}
           </ul>
         )}
       </nav>

@@ -1,14 +1,14 @@
 "use server";
 
 import { validateSchema } from "./schema";
+import { getMe } from "@/app/shared/services/user/controller";
 import { getSession, isAdmin } from "@/app/shared/services/auth";
 import { create, createUserOnDiscount, read, remove, update } from "./model";
 import type {
+  IUser,
   IDiscountCode,
   IDiscountCodeState,
-  IUser,
 } from "@/app/shared/interfaces";
-import { getMe } from "../user/controller";
 
 export async function getDiscountCodeById(id: string) {
   try {

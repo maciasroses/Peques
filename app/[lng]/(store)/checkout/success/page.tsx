@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { AllGood } from "./components";
 import { GenericBackToPage } from "@/app/shared/components";
 import { processMetadata } from "@/app/shared/services/stripe/payment";
+import type { Metadata } from "next";
 import type { IBaseLangPage } from "@/app/shared/interfaces";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
@@ -9,6 +10,58 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 interface ICheckoutSuccessPage extends IBaseLangPage {
   searchParams: {
     payment_intent: string;
+  };
+}
+
+export async function generateMetadata({
+  searchParams: { payment_intent },
+}: ICheckoutSuccessPage): Promise<Metadata> {
+  if (!payment_intent || typeof payment_intent !== "string") {
+    return {
+      title: "Pago fallido",
+    };
+  }
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(payment_intent);
+
+    if (!paymentIntent.metadata.userId) {
+      return {
+        title: "Pago fallido",
+      };
+    }
+
+    const isSuccess = paymentIntent.status === "succeeded";
+    const isPending = paymentIntent.status === "requires_action";
+    const isFailed = ["requires_payment_method", "canceled"].includes(
+      paymentIntent.status
+    );
+
+    if (isSuccess && paymentIntent.metadata.processed) {
+      return {
+        title: "Pago ya procesado",
+      };
+    } else if (isSuccess) {
+      return {
+        title: "Compra exitosa",
+      };
+    } else if (isPending) {
+      return {
+        title: "Pago pendiente",
+      };
+    } else if (isFailed) {
+      return {
+        title: "Pago fallido",
+      };
+    }
+  } catch {
+    return {
+      title: "Pago fallido",
+    };
+  }
+
+  return {
+    title: "Pago fallido",
   };
 }
 

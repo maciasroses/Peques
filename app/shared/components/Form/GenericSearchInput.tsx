@@ -1,5 +1,5 @@
-import { cn } from "../../utils/cn";
 import React from "react";
+import { cn } from "@/app/shared/utils/cn";
 
 interface IGenericSearchInputProps {
   id?: string;

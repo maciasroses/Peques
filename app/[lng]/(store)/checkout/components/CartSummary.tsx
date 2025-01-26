@@ -109,6 +109,34 @@ const CartSummary = ({
                   {formatCurrency(item.finalPrice, "MXN")}
                 </span>
               </p>
+              {item.customRequest && (
+                <>
+                  <p className="font-semibold text-right">
+                    Producto personalizado
+                  </p>
+                  <div className="flex flex-col items-end gap-0">
+                    <p className="inline-flex gap-2">
+                      Nombre:
+                      <span>{JSON.parse(item.customRequest).name}</span>
+                    </p>
+                    <p className="inline-flex gap-2">
+                      Fuente:
+                      <span>{JSON.parse(item.customRequest).font}</span>
+                    </p>
+                    <div className="inline-flex gap-2">
+                      Color:
+                      <div
+                        style={{
+                          backgroundColor: JSON.parse(item.customRequest).color,
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "100%",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </li>
         ))}

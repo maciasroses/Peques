@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import Loading from "../Loading";
+import Loading from "@/app/shared/components/Loading";
 
 const colorMap: { [key: string]: string } = {
   red: "bg-red-500 hover:bg-red-600 focus:ring-red-500",

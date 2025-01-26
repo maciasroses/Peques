@@ -21,11 +21,12 @@ import type {
 } from "@/app/shared/interfaces";
 
 interface IProductInOrder {
-  productId: string;
   orderId: string;
+  costMXN: number;
   quantity: number;
   discount: number;
-  costMXN: number;
+  productId: string;
+  customRequest: string;
   product: {
     name: string;
   };

@@ -41,7 +41,7 @@ const Actions = ({ lng, customList }: IActions) => {
 
   return (
     <div className="relative inline-block pt-4 pr-4" ref={menuRef}>
-      <button onClick={handleModal}>
+      <button onClick={handleModal} aria-label="Actions">
         <ElipsisList />
       </button>
       {isOpen && (

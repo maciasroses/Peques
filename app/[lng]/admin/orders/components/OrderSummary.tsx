@@ -15,6 +15,7 @@ const OrderSummary = ({ order }: IOrderSummary) => {
         <thead>
           <tr>
             <th className="p-1 border-r border-r-black">Producto</th>
+            <th className="p-1 border-r border-r-black">Personalización</th>
             <th className="p-1 border-r border-r-black">Cantidad</th>
             <th className="p-1 border-r border-r-black">Precio Unitario</th>
             <th className="p-1 border-r border-r-black">Subtotal</th>
@@ -27,6 +28,34 @@ const OrderSummary = ({ order }: IOrderSummary) => {
             <tr key={index}>
               <td className="p-1 border-r border-r-black">
                 {product.product.name}
+              </td>
+              <td className="p-1 border-r border-r-black">
+                {product.customRequest ? (
+                  <div className="flex flex-col gap-0">
+                    <div>
+                      <span className="font-semibold">Nombre:</span>{" "}
+                      {JSON.parse(product.customRequest).name}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Fuente:</span>{" "}
+                      {JSON.parse(product.customRequest).font}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">Color:</span>
+                      <div
+                        className="w-4 h-4 inline-block"
+                        style={{
+                          backgroundColor: JSON.parse(product.customRequest)
+                            .color,
+                          border: "1px solid black",
+                        }}
+                      />
+                      {`(${JSON.parse(product.customRequest).color})`}
+                    </div>
+                  </div>
+                ) : (
+                  "-"
+                )}
               </td>
               <td className="p-1 border-r border-r-black">
                 {product.quantity}

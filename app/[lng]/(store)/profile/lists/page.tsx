@@ -2,11 +2,16 @@ import { Suspense } from "react";
 import { ListsList } from "./components";
 import { getMyLists } from "@/app/shared/services/customList/controller";
 import { CustomListsListSkeleton, Pagination } from "@/app/shared/components";
+import type { Metadata } from "next";
 import type {
   IBaseLangPage,
   ICustomListList,
   ICustomListSearchParams,
 } from "@/app/shared/interfaces";
+
+export const metadata: Metadata = {
+  title: "Mis listas",
+};
 
 interface IProfileListsPage extends IBaseLangPage {
   searchParams?: ICustomListSearchParams;

@@ -8,11 +8,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { genericParseJSON } from "@/app/shared/utils/genericParseJSON";
 import { getProductByKey } from "@/app/shared/services/product/controller";
 import { createOrderThroughStripeWebHook } from "@/app/shared/services/order/controller";
+import { createInventoryTransactionThroughStripeWebHook } from "@/app/shared/services/inventoryTransaction/controller";
 import {
   deleteStockReservationById,
   getStockReservationByUserIdNProductId,
 } from "@/app/shared/services/stockReservation/controller";
-import { createInventoryTransactionThroughStripeWebHook } from "@/app/shared/services/inventoryTransaction/controller";
 import type {
   ICart,
   IOrder,
@@ -158,11 +158,14 @@ export async function POST(req: NextRequest) {
             stripePaymentMethodId: charge.payment_method as string,
             productsIds: parsedProducts.map((product) => product.id),
             productsPrices: parsedProducts.map((product) => product.price),
+            productsQuantities: parsedProducts.map(
+              (product) => product.quantity
+            ),
             productsFinalPrices: parsedProducts.map(
               (product) => product.finalPrice
             ),
-            productsQuantities: parsedProducts.map(
-              (product) => product.quantity
+            productsCustomRequests: parsedProducts.map(
+              (product) => product.customRequest
             ),
             paymentMethodFromStripe: `${charge.payment_method_details?.card?.brand} ${charge.payment_method_details?.card?.funding}`,
           })) as IOrder;

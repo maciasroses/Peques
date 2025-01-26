@@ -81,6 +81,7 @@ const MainSearch = forwardRef(
             className="block w-full p-4 focus:outline-none text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 focus:border-gray-500 dark:focus:border-gray-400 dark:text-white"
           />
           <button
+            aria-label="Search"
             onClick={handleSearch}
             className="link-button-primary absolute top-2 end-2 font-medium text-sm"
           >

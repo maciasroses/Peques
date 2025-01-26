@@ -1,15 +1,15 @@
 import { useCart } from "@/app/shared/hooks";
 import { Toast } from "@/app/shared/components";
 import { useState, useEffect, useRef } from "react";
-import { createMyNewCart } from "../services/cart/controller";
-import {
-  reserverStock,
-  checkNUpdateStock,
-} from "@/app/shared/services/stockReservation/controller";
+import { createMyNewCart } from "@/app/shared/services/cart/controller";
 import {
   createSetUpIntent,
   createPaymentIntent,
 } from "@/app/shared/services/stripe/payment";
+import {
+  reserverStock,
+  checkNUpdateStock,
+} from "@/app/shared/services/stockReservation/controller";
 import type {
   ICartItemForFrontend,
   IDiscountCode,

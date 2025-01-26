@@ -31,8 +31,8 @@ const ProductList = async ({
         </div>
       ) : (
         <Card404
-          title="No products found"
-          description="Try changing the search parameters"
+          title="No se encontraron productos"
+          description="Intenta con otra búsqueda"
         />
       )}
     </>

@@ -164,12 +164,20 @@ const ProductCard = ({
             )}
           </div>
         </Link>
-        <AddToCart
-          product={product}
-          price={discountedPrice}
-          discount={discountDescription}
-          promotionId={selectedPromotion?.id || null}
-        />
+        {!product.isCustomizable ? (
+          <AddToCart
+            product={product}
+            price={discountedPrice}
+            discount={discountDescription}
+            promotionId={selectedPromotion?.id || null}
+          />
+        ) : (
+          <Link href={`/${lng}/${product.key}`}>
+            <p className="w-full bg-green-700 text-white font-semibold py-2 rounded-lg shadow hover:bg-green-800 text-center">
+              Personalizar
+            </p>
+          </Link>
+        )}
       </div>
     </div>
   );

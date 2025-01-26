@@ -1,7 +1,7 @@
+import { Img } from "@react-email/components";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
-import { Img } from "@react-email/components";
 import type { IOrderInfoForEmail } from "@/app/shared/interfaces";
 
 const OrderInfo = ({ order }: { order: IOrderInfoForEmail }) => {
@@ -113,6 +113,73 @@ const OrderInfo = ({ order }: { order: IOrderInfoForEmail }) => {
                   >
                     Descuento aplicado
                   </p>
+                )}
+                {product.customRequest && (
+                  <div>
+                    <p
+                      style={{
+                        fontWeight: "bold",
+                        margin: "0",
+                        textAlign: "right",
+                      }}
+                    >
+                      Producto personalizado
+                    </p>
+
+                    <p
+                      style={{
+                        textAlign: "right",
+                      }}
+                    >
+                      <span
+                        style={{
+                          marginRight: "8px",
+                        }}
+                      >
+                        Nombre:
+                      </span>
+                      <span>{JSON.parse(product.customRequest).name}</span>
+                    </p>
+                    <p
+                      style={{
+                        textAlign: "right",
+                      }}
+                    >
+                      <span
+                        style={{
+                          marginRight: "8px",
+                        }}
+                      >
+                        Fuente:
+                      </span>
+                      <span>{JSON.parse(product.customRequest).font}</span>
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        alignItems: "center",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <span
+                        style={{
+                          marginRight: "8px",
+                        }}
+                      >
+                        Color:
+                      </span>
+                      <div
+                        style={{
+                          backgroundColor: JSON.parse(product.customRequest)
+                            .color,
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "100%",
+                        }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

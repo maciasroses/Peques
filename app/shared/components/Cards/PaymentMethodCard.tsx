@@ -1,5 +1,5 @@
 import { cn } from "@/app/shared/utils/cn";
-import { IPaymentMethod } from "@/app/shared/interfaces";
+import type { IPaymentMethod } from "@/app/shared/interfaces";
 
 interface IPaymentMethodCard {
   paymentMethod: IPaymentMethod;

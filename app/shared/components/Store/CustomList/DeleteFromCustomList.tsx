@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { TrashIcon } from "@/app/shared/icons";
-import { Modal, Toast } from "@/app/shared/components";
 import { useResolvedTheme } from "@/app/shared/hooks";
+import { Modal, Toast } from "@/app/shared/components";
 import { deleteProductFromCustomList } from "@/app/shared/services/customList/controller";
 import type { IProduct } from "@/app/shared/interfaces";
 
@@ -51,6 +51,7 @@ const DeleteFromCustomList = ({
     <>
       <button
         type="button"
+        aria-label="Delete product"
         onClick={() => setIsOpen(true)}
         className="text-red-600 dark:text-red-300 hover:text-red-700 dark:hover:text-red-400"
       >

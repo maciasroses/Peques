@@ -26,7 +26,7 @@ const ProductList = ({ lng, order }: IProductList) => {
           onClose={onClose}
         />
       </Modal>
-      <ul className="flex flex-col gap-2 mt-4">
+      <div className="flex flex-col gap-2 mt-4">
         {order.products.map((product) => (
           <button
             key={product.productId}
@@ -35,7 +35,7 @@ const ProductList = ({ lng, order }: IProductList) => {
               onOpen();
             }}
           >
-            <li className="flex items-center justify-between gap-2 p-4 shadow-lg dark:shadow-gray-800 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg">
+            <div className="flex items-center justify-between gap-2 p-4 shadow-lg dark:shadow-gray-800 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg">
               <div className="flex items-center gap-2">
                 <div className="size-24">
                   <Image
@@ -76,11 +76,40 @@ const ProductList = ({ lng, order }: IProductList) => {
                     Descuento aplicado
                   </p>
                 )}
+                {product.customRequest && (
+                  <>
+                    <p className="font-semibold text-right">
+                      Producto personalizado
+                    </p>
+                    <div className="flex flex-col items-end gap-0">
+                      <p className="inline-flex gap-2">
+                        Nombre:
+                        <span>{JSON.parse(product.customRequest).name}</span>
+                      </p>
+                      <p className="inline-flex gap-2">
+                        Fuente:
+                        <span>{JSON.parse(product.customRequest).font}</span>
+                      </p>
+                      <div className="inline-flex gap-2">
+                        Color:
+                        <div
+                          style={{
+                            backgroundColor: JSON.parse(product.customRequest)
+                              .color,
+                            width: "20px",
+                            height: "20px",
+                            borderRadius: "100%",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
-            </li>
+            </div>
           </button>
         ))}
-      </ul>
+      </div>
     </>
   );
 };

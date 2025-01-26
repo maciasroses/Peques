@@ -8,12 +8,6 @@ import { getSession } from "@/app/shared/services/auth";
 import { read as xlsxRead, utils as xlsxUtils } from "xlsx";
 import { getUserById } from "@/app/shared/services/user/controller";
 import { COMFORT_SET, SET_IDEAL, SET_INTEGRAL } from "@/app/shared/constants";
-import { getPaymentMethodByStripeId } from "@/app/shared/services/paymentMethod/controller";
-import {
-  getProducts,
-  getProductByKey,
-  updateAvailableQuantityProductByKey,
-} from "@/app/shared/services/product/controller";
 import {
   read,
   create,
@@ -22,6 +16,12 @@ import {
   updateMassive,
   deleteMassive,
 } from "./model";
+import { getPaymentMethodByStripeId } from "@/app/shared/services/paymentMethod/controller";
+import {
+  getProducts,
+  getProductByKey,
+  updateAvailableQuantityProductByKey,
+} from "@/app/shared/services/product/controller";
 import {
   getDiscountCodeById,
   createDiscountCodeToUser,
@@ -760,6 +760,7 @@ interface ICreateOrderThroughStripWebHook {
   stripePaymentMethodId: string;
   paymentMethodFromStripe: string;
   promotionsIds: (string | undefined)[];
+  productsCustomRequests: (string | null | undefined)[];
 }
 
 export async function createOrderThroughStripeWebHook({
@@ -775,6 +776,7 @@ export async function createOrderThroughStripeWebHook({
   productsQuantities,
   productsFinalPrices,
   stripePaymentMethodId,
+  productsCustomRequests,
   paymentMethodFromStripe,
 }: ICreateOrderThroughStripWebHook) {
   try {
@@ -869,6 +871,7 @@ export async function createOrderThroughStripeWebHook({
             costMXN: productsPrices[index],
             quantity: productsQuantities[index],
             discount: percentagesDiscounts[index],
+            customRequest: productsCustomRequests[index],
             product: {
               connect: {
                 key: productId,

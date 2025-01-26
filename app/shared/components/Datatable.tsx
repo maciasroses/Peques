@@ -1,8 +1,8 @@
 "use client";
 
-import { useResolvedTheme } from "@/app/shared/hooks";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
+import { useResolvedTheme } from "@/app/shared/hooks";
 import type {
   TableStyles,
   ConditionalStyles,

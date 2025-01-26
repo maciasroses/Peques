@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef } from "react";
-
 import { LeftChevron, RightChevron, XMark } from "@/app/shared/icons";
 import type { IProduct } from "@/app/shared/interfaces";
 

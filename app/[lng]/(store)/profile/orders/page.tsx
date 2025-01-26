@@ -2,11 +2,16 @@ import { Suspense } from "react";
 import { OrdersList } from "./components";
 import { getMyOrders } from "@/app/shared/services/order/controller";
 import { OrdersListSkeleton, Pagination } from "@/app/shared/components";
+import type { Metadata } from "next";
 import type {
   IOrderList,
   IBaseLangPage,
   IOrderSearchParams,
 } from "@/app/shared/interfaces";
+
+export const metadata: Metadata = {
+  title: "Mis pedidos",
+};
 
 interface IProfileOrdersPage extends IBaseLangPage {
   searchParams?: IOrderSearchParams;

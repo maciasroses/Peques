@@ -42,6 +42,7 @@ export interface IProductInOrder {
   quantity: number;
   discount: number;
   costMXN: number;
+  customRequest: string;
   product: {
     name: string;
   };

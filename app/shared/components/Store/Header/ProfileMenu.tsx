@@ -84,6 +84,7 @@ const ProfileMenu = ({ user, lng }: IProfileMenu) => {
       <button
         type="button"
         onClick={toggleMenu}
+        aria-label="Profile"
         className="size-6 rounded-full flex items-center"
       >
         <Image

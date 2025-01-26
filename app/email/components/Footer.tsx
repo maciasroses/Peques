@@ -3,7 +3,6 @@ import { Img } from "@react-email/components";
 const Footer = () => {
   return (
     <>
-      {/* Estilos en línea con media queries */}
       <style>
         {`
           @media (max-width: 640px) {
@@ -61,8 +60,8 @@ const Footer = () => {
               alt="Peques logo"
               src="https://ilidf54ifchqqkqe.public.blob.vercel-storage.com/logo-mini-618H1j8ecia4nZOF8sSrr5dM6NlNK1.webp"
               style={{
-                display: "block", // Esto asegura que esté centrado en su contenedor
-                margin: "0 auto", // Centra horizontalmente dentro del div
+                display: "block",
+                margin: "0 auto",
                 borderRadius: "50%",
               }}
             />
@@ -74,7 +73,7 @@ const Footer = () => {
               margin: "10px 0 0",
               color: "#2563eb",
               fontSize: "14px",
-              lineHeight: "1.6", // Ajusta la separación entre líneas para mejor legibilidad
+              lineHeight: "1.6",
             }}
           >
             <a

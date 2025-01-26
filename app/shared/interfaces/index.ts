@@ -486,6 +486,7 @@ export interface IAddressSearchParams {
 export interface IProductList {
   products: IProduct[];
   totalPages: number;
+  totalCount: number;
 }
 
 export interface IOrderList {
@@ -533,6 +534,7 @@ export interface ICartItemForFrontend {
   finalPrice: number;
   discount?: string | null;
   promotionId?: string | null;
+  customRequest?: string | null;
 }
 
 export interface IProductFromStripe extends ICartItemForFrontend {}
@@ -560,6 +562,7 @@ export interface IProductForEmail {
   finalPrice: number;
   discount?: string | null;
   promotionId?: string | null;
+  customRequest?: string | null;
 }
 
 export interface IOrderInfoForEmail {

@@ -43,7 +43,10 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
               className="w-screen h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h=[700px] bg-cover bg-center"
               style={{ backgroundImage: `url(${hero.imageUrl})` }}
             >
-              <Link href={`/${lng}/collections/${hero.collection.link}`}>
+              <Link
+                aria-label="Ver colección"
+                href={`/${lng}/collections/${hero.collection.link}`}
+              >
                 <div className="w-full h-full bg-black bg-opacity-30 flex flex-col items-center justify-end p-10 md:p-20 text-white text-center">
                   <p className="text-base md:text-lg xl:text-2xl font-thin">
                     {hero.title}

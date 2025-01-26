@@ -4,8 +4,8 @@ const OrderIdNotFoundPage = () => {
   return (
     <div>
       <Card404
-        title="Order Not Found"
-        description="The order you are looking for does not exist."
+        title="Pedido no encontrado"
+        description="El pedido que buscas no existe o ha sido eliminado."
       />
     </div>
   );

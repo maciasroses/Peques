@@ -4,14 +4,14 @@ import bcrypt from "bcrypt";
 import { Resend } from "resend";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
+import { del, put } from "@vercel/blob";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { create, read, update } from "./model";
+import { createMyNewCart } from "../cart/controller";
 import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
-import { createMyNewCart } from "../cart/controller";
-import { del, put } from "@vercel/blob";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const resend_email = process.env.RESEND_EMAIL as string;

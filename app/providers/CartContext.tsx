@@ -50,16 +50,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (myCart) {
           setCart(
             myCart.items.map((item) => ({
+              price: item.priceMXN,
               id: item.product.key,
               name: item.product.name,
               quantity: item.quantity,
-              price: item.priceMXN,
-              finalPrice: item.finalPriceMXN,
               discount: item.discount,
+              promotionId: item.promotionId,
+              finalPrice: item.finalPriceMXN,
+              customRequest: item.customRequest,
               file:
                 item.product.files[0]?.url ||
                 "/assets/images/landscape-placeholder.webp",
-              promotionId: item.promotionId,
             }))
           );
         } else {

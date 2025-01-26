@@ -1,10 +1,13 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
 import { create, read, remove, update } from "./model";
+import { getProductByKey } from "@/app/shared/services/product/controller";
+import { getCollectionByName } from "@/app/shared/services//collection/controller";
 import {
   createDiscountCodeByAdmin,
   getDiscountCodeByCode,
@@ -14,9 +17,6 @@ import type {
   IProduct,
   IPromotion,
 } from "@/app/shared/interfaces";
-import { getProductByKey } from "../product/controller";
-import { getCollectionByName } from "../collection/controller";
-import { validateSchema } from "./schema";
 
 export async function getPromotions({ q }: { q?: string }) {
   try {

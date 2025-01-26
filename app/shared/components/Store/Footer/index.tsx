@@ -37,8 +37,9 @@ const Footer = ({ lng, user }: IFooter) => {
             <ul className="mt-4 flex gap-2 items-center justify-center">
               <li>
                 <Link
-                  href="https://www.instagram.com/peques.mex/"
                   target="_blank"
+                  aria-label="Instagram"
+                  href="https://www.instagram.com/peques.mex/"
                 >
                   <Instagram />
                 </Link>

@@ -42,6 +42,7 @@ export async function createPaymentIntent(
         quantity: item.quantity,
         finalPrice: item.finalPrice,
         promotionId: item.promotionId,
+        customRequest: item.customRequest,
       }))
     );
 
