@@ -11,8 +11,9 @@ const RichTextEditor = ({ value, onChange }: IRichTextEditor) => {
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, false] }],
+      [{ size: ["small", false, "large", "huge"] }],
       ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+      [{ list: "ordered" }, { list: "bullet" }],
       [{ script: "sub" }, { script: "super" }],
       [{ indent: "-1" }, { indent: "+1" }],
       [{ align: [] }],
@@ -23,12 +24,14 @@ const RichTextEditor = ({ value, onChange }: IRichTextEditor) => {
   };
 
   return (
-    <ReactQuill
-      value={value}
-      onChange={onChange}
-      modules={modules}
-      theme="snow"
-    />
+    <div className="bg-white dark:bg-neutral-light rounded-md text-black dark:text-white max-h-[320px] overflow-y-auto">
+      <ReactQuill
+        value={value}
+        onChange={onChange}
+        modules={modules}
+        theme="snow"
+      />
+    </div>
   );
 };
 

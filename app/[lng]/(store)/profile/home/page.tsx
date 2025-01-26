@@ -7,7 +7,7 @@ const ProfileHomePage = ({ params: { lng } }: IProfileHomePage) => {
   return (
     <>
       <Greetings />
-      <div className="flex flex-col md:flex-row gap-2 mt-4">
+      <div className="flex flex-col md:flex-row gap-2 justify-center mt-4">
         <MainInfo lng={lng} />
       </div>
     </>

@@ -11,6 +11,7 @@ import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
 import { createMyNewCart } from "../cart/controller";
+import { del, put } from "@vercel/blob";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const resend_email = process.env.RESEND_EMAIL as string;
@@ -375,5 +376,78 @@ export async function addStripeCustomerIdToMe({
   } catch (error) {
     console.error("Error getting user session:", error);
     return null; // Retornar null si ocurre un error
+  }
+}
+
+export async function updateProfilePicture(formData: FormData) {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) throw new Error("No session found");
+
+    const user = (await read({ id: session.userId as string })) as IUser;
+
+    const imageUrl = formData.get("image") as File;
+
+    const { url } = await put(
+      `User profile pictures/${session.userId}.${imageUrl.name
+        .split(".")
+        .pop()}`,
+      imageUrl,
+      {
+        access: "public",
+      }
+    );
+
+    await update({
+      id: session.userId as string,
+      data: {
+        image: url,
+      },
+    });
+    await del(user.image as string);
+
+    return {
+      success: true,
+      message: "Foto de perfil actualizada correctamente.",
+    };
+  } catch (error) {
+    console.error("Error updating profile picture", error);
+    return {
+      message: "Ocurrió un error interno.",
+      success: false,
+    };
+  }
+}
+
+export async function removeProfilePicture() {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) throw new Error("No session found");
+
+    const user = (await read({ id: session.userId as string })) as IUser;
+
+    if (user.image === "/assets/images/profilepic.webp") {
+      throw new Error("No profile picture found");
+    }
+
+    await update({
+      id: session.userId as string,
+      data: {
+        image: "/assets/images/profilepic.webp",
+      },
+    });
+
+    await del(user.image as string);
+
+    return {
+      success: true,
+      message: "Foto de perfil eliminada correctamente.",
+    };
+  } catch (error) {
+    console.error("Error removing profile picture", error);
+    return {
+      message: "Ocurrió un error interno.",
+      success: false,
+    };
   }
 }

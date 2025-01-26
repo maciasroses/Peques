@@ -80,7 +80,7 @@ const CollectionsForm = ({
     <div className="flex flex-col items-center gap-4 text-left dark:text-white">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-center text-xl md:text-4xl">
-          Eliminando Colección(es)
+          Quitando Colección(es) de la Promoción
         </h1>
       </div>
       <form onSubmit={submitAction}>
@@ -91,7 +91,7 @@ const CollectionsForm = ({
                 ⚠️ Acción irreversible ⚠️
               </span>
               <p className="text-base md:text-xl">
-                ¿Estás seguro de querer eliminar la colección
+                ¿Estás seguro de querer quitar la colección
                 {' "'}
                 {(collection as ICollection).name}
                 {'"'}?
@@ -103,7 +103,7 @@ const CollectionsForm = ({
                 ⚠️ Acción irreversible ⚠️
               </span>
               <p className="text-base md:text-xl">
-                ¿Estás seguro de querer eliminar las siguientes colecciones?
+                ¿Estás seguro de querer quitar las siguientes colecciones?
               </p>
               <ul>
                 {(collection as ICollection[]).map((collection) => (
@@ -113,7 +113,7 @@ const CollectionsForm = ({
             </div>
           )}
           <div className="text-center">
-            <SubmitButton color="accent" pending={isPending} title="Eliminar" />
+            <SubmitButton color="accent" pending={isPending} title="Quitar" />
           </div>
         </fieldset>
       </form>

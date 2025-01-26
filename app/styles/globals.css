@@ -124,3 +124,174 @@ body {
   }
 
 }
+
+/* Estilo general para el editor */
+.ql-editor {
+  font-size: 1rem;
+  line-height: 1.6;
+  font-family: sans-serif;
+}
+
+/* Encabezados (header) */
+.ql-editor h1 {
+  font-size: 2.25rem; /* text-3xl */
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.ql-editor h2 {
+  font-size: 1.875rem; /* text-2xl */
+  font-weight: semibold;
+  margin-bottom: 0.75rem;
+}
+
+.ql-editor h3 {
+  font-size: 1.5rem; /* text-xl */
+  font-weight: medium;
+  margin-bottom: 0.5rem;
+}
+
+.ql-editor h4 {
+  font-size: 1.25rem; /* text-lg */
+  font-weight: medium;
+  margin-bottom: 0.5rem;
+}
+
+/* Tamaños (size) */
+.ql-size-small {
+  font-size: 0.75rem; /* text-sm */
+}
+
+.ql-size-large {
+  font-size: 1.5rem; /* text-xl */
+}
+
+.ql-size-huge {
+  font-size: 2.25rem; /* text-3xl */
+}
+
+/* Estilo de texto */
+.ql-editor .ql-bold {
+  font-weight: bold;
+}
+
+.ql-editor .ql-italic {
+  font-style: italic;
+}
+
+.ql-editor .ql-underline {
+  text-decoration: underline;
+}
+
+.ql-editor .ql-strike {
+  text-decoration: line-through;
+}
+
+/* Listas */
+.ql-editor ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.ql-editor ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.ql-editor .ql-indent-1 {
+  padding-left: 1.5rem;
+}
+
+.ql-editor .ql-indent-2 {
+  padding-left: 3rem;
+}
+
+.ql-editor .ql-indent-3 {
+  padding-left: 4.5rem;
+}
+
+.ql-editor .ql-indent-4 {
+  padding-left: 6rem;
+}
+
+.ql-editor .ql-indent-5 {
+  padding-left: 7.5rem;
+}
+
+.ql-editor .ql-indent-6 {
+  padding-left: 9rem;
+}
+
+.ql-editor .ql-indent-7 {
+  padding-left: 10.5rem;
+}
+
+.ql-editor .ql-indent-8 {
+  padding-left: 12rem;
+}
+
+.ql-editor .ql-indent-9 {
+  padding-left: 13.5rem;
+}
+
+/* Listas tipo checklist */
+.ql-editor .ql-list.ql-checklist li::before {
+  content: '\2610'; /* Checkbox vacío */
+  margin-right: 0.5rem;
+}
+
+.ql-editor .ql-list.ql-checklist li.ql-active::before {
+  content: '\2611'; /* Checkbox marcado */
+}
+
+/* Subíndice y superíndice */
+.ql-editor .ql-script.ql-sub {
+  font-size: 0.75em;
+  vertical-align: sub;
+}
+
+.ql-editor .ql-script.ql-super {
+  font-size: 0.75em;
+  vertical-align: super;
+}
+
+/* Alineaciones */
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ql-align-justify {
+  text-align: justify;
+}
+
+.ql-align-left {
+  text-align: left;
+}
+
+/* Dirección RTL */
+.ql-direction-rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Enlaces */
+.ql-editor a {
+  color: #3490dc;
+  text-decoration: underline;
+}
+
+/* Enlace al limpiar (clean) */
+.ql-editor .ql-clean {
+  text-decoration: none;
+  font-style: normal;
+  font-weight: normal;
+}
+
+/* Márgenes entre párrafos */
+.ql-editor p {
+  margin-bottom: 1rem;
+}

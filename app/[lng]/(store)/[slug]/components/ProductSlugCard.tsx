@@ -237,9 +237,12 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   </span>
                 )}
               </div>
-              <p className="text-base md:text-xl lg:text-4xl">
-                {product.description}
-              </p>
+              {product.description && (
+                <div
+                  className="ql-editor"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              )}
               <AddToCart
                 product={product}
                 price={discountedPrice}

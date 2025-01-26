@@ -15,7 +15,7 @@ import type { IProvider } from "@/app/shared/interfaces";
 const columns = [
   {
     name: "Acciones",
-    wdith: "100px",
+    width: "150px",
     cell: (row: IProvider) => (
       <div className="flex justify-center gap-2">
         <Action action="update">

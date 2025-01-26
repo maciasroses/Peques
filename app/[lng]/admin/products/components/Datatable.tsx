@@ -6,6 +6,7 @@ import { useRowSelection } from "@/app/shared/hooks";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
 import { Form as HistoryForm, Datatable as HistoryDatatable } from "./History";
+import { Datatable as FilesDatatable } from "./Files";
 import {
   Action,
   Card404,
@@ -17,19 +18,53 @@ import type {
   ConditionalStyles,
   ExpanderComponentProps,
 } from "react-data-table-component";
+import SharedForm from "./SharedForm";
+import { cn } from "@/app/shared/utils/cn";
 
 const ExpandedComponent: React.FC<ExpanderComponentProps<IProduct>> = ({
   data,
 }) => {
+  const [tab, setTab] = useState<"history" | "files">("history");
+
   return (
-    <div className="pl-12 py-4">
-      <h1 className="text-2xl">
-        Historial de pedidos del producto: {`"${data.name}"`}
-      </h1>
-      <HistoryDatatable
-        orders={(data._count as { orders: number })?.orders}
-        history={data.history}
-      />
+    <div className="pl-12 py-4 dark:bg-black dark:text-white">
+      <ul className="flex flex-row gap-4">
+        <li>
+          <button
+            onClick={() => setTab("history")}
+            className={cn(
+              "px-4 py-2 rounded-md",
+              tab === "history"
+                ? "bg-primary dark:bg-primary-dark"
+                : "bg-gray-200 text-gray-700"
+            )}
+          >
+            Historial de pedidos
+          </button>
+        </li>
+        <li>
+          <button
+            onClick={() => setTab("files")}
+            className={cn(
+              "px-4 py-2 rounded-md",
+              tab === "files"
+                ? "bg-primary dark:bg-primary-dark"
+                : "bg-gray-200 text-gray-700"
+            )}
+          >
+            Archivos
+          </button>
+        </li>
+      </ul>
+      {tab === "history" && (
+        <HistoryDatatable
+          orders={(data._count as { orders: number })?.orders}
+          history={data.history}
+        />
+      )}
+      {tab === "files" && (
+        <FilesDatatable files={data.files} productId={data.id} />
+      )}
     </div>
   );
 };
@@ -74,7 +109,7 @@ const Datatable = ({ products, providers }: IDatatable) => {
         <div className="flex justify-center gap-2">
           <Action action="create">
             {/* @ts-ignore */}
-            <HistoryForm productId={row.id} />
+            <SharedForm productId={row.id} />
           </Action>
           <Action action="update">
             {/* @ts-ignore */}
@@ -102,6 +137,25 @@ const Datatable = ({ products, providers }: IDatatable) => {
       selector: (row: { key: string }) => row.key,
       sortable: true,
       cell: (row: { key: string }) => row.key,
+    },
+    {
+      name: "Descripción",
+      width: "600px",
+      selector: (row: { description: string }) => row.description,
+      cell: (row: { description: string }) => (
+        <div
+          className="max-w-[600px] max-h-[300px] overflow-y-auto ql-editor"
+          dangerouslySetInnerHTML={{ __html: row.description }}
+        />
+      ),
+    },
+    {
+      name: "¿Es personalizable?",
+      width: "160px",
+      selector: (row: { isCustomizable: boolean }) => row.isCustomizable,
+      sortable: true,
+      cell: (row: { isCustomizable: boolean }) =>
+        row.isCustomizable ? "Sí" : "No",
     },
     {
       name: "Cantidad Disponible",

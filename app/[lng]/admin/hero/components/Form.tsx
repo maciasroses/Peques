@@ -124,22 +124,24 @@ const Form = ({ hero, onClose, collections, action }: IForm) => {
                   />
                 </GenericDiv>
               </GenericPairDiv>
-              <div>
-                <p>Imagen del Hero</p>
-                <GenericInput
-                  type="file"
-                  file={file}
-                  id="imageUrl"
-                  fileAccept="image/webp"
-                  ariaLabel="Imagen del Hero"
-                  error={badResponse.errors?.imageUrl}
-                  onChange={(event) => {
-                    setFile(
-                      (event.target as HTMLInputElement).files?.[0] ?? null
-                    );
-                  }}
-                />
-              </div>
+              {action === "create" && (
+                <div>
+                  <p>Imagen del Hero</p>
+                  <GenericInput
+                    type="file"
+                    file={file}
+                    id="imageUrl"
+                    fileAccept="image/webp"
+                    ariaLabel="Imagen del Hero"
+                    error={badResponse.errors?.imageUrl}
+                    onChange={(event) => {
+                      setFile(
+                        (event.target as HTMLInputElement).files?.[0] ?? null
+                      );
+                    }}
+                  />
+                </div>
+              )}
             </>
           ) : (
             <>

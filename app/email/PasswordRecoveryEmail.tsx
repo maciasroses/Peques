@@ -10,6 +10,7 @@ import {
   Container,
 } from "@react-email/components";
 import { BASE_URL } from "@/app/shared/constants";
+import { Footer, Header } from "./components";
 
 interface IPasswordRecoveryEmail {
   resetPasswordToken: string;
@@ -26,10 +27,8 @@ const PasswordRecoveryEmail: React.FC<IPasswordRecoveryEmail> = ({
       <Body className="bg-gray-50">
         <Container className="max-w-2xl">
           <Tailwind>
+            <Header title="Recuperación de contraseña" />
             <Section className="bg-white rounded-md p-6 shadow-md">
-              <Text className="text-xl font-bold text-gray-900 mb-4">
-                Recuperación de contraseña
-              </Text>
               <Text className="text-gray-600">
                 Has solicitado recuperar tu contraseña. Para continuar, por
                 favor haz clic en el siguiente botón:
@@ -53,12 +52,7 @@ const PasswordRecoveryEmail: React.FC<IPasswordRecoveryEmail> = ({
                 <a href={recoveryUrl}>{recoveryUrl}</a>
               </Text>
             </Section>
-            <Section className="text-center mt-8">
-              <Text className="text-xs text-gray-500">
-                © {new Date().getFullYear()} Shopeques. Todos los derechos
-                reservados.
-              </Text>
-            </Section>
+            <Footer />
           </Tailwind>
         </Container>
       </Body>

@@ -56,7 +56,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
               price: item.priceMXN,
               finalPrice: item.finalPriceMXN,
               discount: item.discount,
-              file: item.product.files[0]?.url || "",
+              file:
+                item.product.files[0]?.url ||
+                "/assets/images/landscape-placeholder.webp",
               promotionId: item.promotionId,
             }))
           );

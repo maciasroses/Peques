@@ -171,7 +171,7 @@ export async function updateCollection({
   const dataToValidate = {
     name: formData.get("name"),
     link: formData.get("link"),
-    imageUrl: formData.get("imageUrl"),
+    // imageUrl: formData.get("imageUrl"),
   };
 
   const errors = validateSchema("update", dataToValidate);
@@ -215,24 +215,25 @@ export async function updateCollection({
       };
     }
 
-    const { imageUrl, ...rest } = dataToValidate;
+    // const { imageUrl, ...rest } = dataToValidate;
 
-    const { url } = await put(
-      `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-      imageUrl as File,
-      {
-        access: "public",
-        contentType: "image/webp",
-      }
-    );
+    // const { url } = await put(
+    //   `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
+    //   imageUrl as File,
+    //   {
+    //     access: "public",
+    //     contentType: "image/webp",
+    //   }
+    // );
 
     const finalData = {
-      ...rest,
-      imageUrl: url,
+      // ...rest,
+      // imageUrl: url,
+      ...dataToValidate,
     };
 
     await update({ id, data: finalData });
-    await del(collection.imageUrl);
+    // await del(collection.imageUrl);
   } catch (error) {
     console.error(error);
     // throw new Error("Failed to update collection");

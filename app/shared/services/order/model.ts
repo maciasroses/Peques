@@ -53,6 +53,9 @@ export async function read({
   isAdminRequest = false,
 }: IOrderSearchParams) {
   const globalInclude = {
+    user: true,
+    payment: true,
+    address: true,
     products: {
       include: {
         product: {

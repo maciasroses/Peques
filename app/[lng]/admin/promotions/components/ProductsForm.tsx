@@ -78,7 +78,7 @@ const ProductsForm = ({
     <div className="flex flex-col items-center gap-4 text-left dark:text-white">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-center text-xl md:text-4xl">
-          Eliminando Producto(s)
+          Quitando Producto(s) de la Promoción
         </h1>
       </div>
       <form onSubmit={submitAction}>
@@ -89,7 +89,7 @@ const ProductsForm = ({
                 ⚠️ Acción irreversible ⚠️
               </span>
               <p className="text-base md:text-xl">
-                ¿Estás seguro de querer eliminar el producto
+                ¿Estás seguro de querer quitar el producto
                 {' "'}
                 {(product as IProduct).name}
                 {'"'}?
@@ -101,7 +101,7 @@ const ProductsForm = ({
                 ⚠️ Acción irreversible ⚠️
               </span>
               <p className="text-base md:text-xl">
-                ¿Estás seguro de querer eliminar los siguientes productos?
+                ¿Estás seguro de querer quitar los siguientes productos?
               </p>
               <ul>
                 {(product as IProduct[]).map((product) => (
@@ -111,7 +111,7 @@ const ProductsForm = ({
             </div>
           )}
           <div className="text-center">
-            <SubmitButton color="accent" pending={isPending} title="Eliminar" />
+            <SubmitButton color="accent" pending={isPending} title="Quitar" />
           </div>
         </fieldset>
       </form>

@@ -61,7 +61,7 @@ const Form = ({ onClose, filterId, collection, action }: IForm) => {
     <div className="flex flex-col items-center gap-4 text-left dark:text-white">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-center text-xl md:text-4xl">
-          Eliminando colección
+          Quitando colección del filtro
         </h1>
         {badResponse.message && (
           <div className="text-red-500 text-center">{badResponse.message}</div>
@@ -75,7 +75,7 @@ const Form = ({ onClose, filterId, collection, action }: IForm) => {
                 ⚠️ Acción irreversible ⚠️
               </span>
               <h1 className="text-center text-base md:text-xl">
-                ¿Estás seguro de que deseas eliminar la colección
+                ¿Estás seguro de que deseas quitar la colección
                 {` "${(collection as ICollection).name}"`}?
               </h1>
             </div>
@@ -85,7 +85,7 @@ const Form = ({ onClose, filterId, collection, action }: IForm) => {
                 ⚠️ Acción irreversible ⚠️
               </span>
               <h1 className="text-center text-base md:text-xl">
-                ¿Estás seguro de que deseas eliminar las siguientes colecciones?
+                ¿Estás seguro de que deseas quitar las siguientes colecciones?
               </h1>
               <ul>
                 {(collection as ICollection[]).map((coll) => (
@@ -95,7 +95,7 @@ const Form = ({ onClose, filterId, collection, action }: IForm) => {
             </div>
           )}
           <div className="text-center mt-4">
-            <SubmitButton color="accent" title="Eliminar" pending={isPending} />
+            <SubmitButton color="accent" title="Quitar" pending={isPending} />
           </div>
         </fieldset>
       </form>

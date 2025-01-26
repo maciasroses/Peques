@@ -7,6 +7,7 @@ interface IGenericInput {
   type: string;
   file?: File | null;
   fileAccept?: string;
+  multiple?: boolean;
   step?: string;
   min?: string;
   max?: string;
@@ -35,6 +36,7 @@ const GenericInput: React.FC<IGenericInput> = ({
   autoComplete,
   step,
   min,
+  multiple,
   max,
   rows = 3,
   options,
@@ -95,6 +97,7 @@ const GenericInput: React.FC<IGenericInput> = ({
           </div>
           <input
             id={id}
+            multiple
             name={id}
             type="file"
             className="hidden"

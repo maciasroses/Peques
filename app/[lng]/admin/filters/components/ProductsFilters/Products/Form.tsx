@@ -59,9 +59,7 @@ const Form = ({ onClose, productFilterId, product, action }: IForm) => {
   return (
     <div className="flex flex-col items-center gap-4 text-left dark:text-white">
       <div className="flex flex-col items-center gap-2">
-        <h1 className="text-center text-xl md:text-4xl">
-          Eliminando productos
-        </h1>
+        <h1 className="text-center text-xl md:text-4xl">Quitando productos</h1>
         {badResponse.message && (
           <div className="text-red-500 text-center">{badResponse.message}</div>
         )}
@@ -74,7 +72,7 @@ const Form = ({ onClose, productFilterId, product, action }: IForm) => {
                 ⚠️ Acción irreversible ⚠️
               </span>
               <h1 className="text-center text-base md:text-xl">
-                ¿Estás seguro de que deseas eliminar el producto
+                ¿Estás seguro de que deseas quitar el producto
                 {` "${(product as IProduct).name}"`}?
               </h1>
             </div>
@@ -84,7 +82,7 @@ const Form = ({ onClose, productFilterId, product, action }: IForm) => {
                 ⚠️ Acción irreversible ⚠️
               </span>
               <h1 className="text-center text-base md:text-xl">
-                ¿Estás seguro de que deseas eliminar los siguientes productos?
+                ¿Estás seguro de que deseas quitar los siguientes productos?
               </h1>
               <ul>
                 {(product as IProduct[]).map((p) => (
@@ -94,7 +92,7 @@ const Form = ({ onClose, productFilterId, product, action }: IForm) => {
             </div>
           )}
           <div className="text-center mt-4">
-            <SubmitButton color="accent" title="Eliminar" pending={isPending} />
+            <SubmitButton color="accent" title="Quitar" pending={isPending} />
           </div>
         </fieldset>
       </form>

@@ -37,7 +37,10 @@ const ListCard = ({ lng, customList }: IListCard) => {
               {customList.products.slice(0, 3).map((item) => (
                 <Image
                   key={item.productId}
-                  src={item.product.files[0].url}
+                  src={
+                    item.product.files[0]?.url ??
+                    "/assets/images/landscape-placeholder.webp"
+                  }
                   alt={item.product.name}
                   width={50}
                   height={50}

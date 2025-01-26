@@ -17,6 +17,7 @@ import type {
   IProduct,
   IProvider,
 } from "@/app/shared/interfaces";
+import RichTextEditor from "@/app/shared/components/Form/RichTextEditor";
 
 interface IForm {
   onClose: () => void;
@@ -28,6 +29,9 @@ interface IForm {
 const Form = ({ onClose, providers, product, action }: IForm) => {
   const [formView, setFormView] = useState(true);
   const [isPending, setIsPending] = useState(false);
+  const [description, setDescription] = useState(
+    (product as IProduct)?.description ?? ""
+  );
   const [file, setFile] = useState<File | null>(null);
   const [badResponse, setBadResponse] = useState<ICreateNUpdateProductState>(
     INITIAL_STATE_RESPONSE
@@ -39,6 +43,7 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
     setIsPending(true);
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    formData.append("description", description);
     const res =
       action === "create" && formView
         ? await createProduct(formData)
@@ -137,6 +142,18 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
                     />
                   </GenericDiv>
                 </GenericPairDiv>
+                <div className="w-full">
+                  <p>Descripción</p>
+                  <RichTextEditor
+                    value={description}
+                    onChange={setDescription}
+                  />
+                  {badResponse.errors?.description && (
+                    <p className="text-red-500 dark:text-red-400">
+                      {badResponse.errors?.description}
+                    </p>
+                  )}
+                </div>
                 <GenericPairDiv>
                   <GenericDiv>
                     <GenericInput
@@ -168,6 +185,14 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
                     />
                   </GenericDiv>
                 </GenericPairDiv>
+                <div className="flex items-center justify-end gap-2">
+                  <GenericInput
+                    type="checkbox"
+                    id="isCustomizable"
+                    ariaLabel="¿Es producto personalizable?"
+                    defaultChecked={(product as IProduct)?.isCustomizable}
+                  />
+                </div>
                 {action === "create" && (
                   <>
                     {/* AFTER CHANGE TO A SEPARATE FORM */}

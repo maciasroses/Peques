@@ -66,7 +66,10 @@ const Datatable = ({ collections, products }: IDatatable) => {
             {/* @ts-ignore */}
             <Form collection={row} />
           </Action>
-          <Action action="delete" cannotDelete={row.hero !== null}>
+          <Action
+            action="delete"
+            cannotDelete={row.hero !== null || row.filters.length > 0}
+          >
             {/* @ts-ignore */}
             <Form collection={row} />
           </Action>
@@ -139,7 +142,9 @@ const Datatable = ({ collections, products }: IDatatable) => {
                 <div className="flex justify-end gap-2 mb-4">
                   <Action
                     action="massiveDelete"
-                    cannotDelete={selectedRows.some((row) => row.hero !== null)}
+                    cannotDelete={selectedRows.some(
+                      (row) => row.hero !== null || row.filters.length > 0
+                    )}
                   >
                     {/* @ts-ignore */}
                     <Form collection={selectedRows} />

@@ -96,7 +96,7 @@ export async function updateHeroById({
     title: formData.get("title"),
     subtitle: formData.get("subtitle"),
     description: formData.get("description"),
-    imageUrl: formData.get("imageUrl"),
+    // imageUrl: formData.get("imageUrl"),
     collectionId: formData.get("collectionId"),
   };
 
@@ -118,24 +118,25 @@ export async function updateHeroById({
       return null;
     }
 
-    const { imageUrl, ...rest } = dataToValidate;
+    // const { imageUrl, ...rest } = dataToValidate;
 
-    const { url } = await put(
-      `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-      imageUrl as File,
-      {
-        access: "public",
-        contentType: "image/webp",
-      }
-    );
+    // const { url } = await put(
+    //   `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
+    //   imageUrl as File,
+    //   {
+    //     access: "public",
+    //     contentType: "image/webp",
+    //   }
+    // );
 
     const finalData = {
-      ...rest,
-      imageUrl: url,
+      // ...rest,
+      // imageUrl: url,
+      ...dataToValidate,
     };
 
     await update({ id, data: finalData });
-    await del(prevHero.imageUrl);
+    // await del(prevHero.imageUrl);
   } catch (error) {
     console.error(error);
     throw new Error("Failed to update hero");

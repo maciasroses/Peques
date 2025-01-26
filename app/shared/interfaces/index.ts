@@ -280,6 +280,7 @@ export interface ICreateNUpdateProductState extends ISharedState {
   errors?: {
     name?: string;
     key?: string;
+    description?: string;
     minimumAcceptableQuantity?: string;
     providerId?: string;
     dollarExchangeRate?: string;

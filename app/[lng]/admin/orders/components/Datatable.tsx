@@ -21,7 +21,13 @@ import {
   Datatable as CustomDatatable,
   Modal,
 } from "@/app/shared/components";
-import type { IOrder } from "@/app/shared/interfaces";
+import type {
+  IAddress,
+  IOrder,
+  IOrderOnPromotion,
+  IPromotion,
+  IUser,
+} from "@/app/shared/interfaces";
 import OrderSummary from "./OrderSummary";
 import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
 
@@ -168,8 +174,18 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       sortable: true,
     },
     {
-      name: "Cliente",
+      name: "Cliente (antiguo)",
+      width: "150px",
       selector: (row: { client: string }) => row.client,
+      sortable: true,
+    },
+    {
+      name: "Cliente (nuevo)",
+      width: "150px",
+      selector: (row: { client: string; user: IUser }) =>
+        row.user?.firstName || row.user?.lastName
+          ? `${row.user?.firstName} ${row.user?.lastName}`
+          : (row.user?.username ?? "Sin registro de usuario de e-commerce"),
       sortable: true,
     },
     {
@@ -200,6 +216,13 @@ const Datatable = ({ lng, orders }: IDataTable) => {
     {
       name: "Subtotal General",
       width: "170px",
+      selector: (row: { products: IProductInOrder[] }) =>
+        row.products.reduce(
+          (acc, product) =>
+            acc +
+            product.costMXN * product.quantity * (1 - product.discount / 100),
+          0
+        ),
       sortable: true,
       cell: (row: { products: IProductInOrder[] }) => (
         <span>
@@ -227,6 +250,35 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       format: (row: { discount: number }) => `${row.discount}%`,
     },
     {
+      name: "Promociones",
+      width: "250px",
+      cell: (row: { promotions: IOrderOnPromotion[] }) => {
+        return (
+          <>
+            {row.promotions.length > 0 ? (
+              <div>
+                <p className="my-4">
+                  {row.promotions.length} promociones aplicadas
+                </p>
+                <ul className="flex flex-col gap-2 mb-4">
+                  {row.promotions?.map((promotion, index) => (
+                    <li key={index}>
+                      <p>
+                        <strong>{promotion.promotion.title}</strong>
+                      </p>
+                      <p>{promotion.promotion.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <span>No se aplicaron promociones</span>
+            )}
+          </>
+        );
+      },
+    },
+    {
       name: "Costo de Envío",
       width: "150px",
       selector: (row: { shippingCost: number }) => row.shippingCost,
@@ -240,6 +292,33 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       selector: (row: { total: number }) => row.total,
       sortable: true,
       format: (row: { total: number }) => formatCurrency(row.total, "MXN"),
+    },
+    {
+      name: "Dirección de Envío",
+      width: "200px",
+      selector: (row: { address: IAddress }) => row.address,
+      cell: (row: { address: IAddress }) => {
+        return (
+          <div className="p-2">
+            {row.address ? (
+              <>
+                <h3 className="font-bold text-lg line-clamp-1 pr-5">
+                  {row.address.fullName}
+                </h3>
+                <p>
+                  {row.address.address1}
+                  {row.address.address2 && ` - ${row.address.address2}`}
+                </p>
+                <p>
+                  {row.address.city}, {row.address.state}, {row.address.zipCode}
+                </p>
+              </>
+            ) : (
+              <span className="text-red-500">Dirección no disponible</span>
+            )}
+          </div>
+        );
+      },
     },
     {
       name: "Creado en",

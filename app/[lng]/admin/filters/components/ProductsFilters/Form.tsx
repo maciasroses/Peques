@@ -81,7 +81,7 @@ const Form = ({ onClose, productFilter, products, action }: IForm) => {
             ? "Agregando"
             : action === "update"
               ? "Actualizando"
-              : "Eliminando"}{" "}
+              : "Quitando"}{" "}
           filtro de productos
         </h1>
         {badResponse.message && (
@@ -137,7 +137,7 @@ const Form = ({ onClose, productFilter, products, action }: IForm) => {
                     ⚠️ Acción irreversible ⚠️
                   </span>
                   <h1 className="text-center text-base md:text-xl">
-                    ¿Estás seguro de que deseas eliminar el filtro de productos
+                    ¿Estás seguro de que deseas quitar el filtro de productos
                     {` "${(productFilter as IProductFilter).name}"`}?
                   </h1>
                 </div>
@@ -147,8 +147,8 @@ const Form = ({ onClose, productFilter, products, action }: IForm) => {
                     ⚠️ Acción irreversible ⚠️
                   </span>
                   <h1 className="text-center text-base md:text-xl">
-                    ¿Estás seguro de que deseas eliminar los siguientes filtros
-                    de productos?
+                    ¿Estás seguro de que deseas quitar los siguientes filtros de
+                    productos?
                   </h1>
                   <ul>
                     {(productFilter as IProductFilter[]).map((p) => (
@@ -166,7 +166,7 @@ const Form = ({ onClose, productFilter, products, action }: IForm) => {
                   ? "Agregar"
                   : action === "update"
                     ? "Actualizar"
-                    : "Eliminar"
+                    : "Quitar"
               }
               color="accent"
               pending={isPending}

@@ -25,6 +25,8 @@ import type {
   IProductHistory,
   IProductSearchParams,
 } from "@/app/shared/interfaces";
+import { isAdmin } from "../auth";
+import { del, put } from "@vercel/blob";
 
 export async function getProducts({
   q,
@@ -193,6 +195,8 @@ export async function createProduct(formData: FormData) {
   const data = {
     name: formData.get("name"),
     key: formData.get("productKey"),
+    description: formData.get("description"),
+    isCustomizable: formData.get("isCustomizable") === "on",
     minimumAcceptableQuantity: Number(
       formData.get("minimumAcceptableQuantity")
     ),
@@ -220,11 +224,21 @@ export async function createProduct(formData: FormData) {
   const margin = (data.salePriceMXN / totalCostMXN - 1) * 100;
   const salePerQuantity = data.salePriceMXN * data.quantityPerCarton;
 
-  const { name, key, providerId, minimumAcceptableQuantity, ...rest } = data;
+  const {
+    name,
+    description,
+    isCustomizable,
+    key,
+    providerId,
+    minimumAcceptableQuantity,
+    ...rest
+  } = data;
 
   const updatedData = {
     name,
     key,
+    description,
+    isCustomizable,
     minimumAcceptableQuantity,
     availableQuantity: data.quantityPerCarton,
     salePriceMXN: data.salePriceMXN,
@@ -448,6 +462,8 @@ export async function updateProduct(formData: FormData, productId: string) {
   const data = {
     name: formData.get("name"),
     key: formData.get("productKey"),
+    description: formData.get("description"),
+    isCustomizable: formData.get("isCustomizable") === "on",
     minimumAcceptableQuantity: Number(
       formData.get("minimumAcceptableQuantity")
     ),
@@ -688,5 +704,167 @@ export async function getProductIdsByKeys(keys: string[]) {
   } catch (error) {
     console.error(error);
     return [];
+  }
+}
+
+export async function addFileToProduct(productId: string, formData: FormData) {
+  const files = formData.getAll("files") as File[];
+
+  if (files.length === 0 || files.some((file) => file.size === 0)) {
+    return {
+      success: false,
+      message: "No se ha seleccionado ningún archivo",
+    };
+  }
+
+  try {
+    await isAdmin();
+
+    const product = (await read({ id: productId })) as IProduct;
+
+    if (!product) {
+      return {
+        success: false,
+        message: "Producto no encontrado",
+      };
+    }
+
+    const urls: string[] = [];
+
+    for (const file of files) {
+      const { url } = await put(
+        `Products/${product.id}/${file.name.split(".")[0]}-${new Date().getTime()}.${
+          file.type.includes("image") ? "webp" : "mp4"
+        }`,
+        file,
+        {
+          access: "public",
+          contentType: file.type,
+        }
+      );
+
+      urls.push(url);
+    }
+
+    await update({
+      id: productId,
+      data: {
+        files: {
+          create: files.map((file, index) => ({
+            type: file.type.includes("image") ? "IMAGE" : "VIDEO",
+            url: urls[index],
+          })),
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "An internal error occurred",
+    };
+  }
+}
+
+export async function removeFileFromProduct(productId: string, fileId: string) {
+  try {
+    await isAdmin();
+
+    const product = (await read({ id: productId })) as IProduct;
+
+    if (!product) {
+      return {
+        success: false,
+        message: "Producto no encontrado",
+      };
+    }
+
+    const file = product.files.find((file) => file.id === fileId);
+
+    if (!file) {
+      return {
+        success: false,
+        message: "Archivo no encontrado",
+      };
+    }
+
+    await update({
+      id: productId,
+      data: {
+        files: {
+          delete: {
+            id: fileId,
+          },
+        },
+      },
+    });
+
+    await del(file.url);
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "An internal error occurred",
+    };
+  }
+}
+
+export async function removeMassiveFilesFromProduct(
+  productId: string,
+  fileIds: string[]
+) {
+  try {
+    await isAdmin();
+
+    const product = (await read({ id: productId })) as IProduct;
+
+    if (!product) {
+      return {
+        success: false,
+        message: "Producto no encontrado",
+      };
+    }
+
+    const files = product.files.filter((file) => fileIds.includes(file.id));
+
+    if (files.length === 0) {
+      return {
+        success: false,
+        message: "Archivos no encontrados",
+      };
+    }
+
+    await update({
+      id: productId,
+      data: {
+        files: {
+          delete: files.map((file) => ({
+            id: file.id,
+          })),
+        },
+      },
+    });
+
+    for (const file of files) {
+      await del(file.url);
+    }
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "An internal error occurred",
+    };
   }
 }

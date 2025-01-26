@@ -21,7 +21,7 @@ interface IForm {
   onClose: () => void;
   productId?: string;
   history?: IProductHistory | IProductHistory[];
-  action: "create" | "update" | "delete" | "massiveDelete";
+  action: "update" | "delete" | "massiveDelete";
 }
 
 const Form = ({ onClose, productId, history, action }: IForm) => {
@@ -36,23 +36,21 @@ const Form = ({ onClose, productId, history, action }: IForm) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const res =
-      action === "create"
-        ? await createHistoryProduct(formData, productId as string)
-        : action === "update"
+      action === "update"
         ? await updateHistoryProduct(
             productId as string,
             (history as IProductHistory).id,
             formData
           )
         : action === "delete"
-        ? await deleteHistoryProduct(
-            productId as string,
-            (history as IProductHistory).id
-          )
-        : await deleteMassiveProductsHistory(
-            productId as string,
-            (history as IProductHistory[]).map((h) => h.id)
-          );
+          ? await deleteHistoryProduct(
+              productId as string,
+              (history as IProductHistory).id
+            )
+          : await deleteMassiveProductsHistory(
+              productId as string,
+              (history as IProductHistory[]).map((h) => h.id)
+            );
     if (res && !res.success) {
       setBadResponse(res);
     } else {
@@ -66,12 +64,8 @@ const Form = ({ onClose, productId, history, action }: IForm) => {
     <div className="flex flex-col items-center gap-4 text-left dark:text-white">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-center text-xl md:text-4xl">
-          {action === "create"
-            ? "Creando"
-            : action === "update"
-            ? "Actualizando"
-            : "Eliminando"}{" "}
-          pedido de producto
+          {action === "update" ? "Actualizando" : "Eliminando"} pedido de
+          producto
         </h1>
       </div>
       <form onSubmit={submitAction}>
@@ -218,13 +212,7 @@ const Form = ({ onClose, productId, history, action }: IForm) => {
           )}
           <div className="text-center mt-4">
             <SubmitButton
-              title={
-                action === "create"
-                  ? "Crear"
-                  : action === "update"
-                  ? "Actualizar"
-                  : "Eliminar"
-              }
+              title={action === "update" ? "Actualizar" : "Eliminar"}
               color="accent"
               pending={isPending}
             />

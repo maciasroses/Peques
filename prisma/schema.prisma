@@ -157,6 +157,7 @@ model Product {
   name                      String
   description               String? @db.Text
   salePriceMXN              Float
+  isCustomizable            Boolean @default(false)
   availableQuantity         Int     @default(0)
   minimumAcceptableQuantity Int
 
@@ -286,9 +287,10 @@ model ProductReviewLikeOnUser {
 }
 
 model ProductOnOrder {
-  quantity Int
-  costMXN  Float
-  discount Float? @default(0) //this value is a percentage
+  quantity      Int
+  costMXN       Float
+  discount      Float?  @default(0) //this value is a percentage
+  customRequest String?
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String

@@ -32,7 +32,10 @@ const DiscountCodesDatatable = ({
             {/* @ts-ignore */}
             <DiscountCodeForm discountCode={row} promotionId={promotionId} />
           </Action>
-          <Action action="delete">
+          <Action
+            action="delete"
+            cannotDelete={row.timesUsed > 0 || row.users.length > 0}
+          >
             {/* @ts-ignore */}
             <DiscountCodeForm discountCode={row} promotionId={promotionId} />
           </Action>
@@ -95,7 +98,12 @@ const DiscountCodesDatatable = ({
             <>
               {showMultiActions && (
                 <div className="flex justify-start gap-2 my-4">
-                  <Action action="massiveDelete">
+                  <Action
+                    action="massiveDelete"
+                    cannotDelete={selectedRows.some(
+                      (row) => row.timesUsed > 0 || row.users.length > 0
+                    )}
+                  >
                     {/* @ts-ignore */}
                     <DiscountCodeForm
                       promotionId={promotionId}

@@ -7,6 +7,9 @@ const baseSchema = z.object({
   collectionId: z.string().uuid({
     message: "La colección es requerida",
   }),
+});
+
+const createSchema = baseSchema.extend({
   imageUrl: z
     .instanceof(File)
     .refine((file) => file.size > 0, {
@@ -17,11 +20,11 @@ const baseSchema = z.object({
     }),
 });
 
-const createNUpdateSchema = baseSchema.extend({});
+const updateSchema = baseSchema.extend({});
 
 const schemas: { [key: string]: z.ZodObject<ZodRawShape, UnknownKeysParam> } = {
-  create: createNUpdateSchema,
-  update: createNUpdateSchema,
+  create: createSchema,
+  update: updateSchema,
 };
 
 export function validateSchema(action: string, data: unknown) {
