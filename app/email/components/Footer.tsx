@@ -1,4 +1,5 @@
 import { Img } from "@react-email/components";
+import { BASE_URL } from "@/app/shared/constants";
 
 const Footer = () => {
   return (
@@ -77,7 +78,7 @@ const Footer = () => {
             }}
           >
             <a
-              href="https://ecommerce.com/profile"
+              href={`${BASE_URL}/profile`}
               style={{
                 color: "#2563eb",
                 textDecoration: "none",
@@ -88,7 +89,7 @@ const Footer = () => {
             </a>
             •
             <a
-              href="https://ecommerce.com/terms-of-sales"
+              href={`${BASE_URL}/terms-of-service`}
               style={{
                 color: "#2563eb",
                 textDecoration: "none",
@@ -99,7 +100,7 @@ const Footer = () => {
             </a>
             •
             <a
-              href="https://ecommerce.com/privacy-policy"
+              href={`${BASE_URL}/privacy-policy`}
               style={{
                 color: "#2563eb",
                 textDecoration: "none",
@@ -116,7 +117,7 @@ const Footer = () => {
           className="footer-text"
           style={{ margin: "20px 0 0", color: "#6b7280", fontSize: "14px" }}
         >
-          Copyright © {new Date().getFullYear()} Shopeques
+          Copyright © {new Date().getFullYear()} Peques
           <br />
           <span
             style={{
@@ -127,7 +128,7 @@ const Footer = () => {
           </span>
           <br />
           <span style={{ display: "block", marginTop: "5px" }}>
-            Shopeques, 1234 Main St., Anytown, USA 12345
+            Peques, Chihuahua, Chih. México. 31215
           </span>
         </p>
       </footer>
