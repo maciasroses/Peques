@@ -78,6 +78,12 @@ export async function POST(req: NextRequest) {
       console.log(`PaymentMethod id: ${paymentMethod.id}`);
       break;
     }
+    case "payment_method.updated": {
+      console.log("🔄 PaymentMethod updated");
+      const paymentMethod = event.data.object;
+      console.log(`PaymentMethod id: ${paymentMethod.id}`);
+      break;
+    }
     case "payment_intent.created": {
       console.log("💳 PaymentIntent created");
       const paymentIntent = event.data.object;
@@ -95,12 +101,6 @@ export async function POST(req: NextRequest) {
       const paymentIntent = event.data.object;
       console.log(`Message: ${paymentIntent.last_payment_error?.message}`);
       console.log(`PaymentIntent id: ${paymentIntent.id}`);
-      break;
-    }
-    case "payment_method.updated": {
-      console.log("🔄 PaymentMethod updated");
-      const paymentMethod = event.data.object;
-      console.log(`PaymentMethod id: ${paymentMethod.id}`);
       break;
     }
     case "charge.updated": {
