@@ -73,7 +73,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
       )}
     >
       {shouldShowMenus && (
-        <div className="overflow-hidden whitespace-nowrap bg-primary-dark text-white">
+        <div className="overflow-hidden whitespace-nowrap bg-accent-light text-black">
           <div className="flex animate-marquee">
             <span className="text-lg font-bold mx-4">
               WELCOME! Envío <strong>GRATIS</strong> a partir de{" "}
@@ -82,7 +82,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
           </div>
         </div>
       )}
-      <nav className="h-full flex flex-col items-center py-2 px-4 mx-auto bg-white border-b-4 border-primary-dark">
+      <nav className="h-full flex flex-col items-center py-2 px-4 mx-auto bg-white border-b-4 border-accent-light">
         <ul className="w-full flex justify-between items-center gap-4">
           {shouldShowMenus && (
             <li className="flex items-center md:hidden">
