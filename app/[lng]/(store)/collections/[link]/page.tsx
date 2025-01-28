@@ -78,7 +78,7 @@ const CollectionNamePage = async ({
   const available_filters = (await getFilters({})) as IFilterGroup[];
 
   return (
-    <article className="pt-24 px-4 pb-4 flex md:gap-4">
+    <article className="pt-32 px-4 pb-4 flex md:gap-4">
       <aside className="hidden md:block md:w-1/4 lg:w-1/5 z-20">
         <Filters collection={link} filters={available_filters} />
       </aside>

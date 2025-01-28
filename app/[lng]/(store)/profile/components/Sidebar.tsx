@@ -3,18 +3,12 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  UserIcon,
-  BulletList,
-  ShoppingBag,
-  // MapPin,
-  // CreditCard,
-} from "@/app/shared/icons";
+import { UserIcon, BulletList, ShoppingBag } from "@/app/shared/icons";
 
 const Sidebar = ({ lng }: { lng: string }) => {
   return (
     <aside className="absolute top-0 w-48 transition-transform -translate-x-full md:translate-x-0">
-      <div className="h-full px-4 pt-24 pb-4">
+      <div className="h-full px-4 pt-32 pb-4">
         <ul className="space-y-2">
           <li>
             <LinkComp to={`/${lng}/profile/home`} span="Perfil" icon="home" />

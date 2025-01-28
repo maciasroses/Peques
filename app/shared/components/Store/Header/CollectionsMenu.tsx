@@ -57,7 +57,7 @@ const CollectionsMenu = ({
         <button
           onClick={() => handleTabClick(index)}
           className={cn(
-            "py-2 px-4 text-white hover:bg-neutral dark:hover:bg-primary dark:hover:text-gray-600 w-full text-left inline-flex justify-between items-center gap-2"
+            "py-2 px-4 md:hover:bg-neutral md:dark:hover:bg-primary w-full text-left inline-flex justify-between items-center gap-2"
           )}
         >
           {collection.name}
@@ -76,7 +76,7 @@ const CollectionsMenu = ({
               <Link
                 href={`/${lng}/collections/${collection.link}`}
                 onClick={handleClick}
-                className="py-2 pl-8 pr-4 text-white hover:bg-neutral dark:hover:bg-primary dark:hover:text-gray-600 block"
+                className="py-2 pl-8 pr-4 md:hover:bg-neutral md:dark:hover:bg-primary block"
               >
                 Ver todo
               </Link>
@@ -89,7 +89,7 @@ const CollectionsMenu = ({
                       ? setSubTabSelected(-1)
                       : setSubTabSelected(index)
                   }
-                  className="py-2 pl-8 pr-4 text-white hover:bg-neutral dark:hover:bg-primary dark:hover:text-gray-600 w-full text-left inline-flex justify-between items-center gap-2"
+                  className="py-2 pl-8 pr-4 md:hover:bg-neutral md:dark:hover:bg-primary w-full text-left inline-flex justify-between items-center gap-2"
                 >
                   {filter.group.name}
                   <span
@@ -108,7 +108,7 @@ const CollectionsMenu = ({
                         <Link
                           onClick={handleClick}
                           href={`/${lng}/collections/${collection.link}?filters=${filter.group.key}_${option.key}`}
-                          className="py-2 pl-12 pr-4 text-white hover:bg-neutral dark:hover:bg-primary dark:hover:text-gray-600 block"
+                          className="py-2 pl-12 pr-4 md:hover:bg-neutral md:dark:hover:bg-primary block"
                         >
                           {option.name}
                         </Link>
@@ -130,9 +130,9 @@ const CollectionsMenu = ({
         onClick={toggleMenu}
         aria-haspopup="true"
         aria-expanded={menuOpen}
-        className="cursor-pointer text-gray-600 dark:text-white font-extralight hover:underline inline-flex items-center gap-1"
+        className="cursor-pointer text-gray-600 dark:text-white font-extralight inline-flex items-center gap-1"
       >
-        Colecciones
+        Compra
         <span
           className={cn(
             "transform transition-all duration-300",
@@ -143,14 +143,14 @@ const CollectionsMenu = ({
         </span>
       </button>
       {menuOpen && (
-        <ul className="mt-2 absolute bg-neutral-light dark:bg-primary-dark rounded-md shadow-md w-auto z-10 max-h-[200px] overflow-y-auto">
+        <ul className="z-10 w-52 md:w-auto max-h-[calc(100vh-200px)] md:max-h-[calc(100vh-100px)] overflow-y-auto mt-2 absolute md:bg-neutral-light md:dark:bg-primary-dark md:rounded-md md:shadow-md text-gray-600 dark:text-white md:text-white md:dark:hover:text-gray-600">
           <li>
             <Link
               href={`/${lng}/collections`}
               onClick={handleClick}
-              className="py-2 px-4 text-white hover:bg-neutral dark:hover:bg-primary dark:hover:text-gray-600 block"
+              className="py-2 px-4 md:hover:bg-neutral md:dark:hover:bg-primary block"
             >
-              Ver todas
+              Ver todas las colecciones
             </Link>
           </li>
           {collections.map(renderCollectionLink)}

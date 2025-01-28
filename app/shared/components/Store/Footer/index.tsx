@@ -4,8 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/app/shared/utils/cn";
 import { usePathname } from "next/navigation";
-import { Instagram } from "@/app/shared/icons";
 import Logo from "@/public/assets/images/logo-color.webp";
+import { Facebook, Instagram, TikTok } from "@/app/shared/icons";
 import type { IUser } from "@/app/shared/interfaces";
 
 interface IFooter {
@@ -38,10 +38,28 @@ const Footer = ({ lng, user }: IFooter) => {
               <li>
                 <Link
                   target="_blank"
+                  aria-label="Facebook"
+                  href="https://www.facebook.com/share/15gBSyMtAu/?mibextid=wwXIfr"
+                >
+                  <Facebook />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  target="_blank"
                   aria-label="Instagram"
                   href="https://www.instagram.com/peques.mex/"
                 >
                   <Instagram />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  target="_blank"
+                  aria-label="TikTok"
+                  href="https://www.tiktok.com/@peques.mex?_t=ZM-8tQFxBZ41ry&_r=1"
+                >
+                  <TikTok />
                 </Link>
               </li>
             </ul>

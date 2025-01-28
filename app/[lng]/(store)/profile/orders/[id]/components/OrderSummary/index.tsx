@@ -28,7 +28,12 @@ const OrderSummary = ({ lng, order }: IOrderSummary) => {
         <h1 className="text-2xl font-bold">Resumen</h1>
         <p className="text-sm sm:text-lg mt-2">
           Envío:{" "}
-          <span className="font-bold">
+          <span
+            className={cn(
+              "font-bold",
+              order.shippingCost === 0 && "text-green-600 dark:text-green-400"
+            )}
+          >
             {formatCurrency(order.shippingCost ?? 190, "MXN")}
           </span>
         </p>

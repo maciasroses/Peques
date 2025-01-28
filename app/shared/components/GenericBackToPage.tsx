@@ -20,7 +20,7 @@ const GenericBackToPage = ({
     <section
       className={cn(
         "flex flex-col h-screen items-center justify-center px-4 pb-4 text-center",
-        isWithMDExtraPadding ? "pt-40 md:pt-24" : "pt-24"
+        isWithMDExtraPadding ? "pt-40 md:pt-32" : "pt-32"
       )}
     >
       <h1 className="text-3xl md:text-6xl font-bold">{title}</h1>

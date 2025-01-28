@@ -143,7 +143,12 @@ const CartSummary = ({
       </ul>
       <p className="text-sm sm:text-lg text-right mt-4">
         Envío:{" "}
-        <span className="font-bold">
+        <span
+          className={cn(
+            "font-bold",
+            shippingCost === 0 && "text-green-600 dark:text-green-400"
+          )}
+        >
           {formatCurrency(shippingCost / 100, "MXN")}
         </span>
       </p>

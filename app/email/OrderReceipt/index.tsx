@@ -17,6 +17,7 @@ OrderReceipt.PreviewProps = {
       id: "d814ab35-0c22-4214-a572-0f1b6403a979",
       client: "test macias",
       shippingCost: 190,
+      // shippingCost: 0,
       discount: 0,
       // discount: 10,
       // subtotal: 220,

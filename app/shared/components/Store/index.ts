@@ -6,6 +6,7 @@ import HeroSlider from "./HeroSlider";
 import StarRating from "./StarRating";
 import ReviewList from "./ReviewList";
 import ProductList from "./ProductList";
+import InitialModal from "./InitialModal";
 import ImageGallery from "./ImageGallery";
 import FullCollection from "./FullCollection";
 import CollectionsList from "./CollectionsList";
@@ -20,6 +21,7 @@ export {
   ReviewList,
   StarRating,
   ProductList,
+  InitialModal,
   ImageGallery,
   FullCollection,
   CollectionsList,

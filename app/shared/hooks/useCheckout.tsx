@@ -39,7 +39,12 @@ export const useCheckout = ({
   const [isStockChecked, setIsStockChecked] = useState(false);
   const [updatedCart, setUpdatedCart] = useState<ICartItemForFrontend[]>([]);
 
-  const shippingCost = 190 * 100; // Change this to a dynamic value, and it is multiplied by 100 for cents
+  const globalAmount = cart.reduce(
+    (acc, item) => acc + item.finalPrice * item.quantity,
+    0
+  );
+
+  const shippingCost = globalAmount >= 1900 ? 0 : 190 * 100;
 
   // Step 1: Check and update stock
   useEffect(() => {

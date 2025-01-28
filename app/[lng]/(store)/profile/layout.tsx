@@ -9,7 +9,7 @@ const ProfileLayout = ({ children, params: { lng } }: IProfileLayout) => {
   return (
     <>
       <Sidebar lng={lng} />
-      <article className="md:ml-48 pt-24 px-4 pb-4 min-h-screen">
+      <article className="md:ml-48 pt-32 px-4 pb-4 min-h-screen">
         {children}
       </article>
     </>

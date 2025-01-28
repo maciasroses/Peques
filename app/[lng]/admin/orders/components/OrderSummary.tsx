@@ -85,6 +85,7 @@ const OrderSummary = ({ order }: IOrderSummary) => {
             <td className="p-1 border-r border-r-black font-semibold">
               Totales
             </td>
+            <td className="p-1 border-r border-r-black">-</td>
             <td className="p-1 border-r border-r-black">
               <span className="font-semibold">
                 {order.products.reduce(

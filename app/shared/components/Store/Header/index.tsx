@@ -70,6 +70,16 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
         isVisible ? "translate-y-0" : "-translate-y-full"
       )}
     >
+      {shouldShowMenus && (
+        <div className="overflow-hidden whitespace-nowrap bg-primary-dark text-white">
+          <div className="flex animate-marquee">
+            <span className="text-lg font-bold mx-4">
+              WELCOME! Envío terrestre <strong>GRATIS</strong> en compras de a
+              partir de <strong>$1900 MXN</strong>
+            </span>
+          </div>
+        </div>
+      )}
       <nav className="h-full flex flex-col items-center p-4 mx-auto bg-primary dark:bg-neutral text-neutral dark:text-primary-light">
         <ul className="w-full flex justify-between items-center gap-4">
           {shouldShowMenus && (

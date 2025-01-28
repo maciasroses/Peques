@@ -190,7 +190,12 @@ const OrderInfo = ({ order }: { order: IOrderInfoForEmail }) => {
         <div style={{ textAlign: "right", marginTop: "20px" }}>
           <p style={{ fontSize: "16px", margin: "0" }}>
             Envío:{" "}
-            <span style={{ fontWeight: "bold" }}>
+            <span
+              style={{
+                fontWeight: "bold",
+                color: order.order.shippingCost === 0 ? "#16a34a" : "inherit",
+              }}
+            >
               {formatCurrency(order.order.shippingCost ?? 190, "MXN")}
             </span>
           </p>

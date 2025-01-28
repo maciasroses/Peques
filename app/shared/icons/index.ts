@@ -15,6 +15,7 @@ import Ticket from "./Ticket";
 import Dollar from "./Dollar";
 import Funnel from "./Funnel";
 import Search from "./Search";
+import TikTok from "./TikTok";
 import HomeIcon from "./Home";
 import DarkIcon from "./Dark";
 import UserIcon from "./User";
@@ -24,6 +25,7 @@ import Filters from "./Filters";
 import TrashIcon from "./Trash";
 import LightIcon from "./Light";
 import PhotoIcon from "./Photo";
+import Facebook from "./Facebook";
 import SystemIcon from "./System";
 import PencilIcon from "./Pencil";
 import Instagram from "./Instagram";
@@ -59,6 +61,7 @@ export {
   EyeIcon,
   BulletList,
   TagIcon,
+  TikTok,
   SadFace,
   HomeIcon,
   DarkIcon,
@@ -67,6 +70,7 @@ export {
   PlayIcon,
   SmileFace,
   Ticket,
+  Facebook,
   Check,
   TrashIcon,
   LightIcon,

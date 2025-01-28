@@ -1,3 +1,4 @@
+import { getMe } from "@/app/shared/services/user/controller";
 import { getHeroes } from "@/app/shared/services/hero/controller";
 import { getAllCollections } from "@/app/shared/services/collection/controller";
 import {
@@ -9,6 +10,7 @@ import {
   HeroSlider,
   ReviewList,
   ProductList,
+  InitialModal,
   FullCollection,
   CollectionsList,
 } from "@/app/shared/components";
@@ -17,9 +19,11 @@ import type {
   IProduct,
   ICollection,
   IBaseLangPage,
+  IUser,
 } from "@/app/shared/interfaces";
 
 export default async function Home({ params: { lng } }: IBaseLangPage) {
+  const me = (await getMe()) as IUser;
   const heroes = (await getHeroes({})) as IHero[];
   const bestReviews = (await getTheBestReviews({})) as IProduct[];
   const collections = (await getAllCollections()) as ICollection[];
@@ -28,24 +32,29 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
   const favoriteProducts = (await getTheFavoritesProducts({})) as IProduct[];
 
   return (
-    <article className="pt-20 flex flex-col gap-8">
-      <HeroSlider lng={lng} heroes={heroes} />
-      <CollectionsList lng={lng} collections={part1} layDown />
-      <ProductList
-        lng={lng}
-        title="Nuevos productos"
-        products={newestProducts}
-      />
-      <FullCollection lng={lng} collection={selected[0]} imageSide="left" />
-      <ProductList
-        lng={lng}
-        title="Los favoritos"
-        products={favoriteProducts}
-      />
-      <CollectionsList lng={lng} collections={part2} />
-      <ReviewList lng={lng} title="Testimonios" products={bestReviews} />
-      <FullCollection lng={lng} collection={selected[1]} imageSide="right" />
-    </article>
+    <>
+      {(!me || (me.orders && me.orders.length === 0)) && (
+        <InitialModal lng={lng} />
+      )}
+      <article className="pt-[6.9rem] flex flex-col gap-8">
+        <HeroSlider lng={lng} heroes={heroes} />
+        <CollectionsList lng={lng} collections={part1} layDown />
+        <ProductList
+          lng={lng}
+          title="Nuevos productos"
+          products={newestProducts}
+        />
+        <FullCollection lng={lng} collection={selected[0]} imageSide="left" />
+        <ProductList
+          lng={lng}
+          title="Los favoritos"
+          products={favoriteProducts}
+        />
+        <CollectionsList lng={lng} collections={part2} />
+        <ReviewList lng={lng} title="Testimonios" products={bestReviews} />
+        <FullCollection lng={lng} collection={selected[1]} imageSide="right" />
+      </article>
+    </>
   );
 }
 
