@@ -5,11 +5,12 @@ const UserIcon = ({
   size = "size-6",
   customClass = "",
   strokeWidth = 1.5,
+  isFilled = false,
 }: IGenericIcon) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      fill="none"
+      fill={isFilled ? "currentColor" : "none"}
       viewBox="0 0 24 24"
       strokeWidth={strokeWidth}
       stroke="currentColor"

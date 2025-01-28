@@ -8,11 +8,13 @@ import MainSearch from "./MainSearch";
 import ProfileMenu from "./ProfileMenu";
 import FiltersMenu from "./FiltersMenu";
 import { cn } from "@/app/shared/utils/cn";
-import ThemeSelector from "./ThemeSelector";
+// import ThemeSelector from "./ThemeSelector";
 import { usePathname } from "next/navigation";
 import CollectionsMenu from "./CollectionsMenu";
 import HamburgerLinksMenu from "./HamburgerLinksMenu";
 import { Search, UserIcon } from "@/app/shared/icons";
+import Logo from "@/public/assets/images/logo-color.webp";
+import MiniLogo from "@/public/assets/images/logo-mini.webp";
 import { useScrollVisibility, useToggleMenu } from "@/app/shared/hooks";
 import type {
   IUser,
@@ -74,38 +76,47 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
         <div className="overflow-hidden whitespace-nowrap bg-primary-dark text-white">
           <div className="flex animate-marquee">
             <span className="text-lg font-bold mx-4">
-              WELCOME! Envío terrestre <strong>GRATIS</strong> en compras de a
-              partir de <strong>$1900 MXN</strong>
+              WELCOME! Envío <strong>GRATIS</strong> a partir de{" "}
+              <strong>$1900 MXN</strong>
             </span>
           </div>
         </div>
       )}
-      <nav className="h-full flex flex-col items-center p-4 mx-auto bg-primary dark:bg-neutral text-neutral dark:text-primary-light">
+      <nav className="h-full flex flex-col items-center py-2 px-4 mx-auto bg-white border-b-4 border-primary-dark">
         <ul className="w-full flex justify-between items-center gap-4">
           {shouldShowMenus && (
             <li className="flex items-center md:hidden">
               <HamburgerLinksMenu lng={lng} collections={collections} />
             </li>
           )}
-          <li className="rounded-full bg-white w-[50px] h-[50px]">
+          <li>
             <Link href={isAdmin ? `/${lng}/admin/home` : `/${lng}`}>
               <Image
+                priority
+                src={Logo}
+                width={150}
+                height={150}
+                alt="Peques logo"
+                className="size-auto hidden md:block"
+              />
+              <Image
+                priority
                 width={50}
                 height={50}
-                alt="Logo"
-                src="/assets/images/logo-mini.webp"
-                className="size-full object-cover rounded-full"
+                src={MiniLogo}
+                alt="Peques logo"
+                className="size-auto md:hidden"
               />
             </Link>
           </li>
           <li>
-            <ul className="flex items-center gap-2">
+            <ul className="flex items-center gap-4">
               {shouldShowMenus && (
                 <>
                   <li className="mx-2 md:block hidden">
                     <Link href={`/${lng}`}>
-                      <p className="cursor-pointer text-gray-600 dark:text-white font-extralight hover:underline">
-                        Inicio
+                      <p className="cursor-pointer text-black font-extralight text-2xl">
+                        INICIO
                       </p>
                     </Link>
                   </li>
@@ -116,16 +127,17 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                     <button
                       aria-label="Search"
                       data-ignore-outside-click
+                      className="text-black"
                       onClick={handleToggleAndFocus}
                     >
-                      <Search size="size-5" />
+                      <Search size="size-5 md:size-8" />
                     </button>
                   </li>
                 </>
               )}
-              <li className="flex items-center">
+              {/* <li className="flex items-center">
                 <ThemeSelector />
-              </li>
+              </li> */}
               {user && !pathname.startsWith(`/${lng}/checkout`) ? (
                 <li className="flex items-center">
                   <ProfileMenu lng={lng} user={user} />
@@ -133,15 +145,19 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
               ) : (
                 !isAuthPage &&
                 !isCheckoutOrAdmin && (
-                  <li className="text-gray-600 dark:text-white">
+                  <li className="text-black">
                     <Link href={`/${lng}/login`} aria-label="Login">
-                      <UserIcon strokeWidth={1} />
+                      <UserIcon
+                        size="size-5 md:size-8"
+                        strokeWidth={2}
+                        isFilled
+                      />
                     </Link>
                   </li>
                 )
               )}
               {shouldShowMenus && (
-                <li className="flex items-center text-gray-600 dark:text-white">
+                <li className="flex items-center text-black">
                   <CartMenu lng={lng} products={products} />
                 </li>
               )}

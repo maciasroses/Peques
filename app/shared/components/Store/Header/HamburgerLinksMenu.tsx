@@ -52,8 +52,8 @@ const HamburgerLinksMenu = ({ lng, collections }: IHamburgerLinksMenu) => {
           <ul className="flex flex-col gap-4">
             <li className="mx-2">
               <Link href={`/${lng}`} onClick={toggleMenu}>
-                <p className="cursor-pointer text-gray-600 dark:text-white font-extralight hover:underline">
-                  Inicio
+                <p className="cursor-pointer text-black font-extralight hover:underline">
+                  INICIO
                 </p>
               </Link>
             </li>

@@ -130,20 +130,20 @@ const CollectionsMenu = ({
         onClick={toggleMenu}
         aria-haspopup="true"
         aria-expanded={menuOpen}
-        className="cursor-pointer text-gray-600 dark:text-white font-extralight inline-flex items-center gap-1"
+        className="cursor-pointer text-black font-extralight inline-flex items-center gap-1 text-2xl"
       >
-        Compra
+        COMPRA
         <span
           className={cn(
             "transform transition-all duration-300",
             menuOpen ? "rotate-180" : "rotate-0"
           )}
         >
-          <DownChevron size="size-5" />
+          <DownChevron size="size-8" strokeWidth={2} />
         </span>
       </button>
       {menuOpen && (
-        <ul className="z-10 w-52 md:w-auto max-h-[calc(100vh-200px)] md:max-h-[calc(100vh-100px)] overflow-y-auto mt-2 absolute md:bg-neutral-light md:dark:bg-primary-dark md:rounded-md md:shadow-md text-gray-600 dark:text-white md:text-white md:dark:hover:text-gray-600">
+        <ul className="z-10 w-52 md:w-auto max-h-[calc(100vh-200px)] md:max-h-[calc(100vh-100px)] overflow-y-auto mt-2 absolute md:bg-neutral-light md:dark:bg-primary-dark md:rounded-md md:shadow-md text-gray-600 dark:text-white md:text-white">
           <li>
             <Link
               href={`/${lng}/collections`}

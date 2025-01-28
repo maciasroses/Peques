@@ -17,7 +17,7 @@ interface IHeroSlider {
 const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
   if (heroes.length === 0) return null;
   return (
-    <div className="">
+    <div>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={20}
@@ -40,14 +40,14 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
         {heroes.map((hero, index) => (
           <SwiperSlide key={index}>
             <div
-              className="w-screen h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h=[700px] bg-cover bg-center"
+              className="w-screen h-screen bg-cover bg-center"
               style={{ backgroundImage: `url(${hero.imageUrl})` }}
             >
               <Link
                 aria-label="Ver colección"
                 href={`/${lng}/collections/${hero.collection.link}`}
               >
-                <div className="w-full h-full bg-black bg-opacity-30 flex flex-col items-center justify-end p-10 md:p-20 text-white text-center">
+                <div className="w-full h-full bg-black bg-opacity-30 flex flex-col gap-4 items-center justify-center px-12 pt-32 pb-5 md:px-20 md:pt-36 md:pb-10 text-white text-center">
                   <p className="text-base md:text-lg xl:text-2xl font-thin">
                     {hero.title}
                   </p>
@@ -58,16 +58,10 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
                     {hero.description}
                   </p>
                   {(hero.title || hero.subtitle || hero.description) && (
-                    <div className="mt-2 text-base md:text-lg xl:text-2xl link-button-primary">
-                      Ver colección
+                    <div className="text-base md:text-lg xl:text-2xl bg-white/20 p-4 rounded-xl">
+                      ¡Qué emoción!
                     </div>
                   )}
-                  {/* <Link
-                    className="mt-2 px-4 py-2 bg-white text-black rounded-full text-base md:text-lg xl:text-2xl"
-                    href={`/${lng}/collections/${hero.collection.link}`}
-                  >
-                    Ver colección
-                  </Link> */}
                 </div>
               </Link>
             </div>

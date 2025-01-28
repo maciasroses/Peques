@@ -6,25 +6,19 @@ interface IShoppingBag extends IGenericIcon {
 }
 
 const ShoppingBag = ({
-  isActive,
   size = "size-6",
   customClass = "",
   strokeWidth = 1.5,
+  isFilled = false,
 }: IShoppingBag) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      fill="none"
+      fill={isFilled ? "currentColor" : "none"}
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={strokeWidth}
       className={cn(size, customClass)}
-      // strokeWidth="2.5"
-      // style={{ width: "1.5rem", height: "1.5rem" }}
-      // className={clsx(
-      //   "transition duration-75 group-hover:text-primary-light",
-      //   isActive && "text-primary-light"
-      // )}
     >
       <path
         strokeLinecap="round"

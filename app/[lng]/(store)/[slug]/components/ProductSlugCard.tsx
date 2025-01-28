@@ -172,16 +172,15 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
           setSelectedImageId={setSelectedImageId}
         />
       )}
-      <div className="flex flex-col md:flex-row gap-4 w-full">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full">
         <div className="flex gap-4 w-full md:w-1/2 h-full justify-center md:justify-start">
           <div className="flex flex-col gap-2">
             {product.files.map((file) => (
               <div
                 key={file.id}
                 className={cn(
-                  "size-16 border border-gray-300 cursor-pointer hover:border-blue-600 dark:hover:border-blue-300 p-1",
-                  selectedImage === file &&
-                    "border-blue-600 dark:border-blue-300"
+                  "size-16 hover:border cursor-pointer hover:border-black rounded-2xl",
+                  selectedImage === file && "border border-black"
                 )}
               >
                 <MediaPreview
@@ -199,7 +198,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             className={cn(
-              "w-full h-96 flex justify-center border border-gray-300 cursor-pointer relative",
+              "w-full h-96 flex justify-center cursor-pointer relative",
               selectedImage &&
                 selectedImage.type === "IMAGE" &&
                 "md:cursor-zoom-in "
@@ -227,9 +226,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
         <div className="relative w-full md:w-1/2">
           <div className="flex flex-col gap-2">
             <div className="flex items-start justify-between gap-4">
-              <h1 className="text-2xl md:text-5xl lg:text-9xl font-bold truncate">
-                {product.name}
-              </h1>
+              <h1 className="text-2xl md:text-6xl font-bold">{product.name}</h1>
               <AddToCustomList
                 lng={lng}
                 user={user}
@@ -238,10 +235,6 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               />
             </div>
             <div className="flex flex-col gap-2 md:gap-4">
-              <StarRating
-                rating={averageRating}
-                totalReviews={product.reviews.length}
-              />
               <div className="flex flex-col">
                 <div className="flex items-baseline gap-2">
                   {selectedPromotion && (
@@ -259,12 +252,10 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   </span>
                 )}
               </div>
-              {product.description && (
-                <div
-                  className="ql-editor"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
-              )}
+              <StarRating
+                rating={averageRating}
+                totalReviews={product.reviews.length}
+              />
               {product.isCustomizable && (
                 <div className="border border-gray-300 dark:border-gray-600 p-4">
                   <p>
@@ -305,7 +296,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                     />
                   </div>
                   <p className="my-4">Elige un color</p>
-                  <div className="my-4 grid grid-cols-3 lg:grid-cols-6 gap-2">
+                  <div className="my-4 grid grid-cols-6 md:grid-cols-3 lg:grid-cols-6 gap-2">
                     {Array.from({ length: 6 }).map((_, index) => (
                       <button
                         key={index}
@@ -313,7 +304,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                         style={{ backgroundColor: COLORS_CUSTOM[index] }}
                         onClick={() => setCustomColor(COLORS_CUSTOM[index])}
                         className={cn(
-                          "rounded-full size-20",
+                          "rounded-full size-10 md:size-14 xl:size-20",
                           customColor === COLORS_CUSTOM[index] &&
                             `border-4 border-black`
                         )}
@@ -355,6 +346,12 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                         })
                       : null
                   }
+                />
+              )}
+              {product.description && (
+                <div
+                  className="ql-editor"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
                 />
               )}
             </div>

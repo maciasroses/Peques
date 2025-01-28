@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { XMark } from "@/app/shared/icons";
 import { useDisableScroll } from "@/app/shared/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -37,7 +38,7 @@ const InitialModal = ({ lng }: { lng: string }) => {
     <div className="fixed flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-75 inset-0 z-50">
       <div
         ref={menuRef}
-        className="relative bg-accent-light dark:bg-neutral rounded-lg shadow-lg dark:shadow-gray-900 w-[80%] md:w-1/2 h-auto max-h-[80%] overflow-y-auto overflow-x-hidden flex flex-col lg:flex-row gap-2"
+        className="relative bg-accent/80 backdrop-blur-lg p-6 rounded-2xl shadow-lg max-w-lg text-center"
       >
         <button
           onClick={() => setIsOpen(false)}
@@ -45,29 +46,28 @@ const InitialModal = ({ lng }: { lng: string }) => {
         >
           <XMark />
         </button>
-        <div
-          className="w-full h-52 lg:h-auto lg:w-1/2 bg-cover bg-center bg-no-repeat "
-          style={{
-            backgroundImage: "url('/assets/images/initialPicture.webp')",
-          }}
-        />
-        <div className="relative flex flex-col justify-center p-4 lg:p-8 w-full lg:w-1/2">
-          <div className="m-5">
-            <h1 className="text-center text-xl md:text-4xl font-bold">
-              Aprovecha el 10% en tu primera compra
-            </h1>
-            <p className="text-center text-lg md:text-2xl my-4">
-              Regístrate y usa el código <strong>BIENVENIDO10</strong> en tu
-              primera compra.
-            </p>
-            <div className="text-center">
-              <Link
-                href={`/${lng}/register`}
-                className="link-button-primary text-lg md:text-2xl"
-              >
-                Regístrate
-              </Link>
-            </div>
+        <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
+          <Image
+            width={96}
+            height={96}
+            alt="Initial Picture"
+            src="/assets/images/initialPicture.webp"
+            className="w-36 h-36 object-cover rounded-full"
+          />
+        </div>
+        <div className="mt-20">
+          <h2 className="text-lg font-semibold">Welcome to the family!</h2>
+          <p className="">
+            Aprovecha 10% de descuento registrándote y usando el código:
+          </p>
+          <p className="text-lg font-bold text-gray-900 mt-1">WELCOME10</p>
+          <div className="text-center mt-4">
+            <Link
+              href={`/${lng}/register`}
+              className="px-4 py-2 bg-accent-light rounded-md text-lg"
+            >
+              {"Let's go!"}
+            </Link>
           </div>
         </div>
       </div>

@@ -36,7 +36,7 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
       {(!me || (me.orders && me.orders.length === 0)) && (
         <InitialModal lng={lng} />
       )}
-      <article className="pt-[6.9rem] flex flex-col gap-8">
+      <article className="flex flex-col gap-8">
         <HeroSlider lng={lng} heroes={heroes} />
         <CollectionsList lng={lng} collections={part1} layDown />
         <ProductList
