@@ -226,7 +226,14 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
         <div className="relative w-full md:w-1/2">
           <div className="flex flex-col gap-2">
             <div className="flex items-start justify-between gap-4">
-              <h1 className="text-2xl md:text-6xl font-bold">{product.name}</h1>
+              <h1
+                className="text-2xl md:text-6xl"
+                style={{
+                  fontFamily: "'Champagne & Limousines', bold",
+                }}
+              >
+                {product.name}
+              </h1>
               <AddToCustomList
                 lng={lng}
                 user={user}

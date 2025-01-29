@@ -18,7 +18,7 @@ const CollectionsPage = async ({ params: { lng } }: ICollectionsPage) => {
   const collections = (await getAllCollections()) as ICollection[];
 
   return (
-    <article className="pt-36 px-4 pb-4 flex md:gap-4">
+    <article className="pt-40 px-4 pb-4 flex md:gap-4">
       <CollectionList collections={collections} lng={lng} />
     </article>
   );

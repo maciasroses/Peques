@@ -68,21 +68,22 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
     <header
       className={cn(
         "fixed z-30 top-0 w-full transition-transform duration-300",
-        isAdmin && "h-20",
         isVisible ? "translate-y-0" : "-translate-y-full"
       )}
     >
       {shouldShowMenus && (
-        <div className="overflow-hidden whitespace-nowrap bg-primary-dark text-white">
-          <div className="flex animate-marquee">
-            <span className="text-lg font-bold mx-4">
-              WELCOME! Envío <strong>GRATIS</strong> a partir de{" "}
-              <strong>$1900 MXN</strong>
-            </span>
+        <div className="overflow-hidden whitespace-nowrap bg-accent-light text-white">
+          <div className="flex animate-marquee gap-6 py-2">
+            {Array.from({ length: 10 }).map((_, index) => (
+              <p key={index}>
+                WELCOME! Envío <strong>GRATIS</strong> a partir de{" "}
+                <strong>$1900 MXN</strong>
+              </p>
+            ))}
           </div>
         </div>
       )}
-      <nav className="h-full flex flex-col items-center py-2 px-4 mx-auto bg-white border-b-4 border-primary-dark">
+      <nav className="h-full flex flex-col items-center py-2 px-4 mx-auto bg-white border-b-4 border-accent-light">
         <ul className="w-full flex justify-between items-center gap-4">
           {shouldShowMenus && (
             <li className="flex items-center md:hidden">
@@ -110,14 +111,12 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
             </Link>
           </li>
           <li>
-            <ul className="flex items-center gap-4">
+            <ul className="flex items-center gap-4 text-black">
               {shouldShowMenus && (
                 <>
                   <li className="mx-2 md:block hidden">
                     <Link href={`/${lng}`}>
-                      <p className="cursor-pointer text-black font-extralight text-2xl">
-                        INICIO
-                      </p>
+                      <p className="font-thin text-lg">INICIO</p>
                     </Link>
                   </li>
                   <li className="md:flex items-center hidden group mx-2">
@@ -127,10 +126,9 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                     <button
                       aria-label="Search"
                       data-ignore-outside-click
-                      className="text-black"
                       onClick={handleToggleAndFocus}
                     >
-                      <Search size="size-5 md:size-8" />
+                      <Search size="size-2 md:size-4" />
                     </button>
                   </li>
                 </>
@@ -145,10 +143,10 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
               ) : (
                 !isAuthPage &&
                 !isCheckoutOrAdmin && (
-                  <li className="text-black">
+                  <li>
                     <Link href={`/${lng}/login`} aria-label="Login">
                       <UserIcon
-                        size="size-5 md:size-8"
+                        size="size-2 md:size-4"
                         strokeWidth={2}
                         isFilled
                       />
@@ -157,7 +155,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                 )
               )}
               {shouldShowMenus && (
-                <li className="flex items-center text-black">
+                <li className="flex items-center">
                   <CartMenu lng={lng} products={products} />
                 </li>
               )}

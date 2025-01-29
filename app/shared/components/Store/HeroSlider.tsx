@@ -47,18 +47,18 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
                 aria-label="Ver colección"
                 href={`/${lng}/collections/${hero.collection.link}`}
               >
-                <div className="w-full h-full bg-black bg-opacity-30 flex flex-col gap-4 items-center justify-center px-12 pt-32 pb-5 md:px-20 md:pt-36 md:pb-10 text-white text-center">
-                  <p className="text-base md:text-lg xl:text-2xl font-thin">
+                <div className="w-full h-full bg-black bg-opacity-30 flex flex-col gap-4 items-center justify-center px-12 pt-32 pb-5 md:px-20 md:pt-40 md:pb-10 text-white text-center">
+                  <p className="text-base md:text-lg xl:text-2xl font-thin animate-fade-up">
                     {hero.title}
                   </p>
-                  <p className="text-xl md:text-3xl xl:text-5xl font-bold">
+                  <p className="text-xl md:text-3xl xl:text-5xl font-bold animate-fade-up animate-delay-500">
                     {hero.subtitle}
                   </p>
-                  <p className="text-lg md:text-2xl xl:text-4xl font-extralight">
+                  <p className="text-lg md:text-2xl xl:text-4xl font-extralight animate-fade-up animate-delay-1000">
                     {hero.description}
                   </p>
                   {(hero.title || hero.subtitle || hero.description) && (
-                    <div className="text-base md:text-lg xl:text-2xl bg-white/20 p-4 rounded-xl">
+                    <div className="text-base md:text-lg xl:text-2xl bg-white/20 hover:bg-white/40 p-4 rounded-xl animate-fade-up animate-delay-1000">
                       ¡Qué emoción!
                     </div>
                   )}

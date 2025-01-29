@@ -39,11 +39,7 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
       <article className="flex flex-col gap-8">
         <HeroSlider lng={lng} heroes={heroes} />
         <CollectionsList lng={lng} collections={part1} layDown />
-        <ProductList
-          lng={lng}
-          title="Nuevos productos"
-          products={newestProducts}
-        />
+        <ProductList lng={lng} title="NEW IN" products={newestProducts} />
         <FullCollection lng={lng} collection={selected[0]} imageSide="left" />
         <ProductList
           lng={lng}

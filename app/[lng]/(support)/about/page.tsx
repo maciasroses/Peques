@@ -1,6 +1,6 @@
 const AboutPage = () => {
   return (
-    <article className="pt-28 px-4 pb-8 container mx-auto max-w-3xl">
+    <article className="pt-40 px-4 pb-8 container mx-auto max-w-3xl">
       <h1 className="text-center text-lg md:text-2xl font-black">
         Acerca de Nosotros
       </h1>

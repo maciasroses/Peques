@@ -47,7 +47,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
             {cart.reduce((acc, item) => acc + item.quantity, 0)}
           </span>
         )}
-        <ShoppingBag size="size-5 md:size-8" strokeWidth={2} isFilled />
+        <ShoppingBag size="size-2 md:size-4" strokeWidth={1} isFilled />
       </button>
       <div
         className={cn(

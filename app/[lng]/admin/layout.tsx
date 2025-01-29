@@ -26,7 +26,7 @@ const AdminLayout = async ({ children, params: { lng } }: IAdminLayout) => {
   return (
     <>
       <Sidebar lng={lng} />
-      <main className="sm:ml-48 pt-24 px-4 pb-4 min-h-screen">{children}</main>
+      <main className="sm:ml-48 pt-32 px-4 pb-4 min-h-screen">{children}</main>
     </>
   );
 };

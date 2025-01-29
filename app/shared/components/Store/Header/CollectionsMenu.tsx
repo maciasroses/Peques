@@ -130,7 +130,7 @@ const CollectionsMenu = ({
         onClick={toggleMenu}
         aria-haspopup="true"
         aria-expanded={menuOpen}
-        className="cursor-pointer text-black font-extralight inline-flex items-center gap-1 text-2xl"
+        className="cursor-pointer font-thin inline-flex items-center gap-1 text-lg"
       >
         COMPRA
         <span
@@ -139,7 +139,7 @@ const CollectionsMenu = ({
             menuOpen ? "rotate-180" : "rotate-0"
           )}
         >
-          <DownChevron size="size-8" strokeWidth={2} />
+          <DownChevron size="size-4" strokeWidth={2} />
         </span>
       </button>
       {menuOpen && (

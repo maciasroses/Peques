@@ -1,6 +1,6 @@
 const ContactPage = () => {
   return (
-    <article className="pt-28 px-4 pb-8 container mx-auto max-w-3xl">
+    <article className="pt-40 px-4 pb-8 container mx-auto max-w-3xl">
       <h1 className="text-center text-lg md:text-2xl font-black">Contacto</h1>
       <p className="mt-4">
         Si tienes alguna pregunta sobre nuestros productos o sobre el manejo de

@@ -26,9 +26,9 @@ const StarRating = ({
         {ratingsDistribution && <p className="text-5xl">{rating}</p>}
         <div className="flex" title={`${rating} de 5`}>
           {Array.from({ length: fullStars }).map((_, index) => (
-            <Star key={index} customClass="text-yellow-500" isFilled />
+            <Star key={index} customClass="text-primary" isFilled />
           ))}
-          {halfStar && <Star isHalf customClass="text-yellow-500" />}
+          {halfStar && <Star isHalf customClass="text-primary" />}
           {Array.from({ length: emptyStars }).map((_, index) => (
             <Star key={index} customClass="text-gray-400" />
           ))}
@@ -58,7 +58,7 @@ const StarRating = ({
                 </div>
                 <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded">
                   <div
-                    className="bg-yellow-500 h-2 rounded"
+                    className="bg-primary h-2 rounded"
                     style={{ width: `${percentage}%` }}
                   ></div>
                 </div>

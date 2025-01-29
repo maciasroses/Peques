@@ -13,7 +13,7 @@ const ProductList = ({ lng, title, products }: IProductList) => {
   if (products.length === 0) return null;
   return (
     <section>
-      <h1 className="text-2xl sm:text-4xl md:text-6xl text-center mb-2 md:mb-4">
+      <h1 className="text-2xl sm:text-4xl mb-2 md:mb-4 pl-4 text-gray-600 dark:text-gray-400">
         {title}
       </h1>
       <ul className="flex pr-5 overflow-x-auto items-start w-full max-w-min mx-auto">

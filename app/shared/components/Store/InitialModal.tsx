@@ -9,8 +9,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const InitialModal = ({ lng }: { lng: string }) => {
   const menuRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
+  const [delayedOpen, setDelayedOpen] = useState(false);
 
   useDisableScroll(isOpen);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDelayedOpen(true);
+      setIsOpen(true);
+    }, 10000); // 10 segundos
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
@@ -32,7 +42,7 @@ const InitialModal = ({ lng }: { lng: string }) => {
     };
   }, [handleClickOutside]);
 
-  if (!isOpen) return null;
+  if (!delayedOpen || !isOpen) return null;
 
   return (
     <div className="fixed flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-75 inset-0 z-50">
