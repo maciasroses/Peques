@@ -198,7 +198,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             className={cn(
-              "w-full h-full flex justify-center cursor-pointer relative",
+              "w-full h-full flex justify-center cursor-pointer relative mx-20",
               selectedImage &&
                 selectedImage.type === "IMAGE" &&
                 "md:cursor-zoom-in "
@@ -227,7 +227,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
           <div className="flex flex-col gap-2">
             <div className="flex items-start justify-between gap-4">
               <h1
-                className="text-2xl md:text-6xl"
+                className="text-xl md:text-4xl"
                 style={{
                   fontFamily: "'Champagne & Limousines', bold",
                 }}
@@ -250,11 +250,11 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               >
                 <div className="flex items-baseline gap-2">
                   {selectedPromotion && (
-                    <span className="text-sm md:text-lg lg:text-3xl font-semibold line-through text-gray-500 dark:text-gray-400">
+                    <span className="text-xs md:text-base lg:text-xl font-semibold line-through text-gray-500 dark:text-gray-400">
                       {formatCurrency(product.salePriceMXN, "MXN")}
                     </span>
                   )}
-                  <span className="text-lg md:text-2xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+                  <span className="text-base md:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(discountedPrice, "MXN")}
                   </span>
                 </div>
