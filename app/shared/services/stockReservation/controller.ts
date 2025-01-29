@@ -21,6 +21,62 @@ import type {
   ICartItemForFrontend,
   IStockReservation,
 } from "@/app/shared/interfaces";
+import { COMFORT_SET, SET_IDEAL, SET_INTEGRAL } from "../../constants";
+
+const matchesSet = (
+  setKeys: string[],
+  products: string[],
+  productsQuantity: string[]
+) => {
+  const productCounts: Record<string, number> = {};
+
+  setKeys.forEach((key) => {
+    products.forEach((product, index) => {
+      if (product.startsWith(key.toLowerCase())) {
+        if (!productCounts[key]) {
+          productCounts[key] = 0;
+        }
+        productCounts[key] += Number(productsQuantity[index]);
+      }
+    });
+  });
+
+  const quantities = Object.values(productCounts);
+  return (
+    quantities.length === setKeys.length &&
+    quantities.every((qty) => qty === quantities[0])
+  );
+};
+
+const applyDiscounts = (
+  discount: number,
+  productKey: string,
+  set: { [key: string]: number }
+) => {
+  for (let key in set) {
+    if (productKey.startsWith(key.toLowerCase())) {
+      return set[key];
+    }
+  }
+  return discount;
+};
+
+function calculateDiscountPercentage(price: number, finalPrice: number) {
+  if (price <= 0 && finalPrice <= 0) {
+    return 0;
+  }
+
+  if (price <= 0 && finalPrice !== 0) {
+    return 100;
+  }
+
+  // if (price <= 0 || finalPrice < 0) {
+  //   throw new Error("Los valores de precio deben ser positivos y válidos.");
+  // }
+
+  const discount = ((price - finalPrice) / price) * 100;
+  return Math.round(discount * 100) / 100; // Redondea a 2 decimales
+}
 
 export async function checkNUpdateStock(cart: ICartItemForFrontend[]) {
   try {
@@ -169,6 +225,79 @@ export async function checkNUpdateStock(cart: ICartItemForFrontend[]) {
           discount: discountDescription,
           promotionId: selectedPromotion?.id || null,
           finalPrice: discountedPrice,
+        };
+      }
+
+      let discount = calculateDiscountPercentage(item.price, item.finalPrice);
+
+      if (
+        matchesSet(
+          Object.keys(SET_IDEAL),
+          cart.map((product) => product.id),
+          cart.map((product) => product.quantity.toString())
+        )
+      ) {
+        const discountApplied = applyDiscounts(
+          discount,
+          updatedItem.id,
+          SET_IDEAL
+        );
+        updatedItem = {
+          ...updatedItem,
+          finalPrice:
+            updatedItem.price - (updatedItem.price * discountApplied) / 100,
+        };
+        updatedItem.discount =
+          updatedItem.finalPrice === updatedItem.price
+            ? null
+            : "Descuento de Set Ideal";
+      } else if (
+        matchesSet(
+          Object.keys(SET_INTEGRAL),
+          cart.map((product) => product.id),
+          cart.map((product) => product.quantity.toString())
+        )
+      ) {
+        const discountApplied = applyDiscounts(
+          discount,
+          updatedItem.id,
+          SET_INTEGRAL
+        );
+        updatedItem = {
+          ...updatedItem,
+          finalPrice:
+            updatedItem.price - (updatedItem.price * discountApplied) / 100,
+        };
+        updatedItem.discount =
+          updatedItem.finalPrice === updatedItem.price
+            ? null
+            : "Descuento de Set Integral";
+      } else if (
+        matchesSet(
+          Object.keys(COMFORT_SET),
+          cart.map((product) => product.id),
+          cart.map((product) => product.quantity.toString())
+        )
+      ) {
+        const discountApplied = applyDiscounts(
+          discount,
+          updatedItem.id,
+          COMFORT_SET
+        );
+        updatedItem = {
+          ...updatedItem,
+          finalPrice:
+            updatedItem.price - (updatedItem.price * discountApplied) / 100,
+        };
+        updatedItem.discount =
+          updatedItem.finalPrice === updatedItem.price
+            ? null
+            : "Descuento de Set Comfort";
+      } else {
+        updatedItem = {
+          ...updatedItem,
+          discount: null,
+          finalPrice: updatedItem.price,
         };
       }
 

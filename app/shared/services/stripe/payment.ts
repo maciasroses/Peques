@@ -48,16 +48,17 @@ export async function createPaymentIntent(
 
     await updateOrderInfoDataForStripe(productsForStripeOrderInfoData);
 
-    // amount multiplied by 100 because stripe uses cents
-    const amount = cart.reduce(
-      (acc, item) => acc + item.finalPrice * 100 * item.quantity,
-      0
+    const amount = Math.round(
+      cart.reduce((acc, item) => acc + item.finalPrice * 100 * item.quantity, 0)
     );
 
-    const possibleDiscount =
-      discountCode && discountCode.promotion.discountType === "PERCENTAGE"
-        ? (amount * discountCode.promotion?.discountValue) / 100
-        : (discountCode?.promotion?.discountValue ?? 0) * 100;
+    const possibleDiscount = discountCode
+      ? Math.round(
+          discountCode.promotion.discountType === "PERCENTAGE"
+            ? (amount * discountCode.promotion?.discountValue) / 100
+            : (discountCode?.promotion?.discountValue ?? 0) * 100
+        )
+      : 0;
 
     const paymentIntent = await stripe.paymentIntents.create({
       currency: "MXN",

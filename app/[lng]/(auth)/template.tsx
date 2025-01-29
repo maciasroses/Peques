@@ -8,7 +8,7 @@ interface IAuthTemplate {
 
 const AuthTemplate = ({ children }: IAuthTemplate) => {
   return (
-    <div className="w-full h-screen items-center justify-center flex flex-col sm:flex-row gap-4 pt-24 px-4 pb-4">
+    <div className="w-full h-screen items-center justify-center flex flex-col sm:flex-row gap-4 pt-32 px-4 pb-4">
       <div className="w-full sm:w-1/2 flex justify-center items-center">
         <Image
           priority

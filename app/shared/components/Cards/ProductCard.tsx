@@ -109,8 +109,8 @@ const ProductCard = ({
     : null;
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-      <Link href={`/${lng}/${product.key}`} className="flex justify-center p-8">
+    <div className="w-full bg-white rounded-lg dark:bg-gray-800">
+      <Link href={`/${lng}/${product.key}`} className="flex justify-center">
         <Image
           width={500}
           height={300}
@@ -121,7 +121,7 @@ const ProductCard = ({
           }
         />
       </Link>
-      <div className="flex flex-col gap-2 px-5 pb-5">
+      <div className="flex flex-col gap-2 p-5">
         <div className="flex gap-2 justify-between">
           <StarRating
             rating={averageRating}

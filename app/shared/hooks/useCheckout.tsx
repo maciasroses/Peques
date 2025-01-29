@@ -1,7 +1,6 @@
 import { useCart } from "@/app/shared/hooks";
 import { Toast } from "@/app/shared/components";
 import { useState, useEffect, useRef } from "react";
-import { createMyNewCart } from "@/app/shared/services/cart/controller";
 import {
   createSetUpIntent,
   createPaymentIntent,
@@ -65,7 +64,6 @@ export const useCheckout = ({
 
       if (hasChanges) {
         clearCart();
-        await createMyNewCart();
         newCart.forEach(addToCart);
         setChangesInCart(true);
       }

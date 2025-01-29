@@ -11,10 +11,9 @@ import {
   mergeCarts,
   addToMyCart,
   clearMyCart,
-  createMyNewCart,
   deleteFromMyCart,
 } from "@/app/shared/services/cart/controller";
-import type { ICartItemForFrontend } from "@/app/shared/interfaces";
+import type { ICart, ICartItemForFrontend } from "@/app/shared/interfaces";
 
 export interface ICartContext {
   cart: ICartItemForFrontend[];
@@ -46,27 +45,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           localStorage.removeItem("cart");
         }
 
-        const myCart = await getMyCart();
-        if (myCart) {
-          setCart(
-            myCart.items.map((item) => ({
-              price: item.priceMXN,
-              id: item.product.key,
-              name: item.product.name,
-              quantity: item.quantity,
-              discount: item.discount,
-              promotionId: item.promotionId,
-              finalPrice: item.finalPriceMXN,
-              customRequest: item.customRequest,
-              file:
-                item.product.files[0]?.url ||
-                "/assets/images/landscape-placeholder.webp",
-            }))
-          );
-        } else {
-          await createMyNewCart();
-          setCart([]);
-        }
+        const myCart = (await getMyCart()) as ICart;
+        setCart(
+          myCart.items.map((item) => ({
+            price: item.priceMXN,
+            id: item.product.key,
+            name: item.product.name,
+            quantity: item.quantity,
+            discount: item.discount,
+            promotionId: item.promotionId,
+            finalPrice: item.finalPriceMXN,
+            customRequest: item.customRequest,
+            file:
+              item.product.files[0]?.url ||
+              "/assets/images/landscape-placeholder.webp",
+          }))
+        );
       } else if (typeof window !== "undefined") {
         const cartData = localStorage.getItem("cart");
         if (cartData && JSON.parse(cartData).length > 0) {

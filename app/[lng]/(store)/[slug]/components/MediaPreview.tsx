@@ -23,8 +23,8 @@ const MediaPreview = ({
         width={isAllGallery ? 64 : 500}
         height={isAllGallery ? 64 : 300}
         className={cn(
-          "object-contain",
-          isAllGallery ? "size-full" : "size-auto"
+          "object-contain, size-full",
+          isAllGallery && "rounded-2xl"
         )}
         onMouseEnter={onMouseEnter}
       />

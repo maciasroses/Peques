@@ -18,7 +18,7 @@ const ProductList = ({ lng, title, products }: IProductList) => {
       </h1>
       <ul className="flex pr-5 overflow-x-auto items-start w-full max-w-min mx-auto">
         {products.map((product, index) => (
-          <li key={index} className="min-w-[250px] md:min-w-[500px] ml-5">
+          <li key={index} className="min-w-[300px] ml-5">
             <ProductCard lng={lng} product={product} />
           </li>
         ))}

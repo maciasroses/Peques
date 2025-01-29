@@ -45,7 +45,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
   if (cart.length === 0) return <EmptyCart lng={lng} />;
 
   return (
-    <section className="pt-24 px-4 pb-4 flex flex-col md:flex-row gap-4">
+    <section className="pt-32 px-4 pb-4 flex flex-col md:flex-row gap-4">
       <CartSummary
         lng={lng}
         cart={cart}
@@ -128,7 +128,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
 export default CheckoutSummary;
 
 const LoadingScreen = () => (
-  <div className="flex justify-center items-center h-screen pt-24">
+  <div className="flex justify-center items-center h-screen pt-32">
     <Loading size="size-20" />
   </div>
 );

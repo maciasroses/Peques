@@ -116,7 +116,7 @@ const matchesSet = (
 
   setKeys.forEach((key) => {
     products.forEach((product, index) => {
-      if (product.startsWith(key)) {
+      if (product.startsWith(key.toLowerCase())) {
         if (!productCounts[key]) {
           productCounts[key] = 0;
         }
@@ -138,7 +138,7 @@ const applyDiscounts = (
   set: { [key: string]: number }
 ) => {
   for (let key in set) {
-    if (productKey.startsWith(key)) {
+    if (productKey.startsWith(key.toLowerCase())) {
       return set[key];
     }
   }

@@ -172,8 +172,8 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
           setSelectedImageId={setSelectedImageId}
         />
       )}
-      <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full">
-        <div className="flex gap-4 w-full md:w-1/2 h-full justify-center md:justify-start">
+      <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full">
+        <div className="flex gap-4 w-full md:w-[60%] h-full justify-center md:justify-start">
           <div className="flex flex-col gap-2">
             {product.files.map((file) => (
               <div
@@ -198,14 +198,14 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             className={cn(
-              "w-full h-96 flex justify-center cursor-pointer relative",
+              "w-full h-full flex justify-center cursor-pointer relative",
               selectedImage &&
                 selectedImage.type === "IMAGE" &&
                 "md:cursor-zoom-in "
             )}
           >
             <MediaPreview alt={product.name} file={selectedImage} />
-            <div
+            {/* <div
               className={cn(
                 "hidden absolute border border-black bg-black opacity-40",
                 selectedImage.type === "IMAGE" && "md:block"
@@ -220,10 +220,10 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                     ? "hidden"
                     : "visible",
               }}
-            ></div>
+            ></div> */}
           </div>
         </div>
-        <div className="relative w-full md:w-1/2">
+        <div className="relative w-full md:w-[40%]">
           <div className="flex flex-col gap-2">
             <div className="flex items-start justify-between gap-4">
               <h1
@@ -242,7 +242,12 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               />
             </div>
             <div className="flex flex-col gap-2 md:gap-4">
-              <div className="flex flex-col">
+              <div
+                className="flex flex-col"
+                style={{
+                  fontFamily: "'Champagne & Limousines', bold",
+                }}
+              >
                 <div className="flex items-baseline gap-2">
                   {selectedPromotion && (
                     <span className="text-sm md:text-lg lg:text-3xl font-semibold line-through text-gray-500 dark:text-gray-400">
@@ -265,11 +270,20 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               />
               {product.isCustomizable && (
                 <div className="border border-gray-300 dark:border-gray-600 p-4">
-                  <p>
+                  <p
+                    style={{
+                      fontFamily: "'Champagne & Limousines', bold",
+                    }}
+                  >
                     Al ser un producto personalizado, esta pieza tiene un tiempo
                     de elaboración de 7 días.
                   </p>
-                  <div className="flex flex-col gap-2 mt-2">
+                  <div
+                    className="flex flex-col gap-2 mt-2"
+                    style={{
+                      fontFamily: "'Champagne & Limousines', bold",
+                    }}
+                  >
                     <GenericInput
                       type="text"
                       id="customName"
@@ -282,7 +296,12 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                       revisa mayúsculas o acentos)
                     </p>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div
+                    className="flex flex-col gap-2"
+                    style={{
+                      fontFamily: "'Champagne & Limousines', bold",
+                    }}
+                  >
                     <GenericInput
                       type="select"
                       id="customFont"
@@ -302,7 +321,14 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                       ]}
                     />
                   </div>
-                  <p className="my-4">Elige un color</p>
+                  <p
+                    className="my-4"
+                    style={{
+                      fontFamily: "'Champagne & Limousines', bold",
+                    }}
+                  >
+                    Elige un color
+                  </p>
                   <div className="my-4 grid grid-cols-6 md:grid-cols-3 lg:grid-cols-6 gap-2">
                     {Array.from({ length: 6 }).map((_, index) => (
                       <button
@@ -320,7 +346,14 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   </div>
                   {customName && customFont && customColor && (
                     <div>
-                      <p className="text-xl">Resultado:</p>
+                      <p
+                        className="text-xl"
+                        style={{
+                          fontFamily: "'Champagne & Limousines', bold",
+                        }}
+                      >
+                        Resultado:
+                      </p>
                       <p
                         className="text-4xl text-center"
                         style={{
@@ -358,12 +391,15 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               {product.description && (
                 <div
                   className="ql-editor"
+                  style={{
+                    fontFamily: "'Champagne & Limousines', bold",
+                  }}
                   dangerouslySetInnerHTML={{ __html: product.description }}
                 />
               )}
             </div>
           </div>
-          <div
+          {/* <div
             className={cn(
               "hidden absolute top-0 right-0 size-full max-h-[600px] pointer-events-none",
               selectedImage.type === "IMAGE" && "md:block"
@@ -377,7 +413,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   ? "hidden"
                   : "visible",
             }}
-          ></div>
+          ></div> */}
         </div>
       </div>
       <div className="mt-4">
