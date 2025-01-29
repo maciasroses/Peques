@@ -84,7 +84,6 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
         </div>
       )}
       <nav className="h-full flex flex-col items-center py-2 px-4 mx-auto bg-white border-b-4 border-accent-light">
-      <nav className="h-full flex flex-col items-center py-2 px-4 mx-auto bg-white border-b-4 border-accent-light">
         <ul className="w-full flex justify-between items-center gap-4">
           {shouldShowMenus && (
             <li className="flex items-center md:hidden">
