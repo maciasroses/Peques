@@ -77,7 +77,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
             {Array.from({ length: 10 }).map((_, index) => (
               <p key={index}>
                 WELCOME! Envío <strong>GRATIS</strong> a partir de{" "}
-                <strong>$1900 MXN</strong>
+                <strong>$1,900 MXN</strong>
               </p>
             ))}
           </div>

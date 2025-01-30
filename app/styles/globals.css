@@ -55,10 +55,40 @@
 }
 
 @font-face {
-  font-family: 'Champagne & Limousines';
-  src: url('/assets/fonts/Champagne & Limousines Bold.ttf') format('truetype');
-  font-weight: bold;
+  font-family: 'Champagne & Limousines Normal';
+  src: url('/assets/fonts/Champagne&Limousines/Champagne & Limousines.ttf') format('truetype');
+  font-weight: 400;
   font-style: normal;
+}
+
+@font-face {
+  font-family: 'Champagne & Limousines Bold';
+  src: url(
+      '/assets/fonts/Champagne&Limousines/Champagne & Limousines Bold.ttf'
+    )
+    format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Champagne & Limousines Italic';
+  src: url(
+      '/assets/fonts/Champagne&Limousines/Champagne & Limousines Italic.ttf'
+    )
+    format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Champagne & Limousines Bold Italic';
+  src: url(
+      '/assets/fonts/Champagne&Limousines/Champagne & Limousines Bold Italic.ttf'
+    )
+    format('truetype');
+  font-weight: 700;
+  font-style: italic;
 }
 
 
@@ -158,7 +188,7 @@ body {
 .ql-editor {
   font-size: 1rem;
   line-height: 1.6;
-  font-family: sans-serif;
+  font-family: 'Champagne & Limousines Normal';
 }
 
 /* Encabezados (header) */

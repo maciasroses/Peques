@@ -229,7 +229,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               <h1
                 className="text-xl md:text-4xl"
                 style={{
-                  fontFamily: "'Champagne & Limousines', bold",
+                  fontFamily: "'Champagne & Limousines Bold'",
                 }}
               >
                 {product.name}
@@ -245,7 +245,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               <div
                 className="flex flex-col"
                 style={{
-                  fontFamily: "'Champagne & Limousines', bold",
+                  fontFamily: "'Champagne & Limousines Bold'",
                 }}
               >
                 <div className="flex items-baseline gap-2">
@@ -272,7 +272,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                 <div className="border border-gray-300 dark:border-gray-600 p-4">
                   <p
                     style={{
-                      fontFamily: "'Champagne & Limousines', bold",
+                      fontFamily: "'Champagne & Limousines Bold'",
                     }}
                   >
                     Al ser un producto personalizado, esta pieza tiene un tiempo
@@ -281,7 +281,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   <div
                     className="flex flex-col gap-2 mt-2"
                     style={{
-                      fontFamily: "'Champagne & Limousines', bold",
+                      fontFamily: "'Champagne & Limousines Bold'",
                     }}
                   >
                     <GenericInput
@@ -299,7 +299,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   <div
                     className="flex flex-col gap-2"
                     style={{
-                      fontFamily: "'Champagne & Limousines', bold",
+                      fontFamily: "'Champagne & Limousines Bold'",
                     }}
                   >
                     <GenericInput
@@ -324,7 +324,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   <p
                     className="my-4"
                     style={{
-                      fontFamily: "'Champagne & Limousines', bold",
+                      fontFamily: "'Champagne & Limousines Bold'",
                     }}
                   >
                     Elige un color
@@ -349,7 +349,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                       <p
                         className="text-xl"
                         style={{
-                          fontFamily: "'Champagne & Limousines', bold",
+                          fontFamily: "'Champagne & Limousines Bold'",
                         }}
                       >
                         Resultado:
@@ -391,9 +391,6 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               {product.description && (
                 <div
                   className="ql-editor"
-                  style={{
-                    fontFamily: "'Champagne & Limousines', bold",
-                  }}
                   dangerouslySetInnerHTML={{ __html: product.description }}
                 />
               )}

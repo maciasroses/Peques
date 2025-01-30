@@ -22,8 +22,8 @@ const FullCollection = ({ lng, collection, imageSide }: IFullCollection) => {
         )}
       >
         <Image
-          width={400}
-          height={400}
+          width={1920}
+          height={1080}
           src={collection.imageUrl}
           alt={collection.name}
           className={cn(
@@ -34,14 +34,14 @@ const FullCollection = ({ lng, collection, imageSide }: IFullCollection) => {
       </div>
       <div
         className={cn(
-          "w-full md:w-1/2 lg:w-1/3 flex flex-col justify-center items-center gap-2 py-10",
+          "w-full md:w-1/2 lg:w-1/3 flex flex-col justify-center items-center gap-4 py-10",
           isTextLeft ? "md:order-1 md:items-start" : "md:order-2 md:items-end"
         )}
       >
-        <h2>{collection.name}</h2>
+        <h2 className="text-xl md:text-2xl">{collection.name}</h2>
         <Link
           href={`/${lng}/collections/${collection.link}`}
-          className="link-button-primary"
+          className="bg-white/70 hover:bg-white/90 p-4 rounded-xl"
         >
           Ver colección
         </Link>
