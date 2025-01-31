@@ -111,37 +111,50 @@ const Form = ({ hero, onClose, collections, action }: IForm) => {
                 </GenericDiv>
                 <GenericDiv>
                   <GenericInput
-                    type="select"
-                    id="collectionId"
-                    ariaLabel="Colección"
-                    placeholder="Selecciona una colección"
-                    defaultValue={hero?.collectionId ?? ""}
-                    error={badResponse.errors?.collectionId}
-                    options={filteredCollections.map((collection) => ({
-                      value: collection.id,
-                      label: collection.name,
-                    }))}
+                    type="text"
+                    id="buttonLink"
+                    placeholder="Let's go"
+                    ariaLabel="Texto del botón"
+                    defaultValue={hero?.buttonLink ?? ""}
+                    error={badResponse.errors?.buttonLink}
                   />
                 </GenericDiv>
               </GenericPairDiv>
-              {action === "create" && (
-                <div>
-                  <p>Imagen del Hero</p>
-                  <GenericInput
-                    type="file"
-                    file={file}
-                    id="imageUrl"
-                    fileAccept="image/webp"
-                    ariaLabel="Imagen del Hero"
-                    error={badResponse.errors?.imageUrl}
-                    onChange={(event) => {
-                      setFile(
-                        (event.target as HTMLInputElement).files?.[0] ?? null
-                      );
-                    }}
-                  />
-                </div>
-              )}
+              <div>
+                <GenericInput
+                  type="select"
+                  id="collectionId"
+                  ariaLabel="Colección"
+                  placeholder="Selecciona una colección"
+                  defaultValue={hero?.collectionId ?? ""}
+                  error={badResponse.errors?.collectionId}
+                  options={filteredCollections.map((collection) => ({
+                    value: collection.id,
+                    label: collection.name,
+                  }))}
+                />
+              </div>
+              <div>
+                <p>Imagen del Hero</p>
+                {action === "update" && (
+                  <small className="text-gray-500 font-bold">
+                    * Dejar en blanco si no se desea actualizar la imagen *
+                  </small>
+                )}
+                <GenericInput
+                  type="file"
+                  file={file}
+                  id="imageUrl"
+                  fileAccept="image/webp"
+                  ariaLabel="Imagen del Hero"
+                  error={badResponse.errors?.imageUrl}
+                  onChange={(event) => {
+                    setFile(
+                      (event.target as HTMLInputElement).files?.[0] ?? null
+                    );
+                  }}
+                />
+              </div>
             </>
           ) : (
             <>

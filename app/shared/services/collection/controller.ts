@@ -171,7 +171,7 @@ export async function updateCollection({
   const dataToValidate = {
     name: formData.get("name"),
     link: formData.get("link"),
-    // imageUrl: formData.get("imageUrl"),
+    imageUrl: formData.get("imageUrl"),
   };
 
   const errors = validateSchema("update", dataToValidate);
@@ -215,31 +215,64 @@ export async function updateCollection({
       };
     }
 
-    // const { imageUrl, ...rest } = dataToValidate;
+    if ((dataToValidate.imageUrl as File).size > 0) {
+      const { imageUrl, ...rest } = dataToValidate;
 
-    // const { url } = await put(
-    //   `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-    //   imageUrl as File,
-    //   {
-    //     access: "public",
-    //     contentType: "image/webp",
-    //   }
-    // );
+      const { url } = await put(
+        `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
+        imageUrl as File,
+        {
+          access: "public",
+          contentType: "image/webp",
+        }
+      );
 
-    const finalData = {
-      // ...rest,
-      // imageUrl: url,
-      ...dataToValidate,
-    };
+      const finalData = {
+        ...rest,
+        imageUrl: url,
+      };
 
-    await update({ id, data: finalData });
-    // await del(collection.imageUrl);
+      await update({ id, data: finalData });
+      await del(collection.imageUrl);
+    } else {
+      const { imageUrl, ...rest } = dataToValidate;
+
+      const finalData = {
+        ...rest,
+        imageUrl: collection.imageUrl,
+      };
+
+      await update({ id, data: finalData });
+    }
   } catch (error) {
     console.error(error);
     // throw new Error("Failed to update collection");
     return {
       success: false,
       message: "Ha ocurrido un error al actualizar la colección",
+    };
+  }
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/collections`);
+  redirect(`/${lng}/admin/collections`);
+}
+
+export async function updateCollectionOrderById({
+  id,
+  order,
+}: {
+  id: string;
+  order: number;
+}) {
+  try {
+    await isAdmin();
+
+    await update({ id, data: { order } });
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "Ha ocurrido un error al actualizar el orden de la colección",
     };
   }
   const lng = cookies().get("i18next")?.value ?? "es";

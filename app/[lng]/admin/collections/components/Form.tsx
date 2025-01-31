@@ -102,44 +102,45 @@ const Form = ({ onClose, products, collection, action }: IForm) => {
                   />
                 </GenericDiv>
               </GenericPairDiv>
+              <div>
+                <p>Imagen de la colección</p>
+                {action === "update" && (
+                  <small className="text-gray-500 font-bold">
+                    * Dejar en blanco si no se desea actualizar la imagen *
+                  </small>
+                )}
+                <GenericInput
+                  type="file"
+                  file={file}
+                  id="imageUrl"
+                  fileAccept="image/webp"
+                  ariaLabel="Imagen de la colección"
+                  error={badResponse.errors?.imageUrl}
+                  onChange={(event) => {
+                    setFile(
+                      (event.target as HTMLInputElement).files?.[0] ?? null
+                    );
+                  }}
+                />
+              </div>
               {action === "create" && (
-                <>
-                  <div>
-                    <p>Imagen de la colección</p>
-                    <GenericInput
-                      type="file"
-                      file={file}
-                      id="imageUrl"
-                      fileAccept="image/webp"
-                      ariaLabel="Imagen de la colección"
-                      error={badResponse.errors?.imageUrl}
-                      onChange={(event) => {
-                        setFile(
-                          (event.target as HTMLInputElement).files?.[0] ?? null
-                        );
-                      }}
+                <DynamicItemManager
+                  items={products ?? []}
+                  renderForm={(index, items, onSelect) => (
+                    <AutocompleteInput
+                      key={index}
+                      id="product"
+                      ariaLabel="Producto"
+                      customClassName="mt-2"
+                      placeholder="Busca un producto..."
+                      additionOnChange={(e) => onSelect(index, e.target.value)}
+                      suggestions={items.map((i) => ({
+                        value: i.key,
+                        label: i.name,
+                      }))}
                     />
-                  </div>
-                  <DynamicItemManager
-                    items={products ?? []}
-                    renderForm={(index, items, onSelect) => (
-                      <AutocompleteInput
-                        key={index}
-                        id="product"
-                        ariaLabel="Producto"
-                        customClassName="mt-2"
-                        placeholder="Busca un producto..."
-                        additionOnChange={(e) =>
-                          onSelect(index, e.target.value)
-                        }
-                        suggestions={items.map((i) => ({
-                          value: i.key,
-                          label: i.name,
-                        }))}
-                      />
-                    )}
-                  />
-                </>
+                  )}
+                />
               )}
             </>
           ) : (

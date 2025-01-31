@@ -32,10 +32,8 @@ export async function generateMetadata({
 
     if (!collection) notFound();
 
-    const q = searchParams?.q || "";
-
     return {
-      title: q || collection.name,
+      title: collection.name,
     };
   } catch {
     return {
@@ -48,14 +46,13 @@ const CollectionNamePage = async ({
   searchParams,
   params: { lng, link },
 }: ICollectionNamePage) => {
-  const collection = await getCollectionByLink({
+  const collection = (await getCollectionByLink({
     link,
-  });
+  })) as ICollection;
 
   if (!collection) notFound();
 
   const {
-    q = "",
     page = "1",
     filters = "",
     salePriceMXNTo = "",
@@ -63,7 +60,6 @@ const CollectionNamePage = async ({
   } = searchParams || {};
 
   const searchParamsForList = {
-    q,
     page,
     filters,
     salePriceMXNTo,
@@ -84,16 +80,13 @@ const CollectionNamePage = async ({
       </aside>
       <section className="w-full md:w-3/4 lg:w-4/5">
         <div className="mb-4">
-          <p className="font-medium text-lg md:text-2xl">
-            {q ? `Buscando: ${q}` : `Todos los productos`}
-          </p>
           <p className="text-sm md:text-lg text-gray-800 dark:text-gray-200">
             {totalCount} resultado
             {totalCount > 1 || totalCount === 0 ? "s" : ""}
           </p>
         </div>
         <Suspense
-          key={q + page + filters + salePriceMXNTo + salePriceMXNFrom}
+          key={page + filters + salePriceMXNTo + salePriceMXNFrom}
           fallback={<ListSkeleton />}
         >
           <ProductList

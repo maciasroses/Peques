@@ -1,4 +1,5 @@
 import { Img } from "@react-email/components";
+import { PICK_UP_ADDRESSES } from "@/app/shared/constants";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
@@ -265,6 +266,106 @@ const OrderInfo = ({ order }: { order: IOrderInfoForEmail }) => {
             </p>
           </div>
         )}
+      </div>
+
+      {/* Información de Pago y Envío/Recogido */}
+      <div
+        style={{
+          backgroundColor: "#f9fafb",
+          borderRadius: "8px",
+          padding: "16px",
+          marginTop: "20px",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div style={{ flex: "1", marginRight: "16px" }}>
+            {/* Dirección de Envío */}
+            <div style={{ marginTop: "16px" }}>
+              <h3
+                style={{
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  marginBottom: "8px",
+                }}
+              >
+                {order.order.address
+                  ? "Dirección de Envío"
+                  : "Dirección de Recogida"}
+              </h3>
+              {order.order.address ? (
+                <>
+                  <p>
+                    <strong>{order.order.address.fullName}</strong>
+                  </p>
+                  <p>
+                    {order.order.address.address1},{" "}
+                    {order.order.address.address2}
+                  </p>
+                  <p>
+                    {order.order.address.city}, {order.order.address.state},{" "}
+                    {order.order.address.zipCode}
+                  </p>
+                  <p>{order.order.address.country}</p>
+                  <p>
+                    <strong>Teléfono:</strong> {order.order.address.phoneNumber}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    <strong>{PICK_UP_ADDRESSES[0].name}</strong>
+                  </p>
+                  <p>{PICK_UP_ADDRESSES[0].street}</p>
+                  <p>
+                    {PICK_UP_ADDRESSES[0].city}, {PICK_UP_ADDRESSES[0].state},{" "}
+                    {PICK_UP_ADDRESSES[0].zipCode}
+                  </p>
+                  <p>{PICK_UP_ADDRESSES[0].country}</p>
+                  <p>
+                    <strong>Referencia:</strong>{" "}
+                    {PICK_UP_ADDRESSES[0].reference}
+                  </p>
+                  <p>
+                    <strong>Horario:</strong>
+                    <ul>
+                      {PICK_UP_ADDRESSES[0].schedule.map((item) => (
+                        <li key={item.id}>{item.value}</li>
+                      ))}
+                    </ul>
+                  </p>
+                  <p>
+                    <strong>Notas:</strong> {PICK_UP_ADDRESSES[0].notes}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+          <div style={{ flex: "1" }}>
+            {/* Método de Pago */}
+            {order.order.payment && (
+              <div style={{ marginTop: "16px" }}>
+                <h3
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Método de Pago
+                </h3>
+                <p>
+                  <strong>Tarjeta:</strong>{" "}
+                  {order.order.payment.brand.toUpperCase()} ****
+                  {order.order.payment.last4Digits}
+                </p>
+                <p>
+                  <strong>Expiración:</strong> {order.order.payment.expiryMonth}
+                  /{order.order.payment.expiryYear}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

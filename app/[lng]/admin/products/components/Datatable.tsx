@@ -20,6 +20,7 @@ import type {
 } from "react-data-table-component";
 import SharedForm from "./SharedForm";
 import { cn } from "@/app/shared/utils/cn";
+import { activateNDeactivateProduct } from "@/app/shared/services/product/controller";
 
 const ExpandedComponent: React.FC<ExpanderComponentProps<IProduct>> = ({
   data,
@@ -101,6 +102,13 @@ interface IDatatable {
 }
 
 const Datatable = ({ products, providers }: IDatatable) => {
+  const handleActivateNDeactivateProduct = async (
+    productId: string,
+    isActive: boolean
+  ) => {
+    await activateNDeactivateProduct(productId, isActive);
+  };
+
   const columns = [
     {
       name: "Acciones",
@@ -123,6 +131,23 @@ const Datatable = ({ products, providers }: IDatatable) => {
             <Form product={row} />
           </Action>
         </div>
+      ),
+    },
+    {
+      name: "¿Es visible?",
+      selector: (row: { isActive: boolean }) => row.isActive,
+      sortable: true,
+      cell: (row: { id: string; isActive: boolean }) => (
+        <select
+          defaultValue={row.isActive ? "true" : "false"}
+          onChange={(e) => {
+            handleActivateNDeactivateProduct(row.id, e.target.value === "true");
+          }}
+          className="bg-accent text-white rounded-md p-3 border border-white"
+        >
+          <option value="true">Sí</option>
+          <option value="false">No</option>
+        </select>
       ),
     },
     {
@@ -182,14 +207,14 @@ const Datatable = ({ products, providers }: IDatatable) => {
     },
     {
       name: "Creado en",
-      selector: (row: { createdAt: Date }) => row.createdAt.toString(),
+      selector: (row: { createdAt: Date }) => row.createdAt,
       sortable: true,
       format: (row: { createdAt: Date }) =>
         formatDateLatinAmerican(row.createdAt),
     },
     {
       name: "Actualizado en",
-      selector: (row: { updatedAt: Date }) => row.updatedAt.toString(),
+      selector: (row: { updatedAt: Date }) => row.updatedAt,
       sortable: true,
       format: (row: { updatedAt: Date }) =>
         formatDateLatinAmerican(row.updatedAt),

@@ -74,7 +74,7 @@ const Form = ({ token }: IForm) => {
             </div>
             <div className="text-center mt-4">
               <SubmitButton
-                color="primary"
+                color="accent"
                 title="Restablecer"
                 pending={isPending}
               />

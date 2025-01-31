@@ -24,7 +24,7 @@ interface ICheckoutTab {
   lng: string;
   user: IUser;
   theme: string;
-  address: IAddress;
+  address: IAddress | null;
   isLoading: boolean;
   clientSecret: string;
   handleFinish: () => void;
@@ -85,7 +85,7 @@ interface IStripeForm {
   lng: string;
   user: IUser;
   theme: string;
-  address: IAddress;
+  address: IAddress | null;
   clientSecret: string;
   handleFinish: () => void;
   isLoadingFromHook: boolean;
@@ -111,20 +111,6 @@ const StripeForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>();
 
-  const BILLING_DETAILS = {
-    email: user.email,
-    name: address.fullName,
-    phone: address.phoneNumber ?? undefined,
-    address: {
-      city: address.city,
-      state: address.state,
-      line1: address.address1,
-      line2: address.address2 ?? undefined,
-      country: address.country,
-      postal_code: address.zipCode.toString(),
-    },
-  };
-
   const handleConfirmPayment = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -135,10 +121,26 @@ const StripeForm = ({
 
     try {
       if (selectedMethod) {
-        await updateBillingDetails({
-          paymentMethodId: selectedMethod,
-          billing_details: BILLING_DETAILS,
-        });
+        if (address) {
+          const BILLING_DETAILS = {
+            email: user.email,
+            name: address.fullName,
+            phone: address.phoneNumber ?? undefined,
+            address: {
+              city: address.city,
+              state: address.state,
+              line1: address.address1,
+              line2: address.address2 ?? undefined,
+              country: address.country,
+              postal_code: address.zipCode.toString(),
+            },
+          };
+
+          await updateBillingDetails({
+            paymentMethodId: selectedMethod,
+            billing_details: BILLING_DETAILS,
+          });
+        }
 
         const { error } = await stripe.confirmPayment({
           clientSecret,

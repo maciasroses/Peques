@@ -2,10 +2,10 @@
 
 import clsx from "clsx";
 import Form from "./Form";
-import useModal from "@/app/shared/hooks/useModal";
-import { useRowSelection } from "@/app/shared/hooks";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import useModal from "@/app/shared/hooks/useModal";
+import { useRowSelection } from "@/app/shared/hooks";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
 import {
@@ -22,11 +22,10 @@ import {
   Modal,
 } from "@/app/shared/components";
 import type {
-  IAddress,
-  IOrder,
-  IOrderOnPromotion,
-  IPromotion,
   IUser,
+  IOrder,
+  IAddress,
+  IOrderOnPromotion,
 } from "@/app/shared/interfaces";
 import OrderSummary from "./OrderSummary";
 import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
@@ -150,8 +149,13 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       name: "Estado de Entrega",
       selector: (row: { deliveryStatus: string }) => row.deliveryStatus,
       sortable: true,
-      width: "140px",
-      format: (row: { id: string; deliveryStatus: string }) => {
+      width: "180px",
+      format: (row: {
+        id: string;
+        deliveryStatus: string;
+        address: IAddress;
+        user: IUser;
+      }) => {
         if (row.deliveryStatus === "CANCELLED") {
           return <span className="text-red-500 font-semibold">Cancelado</span>;
         } else {
@@ -162,8 +166,21 @@ const Datatable = ({ lng, orders }: IDataTable) => {
               className="bg-accent text-white rounded-md p-2 w-full border border-white"
             >
               <option value="PENDING">Pendiente</option>
-              <option value="DELIVERED">Entregado</option>
               <option value="CANCELLED">Cancelado</option>
+              {!row.user || row.address ? (
+                <>
+                  {/* (solo para pedidos con envío o sin compra en la página web) */}
+                  <option value="SHIPPED">Enviado</option>
+                  <option value="DELIVERED">Entregado</option>
+                </>
+              ) : (
+                <>
+                  {/* (solo para pedidos con recogida en
+                    tienda) */}
+                  <option value="READY_FOR_PICKUP">Listo para recoger</option>
+                  <option value="PICKED_UP">Recogido</option>
+                </>
+              )}
             </select>
           );
         }
@@ -183,7 +200,7 @@ const Datatable = ({ lng, orders }: IDataTable) => {
     {
       name: "Cliente (nuevo)",
       width: "150px",
-      selector: (row: { client: string; user: IUser }) =>
+      selector: (row: { user: IUser }) =>
         row.user?.firstName || row.user?.lastName
           ? `${row.user?.firstName} ${row.user?.lastName}`
           : (row.user?.username ?? "Sin registro de usuario de e-commerce"),
@@ -298,7 +315,7 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       name: "Dirección de Envío",
       width: "200px",
       selector: (row: { address: IAddress }) => row.address,
-      cell: (row: { address: IAddress }) => {
+      cell: (row: { address: IAddress; user: IUser }) => {
         return (
           <div className="p-2">
             {row.address ? (
@@ -315,7 +332,13 @@ const Datatable = ({ lng, orders }: IDataTable) => {
                 </p>
               </>
             ) : (
-              <span className="text-red-500">Dirección no disponible</span>
+              <>
+                {row.user ? (
+                  <span className="text-blue-700">Se recogerá en tienda</span>
+                ) : (
+                  <span className="text-red-500">Dirección no disponible</span>
+                )}
+              </>
             )}
           </div>
         );
@@ -473,8 +496,27 @@ const Datatable = ({ lng, orders }: IDataTable) => {
                     >
                       <option value="">Estado de Envío</option>
                       <option value="PENDING">Pendiente</option>
-                      <option value="DELIVERED">Entregado</option>
                       <option value="CANCELLED">Cancelado</option>
+                      {selectedRows.every((row) => !row.user || row.address) ? (
+                        <>
+                          {/* (solo para pedidos con envío o sin compra en la página web) */}
+                          <option value="SHIPPED">Enviado</option>
+                          <option value="DELIVERED">Entregado</option>
+                        </>
+                      ) : (
+                        selectedRows.every(
+                          (row) => row.user && !row.address
+                        ) && (
+                          <>
+                            {/* (solo para pedidos con recogida en
+                            tienda) */}
+                            <option value="READY_FOR_PICKUP">
+                              Listo para recoger
+                            </option>
+                            <option value="PICKED_UP">Recogido</option>
+                          </>
+                        )
+                      )}
                     </select>
                   )}
                 </div>

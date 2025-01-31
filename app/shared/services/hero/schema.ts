@@ -4,6 +4,7 @@ const baseSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
   description: z.string().optional(),
+  buttonLink: z.string().optional(),
   collectionId: z.string().uuid({
     message: "La colección es requerida",
   }),
@@ -20,7 +21,9 @@ const createSchema = baseSchema.extend({
     }),
 });
 
-const updateSchema = baseSchema.extend({});
+const updateSchema = baseSchema.extend({
+  imageUrl: z.instanceof(File).optional(),
+});
 
 const schemas: { [key: string]: z.ZodObject<ZodRawShape, UnknownKeysParam> } = {
   create: createSchema,

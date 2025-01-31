@@ -67,7 +67,7 @@ const Form = ({ lng }: { lng: string }) => {
           <div className="text-center mt-4">
             <SubmitButton
               title="Iniciar sesión"
-              color="primary"
+              color="accent"
               pending={isPending}
             />
           </div>

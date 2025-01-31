@@ -156,6 +156,7 @@ model Product {
   id                        String  @id @default(uuid())
   key                       String  @unique
   name                      String
+  isActive                  Boolean @default(true)
   description               String? @db.Text
   salePriceMXN              Float
   isCustomizable            Boolean @default(false)
@@ -229,6 +230,7 @@ model Collection {
   id       String @id @default(uuid())
   name     String @unique
   link     String @unique
+  order    Int    @default(1)
   imageUrl String
 
   hero Hero?
@@ -321,7 +323,10 @@ model StockReservation {
 enum DeliveryStatus {
   PENDING
   CANCELLED
+  SHIPPED
   DELIVERED
+  READY_FOR_PICKUP
+  PICKED_UP
 }
 
 model Order {
@@ -502,6 +507,7 @@ model Hero {
   subtitle    String?
   isActive    Boolean @default(true)
   description String?
+  buttonLink  String?
   imageUrl    String
 
   collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)

@@ -102,6 +102,7 @@ const Edit = ({ lng, customList, handleClose }: IEdit) => {
               <input hidden name="id" defaultValue={customList.id} />
               <div className="text-center mt-4 w-full">
                 <SubmitButton
+                  color="accent"
                   pending={isSubmitting}
                   title={lng === "en" ? "Update" : "Actualizar"}
                 />

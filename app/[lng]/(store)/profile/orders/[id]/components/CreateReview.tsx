@@ -120,7 +120,7 @@ const CreateReview = ({ lng, onClose, productSelected }: ICreateReview) => {
           </div>
           <div className="text-center mt-4">
             <SubmitButton
-              color="primary"
+              color="accent"
               title="Enviar reseña"
               pending={isPending}
             />

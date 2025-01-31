@@ -55,7 +55,6 @@ export default async function Home({ params: { lng } }: IBaseLangPage) {
 }
 
 function splitCollections(collections: ICollection[]) {
-  // Si el array está vacío, retornar valores predeterminados
   if (collections.length === 0) {
     return {
       selected: [],
@@ -64,35 +63,27 @@ function splitCollections(collections: ICollection[]) {
     };
   }
 
-  // Si el array tiene menos de 3 elementos, ajustamos los resultados
-  if (collections.length < 3) {
-    const selected = collections.slice(0, 2); // Tomamos hasta 2 elementos como seleccionados
-    const part1 = collections.length > 2 ? collections.slice(2) : []; // El resto queda como parte 1
-    const part2 = [] as ICollection[]; // No hay parte 2
-    return { selected, part1, part2 };
+  let selected: ICollection[] = [];
+  let part1: ICollection[] = [];
+  let part2: ICollection[] = [];
+
+  if (collections.length === 1) {
+    part1 = [collections[0]];
+  } else if (collections.length === 2) {
+    part1 = [collections[0]];
+    part2 = [collections[1]];
+  } else {
+    selected = collections.slice(0, 2);
+    const remaining = collections.slice(2);
+
+    remaining.forEach((item, index) => {
+      if (index % 2 === 0) {
+        part1.push(item);
+      } else {
+        part2.push(item);
+      }
+    });
   }
-
-  // Clonar el array para no modificar el original
-  const remainingCollections = [...collections];
-
-  // Seleccionar dos al azar
-  const randomIndices: number[] = [];
-  while (randomIndices.length < 2) {
-    const randomIndex = Math.floor(Math.random() * remainingCollections.length);
-    if (!randomIndices.includes(randomIndex)) {
-      randomIndices.push(randomIndex);
-    }
-  }
-
-  // Sacar los seleccionados
-  const selected = randomIndices.map(
-    (index) => remainingCollections.splice(index, 1)[0]
-  );
-
-  // Dividir el resto en dos partes
-  const middleIndex = Math.ceil(remainingCollections.length / 2);
-  const part1 = remainingCollections.slice(0, middleIndex);
-  const part2 = remainingCollections.slice(middleIndex);
 
   return {
     selected,

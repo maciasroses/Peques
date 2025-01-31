@@ -115,7 +115,7 @@ const AddToCart = ({
         className={cn(
           "font-medium rounded-lg text-sm px-4 py-2 w-full md:w-2/3",
           product.availableQuantity > 0
-            ? "px-4 py-2 bg-accent"
+            ? "bg-accent"
             : "text-gray-600 dark:text-gray-200 bg-gray-300 cursor-not-allowed dark:bg-gray-700"
         )}
       >

@@ -18,6 +18,7 @@ import type {
   ICollection,
   IProductOnCollection,
 } from "@/app/shared/interfaces";
+import { updateCollectionOrderById } from "@/app/shared/services/collection/controller";
 
 const ExpandedComponent: React.FC<ExpanderComponentProps<ICollection>> = ({
   data,
@@ -43,6 +44,13 @@ interface IDatatable {
 }
 
 const Datatable = ({ collections, products }: IDatatable) => {
+  const handleChangeOrder = async (id: string, order: number) => {
+    await updateCollectionOrderById({
+      id,
+      order,
+    });
+  };
+
   const columns = [
     {
       name: "Acciones",
@@ -77,6 +85,26 @@ const Datatable = ({ collections, products }: IDatatable) => {
       ),
     },
     {
+      name: "Orden de muestra",
+      selector: (row: { order: number }) => row.order,
+      sortable: true,
+      cell: (row: { id: string; order: number }) => (
+        <select
+          defaultValue={row.order}
+          onChange={(e) => handleChangeOrder(row.id, parseInt(e.target.value))}
+          className="bg-accent text-white rounded-md p-3 border border-white"
+        >
+          {Array.from({ length: collections.length }, (_, i) => i + 1).map(
+            (value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            )
+          )}
+        </select>
+      ),
+    },
+    {
       name: "Imagen",
       maxwidth: "150px",
       selector: (row: { imageUrl: string }) => row.imageUrl,
@@ -107,14 +135,14 @@ const Datatable = ({ collections, products }: IDatatable) => {
     },
     {
       name: "Creado en",
-      selector: (row: { createdAt: Date }) => row.createdAt.toString(),
+      selector: (row: { createdAt: Date }) => row.createdAt,
       sortable: true,
       format: (row: { createdAt: Date }) =>
         formatDateLatinAmerican(row.createdAt),
     },
     {
       name: "Actualizado en",
-      selector: (row: { updatedAt: Date }) => row.updatedAt.toString(),
+      selector: (row: { updatedAt: Date }) => row.updatedAt,
       sortable: true,
       format: (row: { updatedAt: Date }) =>
         formatDateLatinAmerican(row.updatedAt),

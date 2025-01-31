@@ -48,7 +48,7 @@ const Form = () => {
             </div>
             <div className="text-center mt-4">
               <SubmitButton
-                color="primary"
+                color="accent"
                 title="Recuperar"
                 pending={isPending}
               />

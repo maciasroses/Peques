@@ -57,11 +57,9 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
                   <p className="text-lg md:text-2xl xl:text-4xl font-extralight animate-fade-up animate-delay-1000">
                     {hero.description}
                   </p>
-                  {(hero.title || hero.subtitle || hero.description) && (
-                    <div className="text-base md:text-lg xl:text-2xl bg-white/20 hover:bg-white/40 p-4 rounded-xl animate-fade-up animate-delay-1000">
-                      ¡Qué emoción!
-                    </div>
-                  )}
+                  <div className="text-base md:text-lg xl:text-2xl bg-white/20 hover:bg-white/40 p-4 rounded-xl animate-fade-up animate-delay-1000">
+                    {hero.buttonLink}
+                  </div>
                 </div>
               </Link>
             </div>

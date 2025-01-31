@@ -13,7 +13,6 @@ interface IMainSearch {
 const MainSearch = forwardRef(
   ({ id, lng, onParentClose }: IMainSearch, ref) => {
     const { push } = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
@@ -26,22 +25,9 @@ const MainSearch = forwardRef(
       if (query) {
         const params = new URLSearchParams();
         params.set("q", query);
-
-        const isSpecificCollection = new RegExp(
-          `^/${lng}/collections/[a-z-]+$`
-        ).test(pathname);
-
-        if (isSpecificCollection) {
-          push(`${pathname}?${params.toString()}`);
-        } else {
-          push(`/${lng}/search?${params.toString()}`);
-        }
+        push(`/${lng}/search?${params.toString()}`);
       } else {
-        if (pathname.includes("search")) {
-          push(`/${lng}`);
-        } else {
-          push(pathname);
-        }
+        push(`/${lng}`);
       }
       if (onParentClose) {
         onParentClose();
@@ -83,7 +69,7 @@ const MainSearch = forwardRef(
           <button
             aria-label="Search"
             onClick={handleSearch}
-            className="link-button-primary absolute top-2 end-2 font-medium text-sm"
+            className="absolute top-2 end-2 font-medium text-sm bg-accent px-4 py-2.5 rounded-lg"
           >
             <Search size="size-5" />
           </button>

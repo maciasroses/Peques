@@ -39,8 +39,9 @@ export async function createHero(formData: FormData) {
   const dataToValidate = {
     title: formData.get("title"),
     subtitle: formData.get("subtitle"),
-    description: formData.get("description"),
     imageUrl: formData.get("imageUrl"),
+    buttonLink: formData.get("buttonLink"),
+    description: formData.get("description"),
     collectionId: formData.get("collectionId"),
   };
 
@@ -94,9 +95,10 @@ export async function updateHeroById({
 }) {
   const dataToValidate = {
     title: formData.get("title"),
+    imageUrl: formData.get("imageUrl"),
     subtitle: formData.get("subtitle"),
+    buttonLink: formData.get("buttonLink"),
     description: formData.get("description"),
-    // imageUrl: formData.get("imageUrl"),
     collectionId: formData.get("collectionId"),
   };
 
@@ -115,28 +117,38 @@ export async function updateHeroById({
     const prevHero = (await read({ id })) as IHero;
 
     if (!prevHero) {
-      return null;
+      throw new Error("Hero not found");
     }
 
-    // const { imageUrl, ...rest } = dataToValidate;
+    if ((dataToValidate.imageUrl as File).size > 0) {
+      const { imageUrl, ...rest } = dataToValidate;
 
-    // const { url } = await put(
-    //   `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-    //   imageUrl as File,
-    //   {
-    //     access: "public",
-    //     contentType: "image/webp",
-    //   }
-    // );
+      const { url } = await put(
+        `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
+        imageUrl as File,
+        {
+          access: "public",
+          contentType: "image/webp",
+        }
+      );
 
-    const finalData = {
-      // ...rest,
-      // imageUrl: url,
-      ...dataToValidate,
-    };
+      const finalData = {
+        ...rest,
+        imageUrl: url,
+      };
 
-    await update({ id, data: finalData });
-    // await del(prevHero.imageUrl);
+      await update({ id, data: finalData });
+      await del(prevHero.imageUrl);
+    } else {
+      const { imageUrl, ...rest } = dataToValidate;
+
+      const finalData = {
+        ...rest,
+        imageUrl: prevHero.imageUrl,
+      };
+
+      await update({ id, data: finalData });
+    }
   } catch (error) {
     console.error(error);
     throw new Error("Failed to update hero");

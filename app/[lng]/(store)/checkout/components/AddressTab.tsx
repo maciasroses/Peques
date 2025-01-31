@@ -217,7 +217,7 @@ const AddressForm = ({ setAddress }: IAddressForm) => {
             </div>
             <div className="text-center mt-4 w-full">
               <SubmitButton
-                color="primary"
+                color="accent"
                 pending={isPending}
                 title="Agregar dirección"
               />

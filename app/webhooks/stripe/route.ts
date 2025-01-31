@@ -114,10 +114,10 @@ export async function POST(req: NextRequest) {
       const charge = event.data.object;
       console.log(`Charge id: ${charge.id}`);
 
-      const { userId, addressId, shippingCost, discountCodeId } =
+      const { userId, shippingCost, addressId, discountCodeId } =
         charge.metadata;
 
-      if (!userId || !addressId || !shippingCost) {
+      if (!userId || !shippingCost) {
         console.error("❌ Missing metadata");
         return new NextResponse("Missing metadata", { status: 400 });
       }

@@ -128,7 +128,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                       data-ignore-outside-click
                       onClick={handleToggleAndFocus}
                     >
-                      <Search size="size-2 md:size-4" />
+                      <Search size="size-4" />
                     </button>
                   </li>
                 </>
@@ -145,11 +145,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                 !isCheckoutOrAdmin && (
                   <li>
                     <Link href={`/${lng}/login`} aria-label="Login">
-                      <UserIcon
-                        size="size-2 md:size-4"
-                        strokeWidth={2}
-                        isFilled
-                      />
+                      <UserIcon size="size-4" strokeWidth={2} isFilled />
                     </Link>
                   </li>
                 )

@@ -467,6 +467,8 @@ export async function updateProduct(formData: FormData, productId: string) {
     minimumAcceptableQuantity: Number(
       formData.get("minimumAcceptableQuantity")
     ),
+    salePriceMXN: Number(formData.get("salePriceMXN")),
+    availableQuantity: Number(formData.get("availableQuantity")),
     providerId: formData.get("providerId"),
   };
 
@@ -479,6 +481,26 @@ export async function updateProduct(formData: FormData, productId: string) {
     };
 
   try {
+    const history = (await readHistory({ productId })) as IProductHistory[];
+
+    if (!history) {
+      throw new Error("Product history not found");
+    }
+
+    const totalQuantity = history.reduce(
+      (acc, curr) => acc + curr.quantityPerCarton,
+      0
+    );
+
+    if (totalQuantity < data.availableQuantity) {
+      return {
+        errors: {
+          availableQuantity: `La cantidad disponible no puede ser mayor a la cantidad total de productos en historial (${totalQuantity})`,
+        },
+        success: false,
+      };
+    }
+
     await update({ id: productId, data });
   } catch (error) {
     console.error(error);
@@ -860,6 +882,26 @@ export async function removeMassiveFilesFromProduct(
     return {
       success: true,
     };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "An internal error occurred",
+    };
+  }
+}
+
+export async function activateNDeactivateProduct(
+  productId: string,
+  isActive: boolean
+) {
+  try {
+    await update({
+      id: productId,
+      data: {
+        isActive,
+      },
+    });
   } catch (error) {
     console.error(error);
     return {

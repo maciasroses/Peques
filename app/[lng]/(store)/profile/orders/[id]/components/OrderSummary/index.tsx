@@ -81,9 +81,17 @@ const OrderSummary = ({ lng, order }: IOrderSummary) => {
       </div>
       <div className="w-full md:w-2/3">
         <h2 className="text-4xl font-bold">
-          {`${
-            order.deliveryStatus === "DELIVERED" ? "Entregado" : "Pendiente"
-          } ${formatDateLatinAmerican(order.updatedAt)}`}
+          {order.deliveryStatus === "PENDING"
+            ? "Pendiente de entrega"
+            : order.deliveryStatus === "CANCELLED"
+              ? `Cancelado el ${formatDateLatinAmerican(order.updatedAt)}`
+              : order.deliveryStatus === "SHIPPED"
+                ? `Enviado el ${formatDateLatinAmerican(order.updatedAt)}`
+                : order.deliveryStatus === "DELIVERED"
+                  ? `Entregado el ${formatDateLatinAmerican(order.updatedAt)}`
+                  : order.deliveryStatus === "READY_FOR_PICKUP"
+                    ? `Listo para recoger el ${formatDateLatinAmerican(order.updatedAt)}`
+                    : `Recogido el ${formatDateLatinAmerican(order.updatedAt)}`}
         </h2>
         <ProductList lng={lng} order={order} />
       </div>

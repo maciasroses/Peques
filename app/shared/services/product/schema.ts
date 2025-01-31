@@ -58,6 +58,12 @@ const updateSchame = baseSchema.extend({
   providerId: z.string().uuid({
     message: "El proveedor debe ser una opción válida",
   }),
+  salePriceMXN: z.number().positive({
+    message: "El precio de venta debe ser un número positivo",
+  }),
+  availableQuantity: z.number().int().positive({
+    message: "La cantidad disponible debe ser un número positivo",
+  }),
 });
 
 const schemas: { [key: string]: z.ZodObject<ZodRawShape, UnknownKeysParam> } = {

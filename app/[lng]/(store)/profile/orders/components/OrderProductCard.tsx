@@ -28,11 +28,17 @@ const OrderProductCard = ({ order, product }: IOrderProductCard) => {
         <div>
           <h1 className="text-xl md:text-2xl">{product.name}</h1>
           <p className="text-gray-400 dark:text-gray-500 text-sm md:text-base">
-            {order.deliveryStatus === "DELIVERED"
-              ? `Entregado el ${formatDateLatinAmerican(order.updatedAt)}`
+            {order.deliveryStatus === "PENDING"
+              ? "Pendiente de entrega"
               : order.deliveryStatus === "CANCELLED"
-                ? "Cancelado"
-                : "Pendiente"}
+                ? `Cancelado el ${formatDateLatinAmerican(order.updatedAt)}`
+                : order.deliveryStatus === "SHIPPED"
+                  ? `Enviado el ${formatDateLatinAmerican(order.updatedAt)}`
+                  : order.deliveryStatus === "DELIVERED"
+                    ? `Entregado el ${formatDateLatinAmerican(order.updatedAt)}`
+                    : order.deliveryStatus === "READY_FOR_PICKUP"
+                      ? `Listo para recoger el ${formatDateLatinAmerican(order.updatedAt)}`
+                      : `Recogido el ${formatDateLatinAmerican(order.updatedAt)}`}
           </p>
         </div>
       </div>

@@ -24,7 +24,7 @@ const PasswordRecoveryEmail: React.FC<IPasswordRecoveryEmail> = ({
     <Html lang="es">
       <Preview>Recupera tu contraseña</Preview>
       <Head />
-      <Body className="bg-gray-50">
+      <Body className="bg-white">
         <Container className="max-w-2xl">
           <Tailwind>
             <Header title="Recuperación de contraseña" />

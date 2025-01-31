@@ -19,7 +19,7 @@ export async function read({
   name,
   link,
   allData = false,
-  orderBy = { createdAt: "desc" },
+  orderBy = { order: "asc" },
   isAdminRequest = false,
 }: ICollectionSearchParams) {
   const globalInclude = {
@@ -38,6 +38,11 @@ export async function read({
       },
     },
     products: {
+      where: {
+        product: {
+          isActive: isAdminRequest ? undefined : true,
+        },
+      },
       include: {
         product: {
           include: {

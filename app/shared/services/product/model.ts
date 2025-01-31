@@ -103,6 +103,9 @@ export async function read({
     return await prisma.product.findMany({
       include: globalInclude,
       orderBy,
+      where: {
+        isActive: isAdminRequest ? undefined : true,
+      },
       take: takeFromRequest,
     });
   }
@@ -119,9 +122,8 @@ export async function read({
 
     const products = await prisma.product.findMany({
       where: {
-        id: {
-          in: productIds,
-        },
+        id,
+        isActive: isAdminRequest ? undefined : true,
       },
       include: globalInclude,
     });
@@ -156,14 +158,17 @@ export async function read({
 
   if (id) {
     return await prisma.product.findUnique({
-      where: { id },
+      where: {
+        id,
+        isActive: isAdminRequest ? undefined : true,
+      },
       include: globalInclude,
     });
   }
 
   if (key) {
     return await prisma.product.findUnique({
-      where: { key },
+      where: { key, isActive: isAdminRequest ? undefined : true },
       include: globalInclude,
     });
   }
@@ -180,6 +185,7 @@ export async function read({
   interface Where {
     OR?: WhereCondition[];
     AND?: WhereCondition[];
+    isActive?: boolean;
     provider?: object;
     category?: object;
     collections?: object;
@@ -188,6 +194,7 @@ export async function read({
   }
 
   const where: Where = {};
+  where.isActive = isAdminRequest ? undefined : true;
 
   if (filters) {
     const filtersSplitted = filters.split(",").map((filter) => {

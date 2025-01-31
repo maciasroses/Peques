@@ -19,6 +19,7 @@ interface ICartSummary {
   shippingCost: number;
   cart: ICartItemForFrontend[];
   discountCode: IDiscountCode | null;
+  isShippingInformationSelected: boolean;
   setDiscountCode: (code: IDiscountCode | null) => void;
 }
 
@@ -29,6 +30,7 @@ const CartSummary = ({
   shippingCost,
   discountCode,
   setDiscountCode,
+  isShippingInformationSelected,
 }: ICartSummary) => {
   const [isPending, setIsPending] = useState(false);
   const [badResponse, setBadResponse] = useState<IDiscountCodeState>(
@@ -74,7 +76,7 @@ const CartSummary = ({
       <h1 className="text-2xl font-bold">
         {lng === "en" ? "Order Summary" : "Resumen del pedido"}
       </h1>
-      <ul className="flex flex-col gap-4 mt-4">
+      <ul className="flex flex-col gap-4 my-4">
         {cart.map((item) => (
           <li
             key={item.id}
@@ -141,17 +143,19 @@ const CartSummary = ({
           </li>
         ))}
       </ul>
-      <p className="text-sm sm:text-lg text-right mt-4">
-        Envío:{" "}
-        <span
-          className={cn(
-            "font-bold",
-            shippingCost === 0 && "text-green-600 dark:text-green-400"
-          )}
-        >
-          {formatCurrency(shippingCost / 100, "MXN")}
-        </span>
-      </p>
+      {isShippingInformationSelected && (
+        <p className="text-sm sm:text-lg text-right">
+          Envío:{" "}
+          <span
+            className={cn(
+              "font-bold",
+              shippingCost === 0 && "text-green-600 dark:text-green-400"
+            )}
+          >
+            {formatCurrency(shippingCost / 100, "MXN")}
+          </span>
+        </p>
+      )}
       <p className="text-sm sm:text-lg text-right">
         Subtotal:{" "}
         <span className={cn("font-bold", discountCode && "line-through")}>
@@ -201,7 +205,7 @@ const CartSummary = ({
             </div>
             <SubmitButton
               title="Aplicar"
-              color="primary"
+              color="accent"
               finish={finished}
               pending={isPending}
             />

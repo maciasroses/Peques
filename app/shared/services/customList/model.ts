@@ -46,6 +46,11 @@ export async function readCustomList({
 }: ICustomListSearchParams) {
   const globalInclude = {
     products: {
+      where: {
+        product: {
+          isActive: true,
+        },
+      },
       include: {
         product: {
           include: {

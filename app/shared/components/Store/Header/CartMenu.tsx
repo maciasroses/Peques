@@ -47,7 +47,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
             {cart.reduce((acc, item) => acc + item.quantity, 0)}
           </span>
         )}
-        <ShoppingBag size="size-2 md:size-4" strokeWidth={1} isFilled />
+        <ShoppingBag size="size-4" strokeWidth={1} isFilled />
       </button>
       <div
         className={cn(
@@ -188,7 +188,10 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                   )}
                 </span>
               </p>
-              <button onClick={handleCheckout} className="link-button-primary">
+              <button
+                onClick={handleCheckout}
+                className="px-4 py-2 bg-accent hover:bg-accent/90 rounded-lg font-medium"
+              >
                 Ir a pagar
               </button>
               <button className="link-button-red" onClick={clearCart}>

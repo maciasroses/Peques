@@ -91,7 +91,6 @@ const CheckoutSuccessPage = async ({
 
     if (
       !paymentIntent.metadata.userId ||
-      !paymentIntent.metadata.addressId ||
       !paymentIntent.metadata.shippingCost
     ) {
       return (

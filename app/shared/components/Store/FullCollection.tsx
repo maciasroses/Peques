@@ -35,7 +35,7 @@ const FullCollection = ({ lng, collection, imageSide }: IFullCollection) => {
       <div
         className={cn(
           "w-full md:w-1/2 lg:w-1/3 flex flex-col justify-center items-center gap-4 py-10",
-          isTextLeft ? "md:order-1 md:items-start" : "md:order-2 md:items-end"
+          isTextLeft ? "md:order-1" : "md:order-2"
         )}
       >
         <h2 className="text-xl md:text-2xl">{collection.name}</h2>

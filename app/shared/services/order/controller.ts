@@ -1,5 +1,6 @@
 "use server";
 
+import { Resend } from "resend";
 import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
@@ -7,7 +8,6 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/app/shared/services/auth";
 import { read as xlsxRead, utils as xlsxUtils } from "xlsx";
 import { getUserById } from "@/app/shared/services/user/controller";
-import { COMFORT_SET, SET_IDEAL, SET_INTEGRAL } from "@/app/shared/constants";
 import {
   read,
   create,
@@ -33,7 +33,12 @@ import type {
   IDiscountCode,
   IPaymentMethod,
   IOrderSearchParams,
+  IOrder,
 } from "@/app/shared/interfaces";
+import React from "react";
+import OrderStatus from "@/app/email/OrderStatus";
+
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 export async function getOrders({
   client,
@@ -107,43 +112,43 @@ export async function getSales({
   }
 }
 
-const matchesSet = (
-  setKeys: string[],
-  products: string[],
-  productsQuantity: string[]
-) => {
-  const productCounts: Record<string, number> = {};
+// const matchesSet = (
+//   setKeys: string[],
+//   products: string[],
+//   productsQuantity: string[]
+// ) => {
+//   const productCounts: Record<string, number> = {};
 
-  setKeys.forEach((key) => {
-    products.forEach((product, index) => {
-      if (product.startsWith(key.toLowerCase())) {
-        if (!productCounts[key]) {
-          productCounts[key] = 0;
-        }
-        productCounts[key] += Number(productsQuantity[index]);
-      }
-    });
-  });
+//   setKeys.forEach((key) => {
+//     products.forEach((product, index) => {
+//       if (product.startsWith(key.toLowerCase())) {
+//         if (!productCounts[key]) {
+//           productCounts[key] = 0;
+//         }
+//         productCounts[key] += Number(productsQuantity[index]);
+//       }
+//     });
+//   });
 
-  const quantities = Object.values(productCounts);
-  return (
-    quantities.length === setKeys.length &&
-    quantities.every((qty) => qty === quantities[0])
-  );
-};
+//   const quantities = Object.values(productCounts);
+//   return (
+//     quantities.length === setKeys.length &&
+//     quantities.every((qty) => qty === quantities[0])
+//   );
+// };
 
-const applyDiscounts = (
-  discount: number,
-  productKey: string,
-  set: { [key: string]: number }
-) => {
-  for (let key in set) {
-    if (productKey.startsWith(key.toLowerCase())) {
-      return set[key];
-    }
-  }
-  return discount;
-};
+// const applyDiscounts = (
+//   discount: number,
+//   productKey: string,
+//   set: { [key: string]: number }
+// ) => {
+//   for (let key in set) {
+//     if (productKey.startsWith(key.toLowerCase())) {
+//       return set[key];
+//     }
+//   }
+//   return discount;
+// };
 
 export async function createOrder(formData: FormData) {
   interface IOrderErrors {
@@ -180,24 +185,24 @@ export async function createOrder(formData: FormData) {
 
   try {
     for (let i = 0; i < products.length; i++) {
-      let discount = Number(productsDiscount[i]) ?? 0;
+      // let discount = Number(productsDiscount[i]) ?? 0;
 
-      if (matchesSet(Object.keys(SET_IDEAL), products, productsQuantity)) {
-        discount = applyDiscounts(discount, products[i], SET_IDEAL);
-      } else if (
-        matchesSet(Object.keys(SET_INTEGRAL), products, productsQuantity)
-      ) {
-        discount = applyDiscounts(discount, products[i], SET_INTEGRAL);
-      } else if (
-        matchesSet(Object.keys(COMFORT_SET), products, productsQuantity)
-      ) {
-        discount = applyDiscounts(discount, products[i], COMFORT_SET);
-      }
+      // if (matchesSet(Object.keys(SET_IDEAL), products, productsQuantity)) {
+      //   discount = applyDiscounts(discount, products[i], SET_IDEAL);
+      // } else if (
+      //   matchesSet(Object.keys(SET_INTEGRAL), products, productsQuantity)
+      // ) {
+      //   discount = applyDiscounts(discount, products[i], SET_INTEGRAL);
+      // } else if (
+      //   matchesSet(Object.keys(COMFORT_SET), products, productsQuantity)
+      // ) {
+      //   discount = applyDiscounts(discount, products[i], COMFORT_SET);
+      // }
 
       orderProducts[i] = {
-        discount,
         productKey: products[i],
         quantity: Number(productsQuantity[i]),
+        discount: Number(productsDiscount[i]) ?? 0,
       };
 
       const { availableQuantity } = (await getProductByKey({
@@ -388,50 +393,50 @@ export async function createMassiveOrder(formData: FormData) {
         }[] = [];
 
         for (let i = 0; i < validatedProducts.length; i++) {
-          let discount = Number(validatedDiscounts[i]) ?? 0;
+          // let discount = Number(validatedDiscounts[i]) ?? 0;
 
-          if (
-            matchesSet(
-              Object.keys(SET_IDEAL),
-              validatedProducts,
-              validatedQuantities as unknown as string[]
-            )
-          ) {
-            discount = applyDiscounts(
-              discount,
-              validatedProducts[i],
-              SET_IDEAL
-            );
-          } else if (
-            matchesSet(
-              Object.keys(SET_INTEGRAL),
-              validatedProducts,
-              validatedQuantities as unknown as string[]
-            )
-          ) {
-            discount = applyDiscounts(
-              discount,
-              validatedProducts[i],
-              SET_INTEGRAL
-            );
-          } else if (
-            matchesSet(
-              Object.keys(COMFORT_SET),
-              validatedProducts,
-              validatedQuantities as unknown as string[]
-            )
-          ) {
-            discount = applyDiscounts(
-              discount,
-              validatedProducts[i],
-              COMFORT_SET
-            );
-          }
+          // if (
+          //   matchesSet(
+          //     Object.keys(SET_IDEAL),
+          //     validatedProducts,
+          //     validatedQuantities as unknown as string[]
+          //   )
+          // ) {
+          //   discount = applyDiscounts(
+          //     discount,
+          //     validatedProducts[i],
+          //     SET_IDEAL
+          //   );
+          // } else if (
+          //   matchesSet(
+          //     Object.keys(SET_INTEGRAL),
+          //     validatedProducts,
+          //     validatedQuantities as unknown as string[]
+          //   )
+          // ) {
+          //   discount = applyDiscounts(
+          //     discount,
+          //     validatedProducts[i],
+          //     SET_INTEGRAL
+          //   );
+          // } else if (
+          //   matchesSet(
+          //     Object.keys(COMFORT_SET),
+          //     validatedProducts,
+          //     validatedQuantities as unknown as string[]
+          //   )
+          // ) {
+          //   discount = applyDiscounts(
+          //     discount,
+          //     validatedProducts[i],
+          //     COMFORT_SET
+          //   );
+          // }
 
           orderProducts[i] = {
-            discount,
-            productKey: validatedProducts[i],
             quantity: validatedQuantities[i],
+            productKey: validatedProducts[i],
+            discount: Number(validatedDiscounts[i]) ?? 0,
           };
 
           const orderProductErrors = validateSchema(
@@ -539,46 +544,17 @@ export async function createMassiveOrder(formData: FormData) {
   redirect(`/${lng}/admin/orders`);
 }
 
-interface IOrderForUpdateDeliveryStatus {
-  products: {
-    product: {
-      id: string;
-      name: string;
-      key: string;
-      availableQuantity: number;
-      salePriceMXN: number;
-      providerId: string;
-      createdAt: Date;
-      updatedAt: Date;
-    };
-    productId: string;
-    orderId: string;
-    quantity: number;
-  }[];
-  id: string;
-  client: string;
-  discount: number | null;
-  subtotal: number;
-  total: number;
-  shipmentType: string;
-  isPaid: boolean;
-  deliveryStatus: string;
-  pendingPayment: number | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export async function updateDeliveryStatus(
   id: string,
   deliveryStatus: string,
-  _pathname: string
+  pathname: string
 ) {
   try {
+    const order = (await read({
+      id,
+      isAdminRequest: true,
+    })) as IOrder;
     if (deliveryStatus === "CANCELLED") {
-      const order = (await read({
-        id,
-        isAdminRequest: true,
-      })) as IOrderForUpdateDeliveryStatus;
       order.products.forEach(async (product) => {
         await updateAvailableQuantityProductByKey({
           key: product.product.key,
@@ -587,19 +563,42 @@ export async function updateDeliveryStatus(
         });
       });
     }
+
     await update({
       id,
       data: {
         deliveryStatus,
       },
     });
+
+    if (order.user) {
+      await resend.emails.send({
+        from: `Peques <${process.env.RESEND_EMAIL}>`,
+        to: order.user.email,
+        subject:
+          deliveryStatus === "PENDING"
+            ? "Tu pedido está pendiente"
+            : deliveryStatus === "SHIPPED"
+              ? "Tu pedido ha sido enviado"
+              : deliveryStatus === "DELIVERED"
+                ? "Tu pedido ha sido entregado"
+                : deliveryStatus === "READY_FOR_PICKUP"
+                  ? "Tu pedido está listo para ser recogido"
+                  : deliveryStatus === "PICKED_UP"
+                    ? "Tu pedido ha sido recogido"
+                    : "Tu pedido ha sido cancelado",
+        react: React.createElement(OrderStatus, {
+          order,
+          deliveryStatus,
+        }),
+      });
+    }
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`/${lng}/admin/orders`);
-  redirect(`/${lng}/admin/orders`);
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
 }
 
 export async function updateMassiveDeliveryStatus(
@@ -612,7 +611,7 @@ export async function updateMassiveDeliveryStatus(
         const order = (await read({
           id,
           isAdminRequest: true,
-        })) as IOrderForUpdateDeliveryStatus;
+        })) as IOrder;
         order.products.forEach(async (product) => {
           await updateAvailableQuantityProductByKey({
             key: product.product.key,
@@ -628,6 +627,35 @@ export async function updateMassiveDeliveryStatus(
         deliveryStatus,
       },
     });
+
+    for (const id of ids) {
+      const order = (await read({
+        id,
+        isAdminRequest: true,
+      })) as IOrder;
+      if (order.user) {
+        await resend.emails.send({
+          from: `Peques <${process.env.RESEND_EMAIL}>`,
+          to: order.user.email,
+          subject:
+            deliveryStatus === "PENDING"
+              ? "Tu pedido está pendiente"
+              : deliveryStatus === "SHIPPED"
+                ? "Tu pedido ha sido enviado"
+                : deliveryStatus === "DELIVERED"
+                  ? "Tu pedido ha sido entregado"
+                  : deliveryStatus === "READY_FOR_PICKUP"
+                    ? "Tu pedido está listo para ser recogido"
+                    : deliveryStatus === "PICKED_UP"
+                      ? "Tu pedido ha sido recogido"
+                      : "Tu pedido ha sido cancelado",
+          react: React.createElement(OrderStatus, {
+            order,
+            deliveryStatus,
+          }),
+        });
+      }
+    }
   } catch (error) {
     console.error(error);
     throw new Error("An internal error occurred");
@@ -665,12 +693,12 @@ export async function markMassiveAsPaid(ids: string[]) {
   }
 }
 
-export async function deleteOrder(id: string, _pathname: string) {
+export async function deleteOrder(id: string, pathname: string) {
   try {
     const order = (await read({
       id,
       isAdminRequest: true,
-    })) as IOrderForUpdateDeliveryStatus;
+    })) as IOrder;
     if (order.deliveryStatus !== "CANCELLED") {
       order.products.forEach(async (product) => {
         await updateAvailableQuantityProductByKey({
@@ -686,9 +714,8 @@ export async function deleteOrder(id: string, _pathname: string) {
     console.error(error);
     return { message: "An internal error occurred", success: false };
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`/${lng}/admin/orders`);
-  redirect(`/${lng}/admin/orders`);
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
 }
 
 export async function deleteMassiveOrder(ids: string[]) {
@@ -697,7 +724,7 @@ export async function deleteMassiveOrder(ids: string[]) {
       const order = (await read({
         id,
         isAdminRequest: true,
-      })) as IOrderForUpdateDeliveryStatus;
+      })) as IOrder;
       if (order.deliveryStatus !== "CANCELLED") {
         order.products.forEach(async (product) => {
           await updateAvailableQuantityProductByKey({
@@ -749,7 +776,7 @@ export async function getMyOrderById({ id }: { id: string }) {
 interface ICreateOrderThroughStripWebHook {
   userId: string;
   amount: number;
-  addressId: string;
+  addressId: string | null;
   shippingCost: number;
   productsIds: string[];
   discountCodeId: string;

@@ -65,14 +65,14 @@ const DiscountCodesDatatable = ({
     },
     {
       name: "Creado en",
-      selector: (row: { createdAt: Date }) => row.createdAt.toString(),
+      selector: (row: { createdAt: Date }) => row.createdAt,
       sortable: true,
       format: (row: { createdAt: Date }) =>
         formatDateLatinAmerican(row.createdAt),
     },
     {
       name: "Actualizado en",
-      selector: (row: { updatedAt: Date }) => row.updatedAt.toString(),
+      selector: (row: { updatedAt: Date }) => row.updatedAt,
       sortable: true,
       format: (row: { updatedAt: Date }) =>
         formatDateLatinAmerican(row.updatedAt),

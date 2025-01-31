@@ -142,6 +142,34 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
                     />
                   </GenericDiv>
                 </GenericPairDiv>
+                {action === "update" && (
+                  <GenericPairDiv>
+                    <GenericDiv>
+                      <GenericInput
+                        type="number"
+                        id="salePriceMXN"
+                        placeholder="2000"
+                        ariaLabel="Precio de venta (MXN)"
+                        defaultValue={(
+                          product as IProduct
+                        )?.salePriceMXN.toString()}
+                        error={badResponse.errors?.salePriceMXN}
+                      />
+                    </GenericDiv>
+                    <GenericDiv>
+                      <GenericInput
+                        type="number"
+                        placeholder="10"
+                        id="availableQuantity"
+                        ariaLabel="Cantidad disponible"
+                        defaultValue={(
+                          product as IProduct
+                        )?.availableQuantity.toString()}
+                        error={badResponse.errors?.availableQuantity}
+                      />
+                    </GenericDiv>
+                  </GenericPairDiv>
+                )}
                 <div className="w-full">
                   <p>Descripción</p>
                   <RichTextEditor

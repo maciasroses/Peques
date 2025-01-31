@@ -43,7 +43,7 @@ export const useCheckout = ({
     0
   );
 
-  const shippingCost = globalAmount >= 1900 ? 0 : 190 * 100;
+  const shippingCost = globalAmount >= 1900 || !addressId ? 0 : 190 * 100;
 
   // Step 1: Check and update stock
   useEffect(() => {
@@ -118,7 +118,7 @@ export const useCheckout = ({
           clientSecret = (await createSetUpIntent()) as string;
         } else {
           clientSecret = (await createPaymentIntent(
-            addressId as string,
+            addressId ?? null,
             shippingCost,
             paymentMethodId as string,
             updatedCart,

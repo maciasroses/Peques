@@ -205,22 +205,6 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
             )}
           >
             <MediaPreview alt={product.name} file={selectedImage} />
-            {/* <div
-              className={cn(
-                "hidden absolute border border-black bg-black opacity-40",
-                selectedImage.type === "IMAGE" && "md:block"
-              )}
-              style={{
-                width: "150px",
-                height: "150px",
-                left: `${zoomBoxPosition.x}px`,
-                top: `${zoomBoxPosition.y}px`,
-                visibility:
-                  zoomPosition.x === 0 && zoomPosition.y === 0
-                    ? "hidden"
-                    : "visible",
-              }}
-            ></div> */}
           </div>
         </div>
         <div className="relative w-full md:w-[40%]">
@@ -268,6 +252,12 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                 rating={averageRating}
                 totalReviews={product.reviews.length}
               />
+              {product.description && (
+                <div
+                  className="ql-editor"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              )}
               {product.isCustomizable && (
                 <div className="border border-gray-300 dark:border-gray-600 p-4">
                   <p
@@ -337,7 +327,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                         style={{ backgroundColor: COLORS_CUSTOM[index] }}
                         onClick={() => setCustomColor(COLORS_CUSTOM[index])}
                         className={cn(
-                          "rounded-full size-10 md:size-14 xl:size-20",
+                          "rounded-full size-8 md:size-10 xl:size-14",
                           customColor === COLORS_CUSTOM[index] &&
                             `border-4 border-black`
                         )}
@@ -388,33 +378,14 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                   }
                 />
               )}
-              {product.description && (
-                <div
-                  className="ql-editor"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
-              )}
             </div>
           </div>
-          {/* <div
-            className={cn(
-              "hidden absolute top-0 right-0 size-full max-h-[600px] pointer-events-none",
-              selectedImage.type === "IMAGE" && "md:block"
-            )}
-            style={{
-              backgroundImage: `url(${selectedImage.url})`,
-              backgroundSize: "150%",
-              backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              visibility:
-                zoomPosition.x === 0 && zoomPosition.y === 0
-                  ? "hidden"
-                  : "visible",
-            }}
-          ></div> */}
         </div>
       </div>
       <div className="mt-4">
-        <p className="text-4xl mt-6 mb-4">Opiniones</p>
+        <p className="text-4xl mt-6 mb-4 text-gray-600 dark:text-gray-400">
+          Reviews
+        </p>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-1/3">
             <StarRating

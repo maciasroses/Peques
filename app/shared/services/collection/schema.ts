@@ -21,7 +21,9 @@ const createSchema = baseSchema.extend({
     }),
 });
 
-const updateSchema = baseSchema.extend({});
+const updateSchema = baseSchema.extend({
+  imageUrl: z.instanceof(File).optional(),
+});
 
 const schemas: { [key: string]: z.ZodObject<ZodRawShape, UnknownKeysParam> } = {
   create: createSchema,

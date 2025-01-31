@@ -289,6 +289,7 @@ export interface ICreateNUpdateProductState extends ISharedState {
     shippingCostMXN?: string;
     salePriceMXN?: string;
     orderDate?: string;
+    availableQuantity?: string;
   };
 }
 
@@ -312,6 +313,7 @@ export interface IHeroState extends ISharedState {
     title?: string;
     subtitle?: string;
     imageUrl?: string;
+    buttonLink?: string;
     description?: string;
     collectionId?: string;
   };
@@ -569,4 +571,25 @@ export interface IOrderInfoForEmail {
   email: string;
   order: IOrder;
   products: IProductForEmail[];
+}
+
+// TEMP
+
+export interface IPickUpAddress {
+  id: number;
+  name: string;
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  reference: string;
+  schedule: {
+    id: number;
+    value: string;
+    pickupAddressId: number;
+  }[];
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
 }

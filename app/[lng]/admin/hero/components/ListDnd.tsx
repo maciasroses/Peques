@@ -117,7 +117,7 @@ const ListDnd = ({ heroes, collections }: IListDnd) => {
                             {hero.description}
                           </small>
                           <p className="border border-white rounded-md py-2 px-4 mt-4 bg-white text-black">
-                            Ir a colección
+                            {hero.buttonLink}
                           </p>
                         </div>
                         {!hero.isActive && (

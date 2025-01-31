@@ -69,3 +69,72 @@ export const SET_IDEAL = {
   abierto: 12.5,
   ...commonProperties,
 };
+
+// TEMP
+// model PickUpAddressSchedule {
+//     id        String  @id @default(uuid())
+//     value    String  // Horario de atención (Ej. "Lunes a Viernes: 11:00 am- 7:00 pm")
+
+//     pickupAddress PickupAddress @relation(fields: [pickupAddressId], references: [id], onDelete: Cascade)
+//     pickupAddressId String
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+// model PickUpAddress {
+//     id          String  @id @default(uuid())
+//     name        String  // Nombre del punto de recolección (Ej. "Sucursal Centro")
+//     street      String  // Calle
+//     number      String? // Número exterior/interior
+//     city        String  // Ciudad
+//     state       String  // Estado/Provincia
+//     country     String  // País
+//     zipCode     String  // Código postal
+//     reference   String? // Referencias para llegar al lugar
+//     schedule    PickUpAddressSchedule[] // Horario de atención
+//     notes       String? // Notas adicionales
+//     latitude    Float?  // Coordenadas para geolocalización
+//     longitude   Float?
+//     phone       String? // Teléfono de contacto
+//     email       String? // Correo de contacto
+//     createdAt   DateTime @default(now())
+//     updatedAt   DateTime @updatedAt
+//   }
+
+// “SET” Concept Store
+// Hacienda Carrizal 3200 4
+// Col. Las Haciendas
+// (Frente a Club Britania)
+// Horario:
+// Lunes a Viernes: 11:00 am- 7:00 pm
+// Sábado: 10:00 am - 6:00 pm
+// Normalmente esta listo en 3 horas dentro del horario
+
+export const PICK_UP_ADDRESSES = [
+  {
+    id: 1,
+    name: "SET Concept Store",
+    street: "Col. Las Hacienda, Carrizal 3200 4",
+    city: "Chihuahua",
+    state: "Chihuahua",
+    country: "México",
+    zipCode: "31215",
+    reference: "Frente a Club Britania",
+    schedule: [
+      {
+        id: 1,
+        value: "Lunes a Viernes: 11:00 am- 7:00 pm",
+        pickupAddressId: 1,
+      },
+      {
+        id: 2,
+        value: "Sábado: 10:00 am - 6:00 pm",
+        pickupAddressId: 1,
+      },
+    ],
+    notes: "Normalmente está listo en 3 horas dentro del horario",
+    createdAt: "2025-01-31 17:17:03.417",
+    updatedAt: "2025-01-31 17:17:03.417",
+  },
+];

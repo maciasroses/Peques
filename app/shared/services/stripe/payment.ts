@@ -18,7 +18,7 @@ import type {
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export async function createPaymentIntent(
-  addressId: string,
+  addressId: string | null,
   shippingCost: number,
   paymentMethodId: string,
   cart: ICartItemForFrontend[],
@@ -70,7 +70,7 @@ export async function createPaymentIntent(
         (possibleDiscount > amount ? amount : possibleDiscount),
       metadata: {
         userId: me.id,
-        addressId,
+        addressId: addressId || null,
         shippingCost,
         discountCodeId: discountCode?.id || "",
       },
@@ -182,7 +182,6 @@ async function createStriperCustomer({ me }: { me: IUser }) {
 
 interface PaymentIntentMetadata {
   userId: string;
-  addressId: string;
   shippingCost: string;
   processed?: string;
 }
@@ -191,7 +190,7 @@ export async function processMetadata(paymentIntent: Stripe.PaymentIntent) {
   try {
     const metadata = paymentIntent.metadata as unknown as PaymentIntentMetadata;
 
-    if (!metadata.userId || !metadata.addressId || !metadata.shippingCost) {
+    if (!metadata.userId || !metadata.shippingCost) {
       throw new Error("Missing required metadata fields");
     }
 
