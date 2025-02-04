@@ -1,0 +1,356 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Sofia Pro";
+  src: url("/assets/fonts/sofia-pro/Sofia Pro Regular Az.otf")
+    format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Sofia Pro";
+  src: url("/assets/fonts/sofia-pro/Sofia Pro Regular Italic Az.otf")
+    format("opentype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Sofia Pro";
+  src: url("/assets/fonts/sofia-pro/Sofia Pro Bold Az.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Sofia Pro";
+  src: url("/assets/fonts/sofia-pro/Sofia Pro Bold Italic Az.otf")
+    format("opentype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Karin Script";
+  src: url("/assets/fonts/Karin Script.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Script 2";
+  src: url("/assets/fonts/Script2 Normal.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Krone";
+  src: url("/assets/fonts/Krone Regular.ttf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Champagne & Limousines Normal';
+  src: url('/assets/fonts/Champagne&Limousines/Champagne & Limousines.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Champagne & Limousines Bold';
+  src: url(
+      '/assets/fonts/Champagne&Limousines/Champagne & Limousines Bold.ttf'
+    )
+    format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Champagne & Limousines Italic';
+  src: url(
+      '/assets/fonts/Champagne&Limousines/Champagne & Limousines Italic.ttf'
+    )
+    format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Champagne & Limousines Bold Italic';
+  src: url(
+      '/assets/fonts/Champagne&Limousines/Champagne & Limousines Bold Italic.ttf'
+    )
+    format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+
+html,
+body {
+  font-family: "Sofia Pro", sans-serif;
+}
+
+.link-button-primary {
+  @apply text-gray-600 dark:text-white hover:text-white dark:hover:text-gray-600 bg-primary dark:bg-primary-dark hover:bg-primary-dark dark:hover:bg-primary border border-gray-600 hover:border-white dark:border-white/70 dark:hover:border-gray-600 px-4 py-2 rounded-md transition-colors duration-300;
+}
+
+.link-button-blue {
+  @apply text-white dark:text-blue-300 bg-blue-600 dark:bg-blue-950 hover:bg-blue-700 dark:hover:bg-blue-900 border border-blue-600 hover:border-blue-700 dark:border-blue-300 px-4 py-2 rounded-md transition-colors duration-300;
+}
+
+.link-button-red {
+  @apply text-white dark:text-red-300 bg-red-600 dark:bg-red-950 hover:bg-red-700 dark:hover:bg-red-900 border border-red-600 hover:border-red-700 dark:border-red-300 px-4 py-2 rounded-md transition-colors duration-300;
+}
+
+.link-button-green {
+  @apply text-white dark:text-green-300 bg-green-600 dark:bg-green-950 hover:bg-green-700 dark:hover:bg-green-900 border border-green-600 hover:border-green-700 dark:border-green-300 px-4 py-2 rounded-md transition-colors duration-300;
+}
+
+.custom-prev,
+.custom-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  font-size: 24px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.custom-prev {
+  left: 10px;
+}
+
+.custom-next {
+  right: 10px;
+}
+
+.custom-prev:hover,
+.custom-next:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.custom-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  position: absolute;
+  bottom: 10px;
+  z-index: 10;
+}
+
+.custom-pagination-bullet {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Tamaño por defecto (pantallas medianas) */
+.custom-pagination-bullet {
+  width: 12px;
+  height: 12px;
+}
+
+.custom-pagination-bullet-active {
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Pantallas pequeñas */
+@media (max-width: 768px) {
+  .custom-pagination-bullet {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Pantallas grandes */
+@media (min-width: 1024px) {
+  .custom-pagination-bullet {
+    width: 16px;
+    height: 16px;
+  }
+
+}
+
+/* Estilo general para el editor */
+.ql-editor {
+  font-size: 1rem;
+  line-height: 1.6;
+  font-family: 'Champagne & Limousines Normal';
+}
+
+/* Encabezados (header) */
+.ql-editor h1 {
+  font-size: 2.25rem; /* text-3xl */
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.ql-editor h2 {
+  font-size: 1.875rem; /* text-2xl */
+  font-weight: semibold;
+  margin-bottom: 0.75rem;
+}
+
+.ql-editor h3 {
+  font-size: 1.5rem; /* text-xl */
+  font-weight: medium;
+  margin-bottom: 0.5rem;
+}
+
+.ql-editor h4 {
+  font-size: 1.25rem; /* text-lg */
+  font-weight: medium;
+  margin-bottom: 0.5rem;
+}
+
+/* Tamaños (size) */
+.ql-size-small {
+  font-size: 0.75rem; /* text-sm */
+}
+
+.ql-size-large {
+  font-size: 1.5rem; /* text-xl */
+}
+
+.ql-size-huge {
+  font-size: 2.25rem; /* text-3xl */
+}
+
+/* Estilo de texto */
+.ql-editor .ql-bold {
+  font-weight: bold;
+}
+
+.ql-editor .ql-italic {
+  font-style: italic;
+}
+
+.ql-editor .ql-underline {
+  text-decoration: underline;
+}
+
+.ql-editor .ql-strike {
+  text-decoration: line-through;
+}
+
+/* Listas */
+.ql-editor ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.ql-editor ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.ql-editor .ql-indent-1 {
+  padding-left: 1.5rem;
+}
+
+.ql-editor .ql-indent-2 {
+  padding-left: 3rem;
+}
+
+.ql-editor .ql-indent-3 {
+  padding-left: 4.5rem;
+}
+
+.ql-editor .ql-indent-4 {
+  padding-left: 6rem;
+}
+
+.ql-editor .ql-indent-5 {
+  padding-left: 7.5rem;
+}
+
+.ql-editor .ql-indent-6 {
+  padding-left: 9rem;
+}
+
+.ql-editor .ql-indent-7 {
+  padding-left: 10.5rem;
+}
+
+.ql-editor .ql-indent-8 {
+  padding-left: 12rem;
+}
+
+.ql-editor .ql-indent-9 {
+  padding-left: 13.5rem;
+}
+
+/* Listas tipo checklist */
+.ql-editor .ql-list.ql-checklist li::before {
+  content: '\2610'; /* Checkbox vacío */
+  margin-right: 0.5rem;
+}
+
+.ql-editor .ql-list.ql-checklist li.ql-active::before {
+  content: '\2611'; /* Checkbox marcado */
+}
+
+/* Subíndice y superíndice */
+.ql-editor .ql-script.ql-sub {
+  font-size: 0.75em;
+  vertical-align: sub;
+}
+
+.ql-editor .ql-script.ql-super {
+  font-size: 0.75em;
+  vertical-align: super;
+}
+
+/* Alineaciones */
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ql-align-justify {
+  text-align: justify;
+}
+
+.ql-align-left {
+  text-align: left;
+}
+
+/* Dirección RTL */
+.ql-direction-rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Enlaces */
+.ql-editor a {
+  color: #3490dc;
+  text-decoration: underline;
+}
+
+/* Enlace al limpiar (clean) */
+.ql-editor .ql-clean {
+  text-decoration: none;
+  font-style: normal;
+  font-weight: normal;
+}
+
+/* Márgenes entre párrafos */
+.ql-editor p {
+  margin-bottom: 1rem;
+}

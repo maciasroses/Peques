@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,20 +8,100 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-enum Role {
-  ADMIN
-  USER
-}
+model CartItem {
+  id            String  @id @default(uuid())
+  quantity      Int
+  priceMXN      Float
+  discount      String?
+  finalPriceMXN Float
+  customRequest String?
 
-model User {
-  id       String @id @default(uuid())
-  email    String @unique
-  password String
-  username String @unique
-  role     Role   @default(USER)
+  cart        Cart       @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId      String
+  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  promotion   Promotion? @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+  promotionId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([productId, cartId])
+}
+
+model Cart {
+  id                     String  @id @default(uuid())
+  orderInfoDataForStripe String? @db.Text
+
+  items CartItem[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id                   String    @id @default(uuid())
+  role                 Role      @default(USER)
+  email                String    @unique
+  image                String?   @default("/assets/images/profilepic.webp")
+  password             String
+  username             String    @unique
+  lastName             String?
+  firstName            String?
+  wantsNewsletter      Boolean   @default(false)
+  stripeCustomerId     String?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+
+  cart Cart?
+
+  orders            Order[]
+  addresses         Address[]
+  customLists       CustomList[]
+  reviews           ProductReview[]
+  paymentMethods    PaymentMethod[]
+  stockReservations StockReservation[]
+  discountCodes     DiscountCodeOnUser[]
+  likes             ProductReviewLikeOnUser[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CustomList {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
+  products CustomProductList[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, userId])
+}
+
+model CustomProductList {
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    String
+  customList   CustomList @relation(fields: [customListId], references: [id], onDelete: Cascade)
+  customListId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([productId, customListId])
 }
 
 model Provider {
@@ -41,19 +115,68 @@ model Provider {
   updatedAt DateTime @updatedAt
 }
 
+model FilterGroup {
+  id   String @id @default(uuid())
+  name String
+  key  String @unique
+
+  filters     ProductFilter[]
+  collections CollectionOnFilterGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductFilter {
+  id   String @id @default(uuid())
+  name String
+  key  String @unique
+
+  products ProductFilterOnProduct[]
+
+  group   FilterGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductFilterOnProduct {
+  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  filter    ProductFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+  filterId  String
+
+  createdAt DateTime @default(now())
+
+  @@id([productId, filterId])
+}
+
 model Product {
-  id                        String @id @default(uuid())
+  id                        String  @id @default(uuid())
+  key                       String  @unique
   name                      String
-  key                       String @unique
-  availableQuantity         Int    @default(0)
-  minimumAcceptableQuantity Int
+  isActive                  Boolean @default(true)
+  description               String? @db.Text
   salePriceMXN              Float
+  isCustomizable            Boolean @default(false)
+  availableQuantity         Int     @default(0)
+  minimumAcceptableQuantity Int
+
+  cartItems          CartItem[]
+  files              ProductFile[]
+  reviews            ProductReview[]
+  orders             ProductOnOrder[]
+  history            ProductHistory[]
+  stockReservations  StockReservation[]
+  customProductsList CustomProductList[]
+  promotions         ProductOnPromotion[]
+  collections        ProductOnCollection[]
+  transactions       InventoryTransaction[]
+  filters            ProductFilterOnProduct[]
 
   provider   Provider @relation(fields: [providerId], references: [id])
   providerId String
-
-  history ProductHistory[]
-  orders  ProductOnOrder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,37 +203,315 @@ model ProductHistory {
   updatedAt DateTime @updatedAt
 }
 
+model ProductOnCollection {
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([productId, collectionId])
+}
+
+model CollectionOnFilterGroup {
+  collection   Collection  @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+  group        FilterGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId      String
+
+  createdAt DateTime @default(now())
+
+  @@id([collectionId, groupId])
+}
+
+model Collection {
+  id       String @id @default(uuid())
+  name     String @unique
+  link     String @unique
+  order    Int    @default(1)
+  imageUrl String
+
+  hero Hero?
+
+  products   ProductOnCollection[]
+  promotions CollectionOnPromotion[]
+  filters    CollectionOnFilterGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum FileType {
+  IMAGE
+  VIDEO
+}
+
+model ProductFile {
+  id   String   @id @default(uuid())
+  url  String
+  type FileType
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductReview {
+  id      String  @id @default(uuid())
+  rating  Int // 1-5
+  content String?
+
+  likes ProductReviewLikeOnUser[]
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, userId])
+}
+
+model ProductReviewLikeOnUser {
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  review   ProductReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId String
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reviewId])
+}
+
 model ProductOnOrder {
+  quantity      Int
+  costMXN       Float
+  discount      Float?  @default(0) //this value is a percentage
+  customRequest String?
+
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
-  quantity  Int
-  costMXN   Float
-  discount  Float?  @default(0)
+
+  createdAt DateTime @default(now())
 
   @@id([productId, orderId])
+}
+
+model StockReservation {
+  id       String @id @default(uuid())
+  quantity Int
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@unique([userId, productId])
 }
 
 enum DeliveryStatus {
   PENDING
   CANCELLED
+  SHIPPED
   DELIVERED
+  READY_FOR_PICKUP
+  PICKED_UP
 }
 
 model Order {
-  id             String         @id @default(uuid())
-  client         String // CONSIDER CHANGE TO USER IN A FUTURE
-  discount       Float?
-  subtotal       Float
-  total          Float
-  shipmentType   String
-  paymentMethod  String
-  isPaid         Boolean        @default(false)
-  deliveryStatus DeliveryStatus @default(PENDING)
-  pendingPayment Float?
+  id              String         @id @default(uuid())
+  client          String // This is functional when the user is not logged in
+  discount        Float?
+  subtotal        Float
+  shippingCost    Float?
+  total           Float
+  shipmentType    String
+  paymentMethod   String
+  isPaid          Boolean        @default(false) // This is functional when the user is not logged in
+  deliveryStatus  DeliveryStatus @default(PENDING)
+  pendingPayment  Float? // This is functional when the user is not logged in
+  paymentIntentId String?
 
-  products ProductOnOrder[]
+  products     ProductOnOrder[]
+  promotions   OrderOnPromotion[]
+  transactions InventoryTransaction[]
+
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  payment   PaymentMethod? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  paymentId String?
+  address   Address?       @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  addressId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InventoryTransaction {
+  id          String  @id @default(uuid())
+  type        String
+  quantity    Int
+  description String?
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+
+  createdAt DateTime @default(now())
+}
+
+model ProductOnPromotion {
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId String
+
+  createdAt DateTime @default(now())
+
+  @@id([productId, promotionId])
+}
+
+model CollectionOnPromotion {
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+  promotion    Promotion  @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId  String
+
+  createdAt DateTime @default(now())
+
+  @@id([collectionId, promotionId])
+}
+
+model OrderOnPromotion {
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId String
+
+  createdAt DateTime @default(now())
+
+  @@id([orderId, promotionId])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model Promotion {
+  id            String       @id @default(uuid())
+  title         String
+  endDate       DateTime
+  isActive      Boolean      @default(true)
+  startDate     DateTime
+  description   String
+  discountType  DiscountType
+  discountValue Float
+
+  cartItems     CartItem[]
+  discountCodes DiscountCode[]
+  orders        OrderOnPromotion[]
+  products      ProductOnPromotion[]
+  collections   CollectionOnPromotion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DiscountCode {
+  id         String @id @default(uuid())
+  code       String @unique
+  timesUsed  Int    @default(0)
+  usageLimit Int?
+
+  users DiscountCodeOnUser[]
+
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DiscountCodeOnUser {
+  discountCode   DiscountCode @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
+  discountCodeId String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+
+  createdAt DateTime @default(now())
+
+  @@id([discountCodeId, userId])
+}
+
+model PaymentMethod {
+  id                    String    @id @default(uuid())
+  brand                 String
+  isActive              Boolean   @default(true)
+  isDefault             Boolean   @default(false)
+  deletedAt             DateTime?
+  expiryYear            Int
+  expiryMonth           Int
+  last4Digits           String
+  stripePaymentMethodId String    @unique
+
+  orders Order[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id             String    @id @default(uuid())
+  city           String
+  state          String
+  zipCode        Int
+  country        String
+  fullName       String
+  address1       String
+  address2       String?
+  isActive       Boolean   @default(true) // Soft delete
+  deletedAt      DateTime?
+  isDefault      Boolean   @default(false)
+  phoneNumber    String?
+  additionalInfo String?
+
+  orders Order[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Hero {
+  id          String  @id @default(uuid())
+  order       Int     @default(0)
+  title       String?
+  subtitle    String?
+  isActive    Boolean @default(true)
+  description String?
+  buttonLink  String?
+  imageUrl    String
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String     @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,12 +1,13 @@
+import tailwindcssAnimated from "tailwindcss-animated";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: "class",
   theme: {
     extend: {
       colors: {
@@ -24,8 +25,17 @@ const config: Config = {
           light: "#AEB898", // Verde grisáceo claro
         },
       },
+      keyframes: {
+        marquee: {
+          // "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 15s linear infinite",
+      },
     },
   },
-  plugins: [],
+  plugins: [tailwindcssAnimated],
 };
 export default config;
