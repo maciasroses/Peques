@@ -173,7 +173,7 @@ const ProductCard = ({
           />
         ) : (
           <Link href={`/${lng}/${product.key}`}>
-            <p className="w-full px-4 py-2 rounded-lg bg-accent text-center">
+            <p className="w-full px-4 py-2 rounded-lg bg-accent text-center text-sm">
               Personalizar
             </p>
           </Link>
