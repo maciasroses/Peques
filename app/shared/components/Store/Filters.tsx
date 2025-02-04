@@ -200,7 +200,10 @@ const Filters = ({ filters, collection }: IFiltersComp) => {
               onChange={(e) => setSalePriceMXNTo(e.target.value)}
             />
           </div>
-          <button type="submit" className="px-4 py-2 bg-accent rounded-lg">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-neutral text-white rounded-lg"
+          >
             Aplicar
           </button>
           <button

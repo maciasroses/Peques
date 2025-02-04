@@ -115,7 +115,7 @@ const ProductCard = ({
           width={500}
           height={300}
           alt={product.name}
-          className="size-auto"
+          className="w-full h-64 object-contain"
           src={
             product.files[0]?.url || "/assets/images/landscape-placeholder.webp"
           }
