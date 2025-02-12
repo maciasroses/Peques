@@ -21,13 +21,10 @@ const ImageGallery = ({
   const leftArrowRef = useRef(null);
   const rightArrowRef = useRef(null);
 
-  const selectedImage = product.files.find(
-    (file) => file.id === selectedImageId
-  ) ??
-    product.files[0] ?? {
-      type: "IMAGE",
-      url: "/assets/images/landscape-placeholder.webp",
-    };
+  const selectedImage =
+    product.files.find((file) => file.id === selectedImageId) ??
+    product.files.find((file) => file.order === 1 && file.type === "IMAGE") ??
+    product.files[0];
 
   const handleNextImage = () => {
     const currentIndex = product.files.findIndex(
@@ -37,7 +34,9 @@ const ImageGallery = ({
     setSelectedImageId(
       nextIndex < product.files.length
         ? product.files[nextIndex].id
-        : product.files[0].id
+        : (product.files.find(
+            (file) => file.order === 1 && file.type === "IMAGE"
+          )?.id ?? product.files[0].id)
     );
   };
 

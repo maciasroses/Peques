@@ -5,6 +5,7 @@ import { cn } from "@/app/shared/utils/cn";
 import CollectionsMenu from "./CollectionsMenu";
 import { BarsII, XMark } from "@/app/shared/icons";
 import { useDisableScroll } from "@/app/shared/hooks";
+import Logo from "@/public/assets/images/logo-color.webp";
 import type { ICollection } from "@/app/shared/interfaces";
 
 interface IHamburgerLinksMenu {
@@ -34,13 +35,13 @@ const HamburgerLinksMenu = ({ lng, collections }: IHamburgerLinksMenu) => {
       >
         <div className="h-full p-4 flex flex-col gap-8">
           <div className="flex justify-between items-center gap-2">
-            <div className="rounded-full bg-white w-[50px] h-[50px] min-w-[50px] min-h-[50px]">
+            <div className="rounded-full bg-white h-[50px] min-h-[50px]">
               <Link href={`/${lng}`}>
                 <Image
+                  src={Logo}
                   width={50}
                   height={50}
                   alt="Peques logo"
-                  src="/assets/images/logo-mini.webp"
                   className="size-full object-cover rounded-full"
                 />
               </Link>

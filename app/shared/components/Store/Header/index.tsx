@@ -8,13 +8,11 @@ import MainSearch from "./MainSearch";
 import ProfileMenu from "./ProfileMenu";
 import FiltersMenu from "./FiltersMenu";
 import { cn } from "@/app/shared/utils/cn";
-// import ThemeSelector from "./ThemeSelector";
 import { usePathname } from "next/navigation";
 import CollectionsMenu from "./CollectionsMenu";
 import HamburgerLinksMenu from "./HamburgerLinksMenu";
 import { Search, UserIcon } from "@/app/shared/icons";
 import Logo from "@/public/assets/images/logo-color.webp";
-import MiniLogo from "@/public/assets/images/logo-mini.webp";
 import { useScrollVisibility, useToggleMenu } from "@/app/shared/hooks";
 import type {
   IUser,
@@ -98,15 +96,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                 width={150}
                 height={150}
                 alt="Peques logo"
-                className="size-auto hidden md:block"
-              />
-              <Image
-                priority
-                width={50}
-                height={50}
-                src={MiniLogo}
-                alt="Peques logo"
-                className="size-auto md:hidden"
+                className="max-w-60 md:size-auto"
               />
             </Link>
           </li>

@@ -204,6 +204,8 @@ model ProductHistory {
 }
 
 model ProductOnCollection {
+  order Int @default(1)
+
   product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId    String
   collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
@@ -249,9 +251,10 @@ enum FileType {
 }
 
 model ProductFile {
-  id   String   @id @default(uuid())
-  url  String
-  type FileType
+  id    String   @id @default(uuid())
+  url   String
+  type  FileType
+  order Int      @default(1)
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String

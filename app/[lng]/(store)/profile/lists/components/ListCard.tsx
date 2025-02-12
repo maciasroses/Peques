@@ -38,8 +38,9 @@ const ListCard = ({ lng, customList }: IListCard) => {
                 <Image
                   key={item.productId}
                   src={
-                    item.product.files[0]?.url ??
-                    "/assets/images/landscape-placeholder.webp"
+                    item.product.files.find(
+                      (file) => file.order === 1 && file.type === "IMAGE"
+                    )?.url ?? "/assets/images/landscape-placeholder.webp"
                   }
                   alt={item.product.name}
                   width={50}
@@ -55,7 +56,11 @@ const ListCard = ({ lng, customList }: IListCard) => {
                 customList.products.length === 4 && (
                   <Image
                     key={customList.products[3].productId}
-                    src={customList.products[3].product.files[0].url}
+                    src={
+                      customList.products[3].product.files.find(
+                        (file) => file.order === 1 && file.type === "IMAGE"
+                      )?.url ?? "/assets/images/landscape-placeholder.webp"
+                    }
                     alt={customList.products[3].product.name}
                     width={50}
                     height={50}

@@ -910,3 +910,54 @@ export async function activateNDeactivateProduct(
     };
   }
 }
+
+export async function updateProductFileOrder({
+  order,
+  productId,
+  fileId,
+}: {
+  order: number;
+  productId: string;
+  fileId: string;
+}) {
+  try {
+    const product = (await read({ id: productId })) as IProduct;
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    const file = product.files.find((file) => file.id === fileId);
+
+    if (!file) {
+      throw new Error("File not found");
+    }
+
+    await update({
+      id: productId,
+      data: {
+        files: {
+          update: {
+            where: {
+              id: fileId,
+            },
+            data: {
+              order,
+            },
+          },
+        },
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "An internal error occurred",
+    };
+  }
+
+  console.log("TODO GOOD");
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/products`);
+  redirect(`/${lng}/admin/products`);
+}

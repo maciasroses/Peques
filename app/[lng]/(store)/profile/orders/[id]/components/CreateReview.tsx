@@ -69,8 +69,9 @@ const CreateReview = ({ lng, onClose, productSelected }: ICreateReview) => {
           <div className="size-24">
             <Image
               src={
-                productSelected.files[0]?.url ??
-                "/assets/images/landscape-placeholder.webp"
+                productSelected.files.find(
+                  (file) => file.order === 1 && file.type === "IMAGE"
+                )?.url ?? "/assets/images/landscape-placeholder.webp"
               }
               alt={productSelected.name}
               width={500}

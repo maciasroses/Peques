@@ -280,6 +280,62 @@ export async function updateCollectionOrderById({
   redirect(`/${lng}/admin/collections`);
 }
 
+export async function updateProductOnCollectionOrder({
+  order,
+  productId,
+  collectionId,
+}: {
+  order: number;
+  productId: string;
+  collectionId: string;
+}) {
+  try {
+    await isAdmin();
+
+    const collection = (await read({ id: collectionId })) as ICollection;
+    if (!collection) {
+      throw new Error("Collection not found");
+    }
+
+    const product = collection.products.find(
+      (product) => product.productId === productId
+    );
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    await update({
+      id: collectionId,
+      data: {
+        products: {
+          update: [
+            {
+              where: {
+                productId_collectionId: {
+                  collectionId,
+                  productId,
+                },
+              },
+              data: {
+                order,
+              },
+            },
+          ],
+        },
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "Ha ocurrido un error al actualizar el orden del producto",
+    };
+  }
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/admin/collections`);
+  redirect(`/${lng}/admin/collections`);
+}
+
 export async function addProductsToCollection({
   id,
   products,

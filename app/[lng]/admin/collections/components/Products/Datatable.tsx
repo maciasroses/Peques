@@ -12,13 +12,25 @@ import {
   Datatable as CustomDatatable,
 } from "@/app/shared/components";
 import type { IProduct } from "@/app/shared/interfaces";
+import { updateProductOnCollectionOrder } from "@/app/shared/services/collection/controller";
+
+interface IProductWithOrder extends IProduct {
+  order: number;
+}
 
 interface IDatatable {
-  products: IProduct[];
+  products: IProductWithOrder[];
   collectionId: string;
 }
 
 const Datatable = ({ products, collectionId }: IDatatable) => {
+  const handleChangeOrder = async (id: string, order: number) => {
+    await updateProductOnCollectionOrder({
+      order,
+      collectionId,
+      productId: id,
+    });
+  };
   const columns = [
     {
       name: "Acciones",
@@ -28,6 +40,26 @@ const Datatable = ({ products, collectionId }: IDatatable) => {
           {/* @ts-ignore */}
           <Form product={row} collectionId={collectionId} />
         </Action>
+      ),
+    },
+    {
+      name: "Orden de muestra",
+      selector: (row: { order: number }) => row.order,
+      sortable: true,
+      cell: (row: { id: string; order: number }) => (
+        <select
+          defaultValue={row.order}
+          onChange={(e) => handleChangeOrder(row.id, Number(e.target.value))}
+          className="bg-accent text-white rounded-md p-3 border border-white"
+        >
+          {Array.from({ length: products.length }, (_, i) => i + 1).map(
+            (value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            )
+          )}
+        </select>
       ),
     },
     {

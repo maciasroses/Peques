@@ -26,11 +26,20 @@ const StarRating = ({
         {ratingsDistribution && <p className="text-5xl">{rating}</p>}
         <div className="flex" title={`${rating} de 5`}>
           {Array.from({ length: fullStars }).map((_, index) => (
-            <Star key={index} customClass="text-primary" isFilled />
+            <Star
+              key={index}
+              customClass="text-primary"
+              isFilled
+              size="size-4 sm:size-6"
+            />
           ))}
           {halfStar && <Star isHalf customClass="text-primary" />}
           {Array.from({ length: emptyStars }).map((_, index) => (
-            <Star key={index} customClass="text-gray-400" />
+            <Star
+              key={index}
+              customClass="text-gray-400"
+              size="size-4 sm:size-6"
+            />
           ))}
         </div>
         {totalReviews && (
@@ -38,7 +47,11 @@ const StarRating = ({
             className="text-sm text-gray-500 dark:text-gray-400"
             title={`${totalReviews} reseñas`}
           >
-            ({totalReviews})
+            (
+            {new Intl.NumberFormat("en", { notation: "compact" }).format(
+              totalReviews
+            )}
+            )
           </span>
         )}
       </div>

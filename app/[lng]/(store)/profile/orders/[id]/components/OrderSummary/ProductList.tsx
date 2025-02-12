@@ -40,8 +40,9 @@ const ProductList = ({ lng, order }: IProductList) => {
                 <div className="size-24">
                   <Image
                     src={
-                      product.product.files[0]?.url ??
-                      "/assets/images/landscape-placeholder.webp"
+                      product.product.files.find(
+                        (file) => file.order === 1 && file.type === "IMAGE"
+                      )?.url ?? "/assets/images/landscape-placeholder.webp"
                     }
                     alt={product.product.name}
                     width={500}

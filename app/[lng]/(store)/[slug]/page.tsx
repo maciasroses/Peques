@@ -52,7 +52,7 @@ const SlugPage = async ({ params: { lng, slug } }: ISlugPage) => {
   );
 
   return (
-    <div className="pt-32 px-4 pb-4 md:pt-48 md:px-24 md:pb-24 flex flex-col gap-8">
+    <div className="pt-36 px-4 pb-4 md:pt-48 md:px-24 md:pb-24 flex flex-col gap-8">
       <ProductSlugCard lng={lng} product={product} />
       <ProductList
         lng={lng}

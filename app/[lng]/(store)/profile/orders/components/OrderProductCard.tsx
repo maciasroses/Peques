@@ -17,8 +17,9 @@ const OrderProductCard = ({ order, product }: IOrderProductCard) => {
           <Image
             alt={product.name}
             src={
-              product.files[0]?.url ??
-              "/assets/images/landscape-placeholder.webp"
+              product.files.find(
+                (file) => file.order === 1 && file.type === "IMAGE"
+              )?.url ?? "/assets/images/landscape-placeholder.webp"
             }
             width={50}
             height={50}
