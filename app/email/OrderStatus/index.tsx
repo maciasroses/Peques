@@ -196,6 +196,7 @@ OrderStatus.PreviewProps = {
             {
               id: "b5e7f6b2-5a9c-4e5c-9b8c-7d2d3c3a5f3a",
               url: "/assets/images/custom-name-necklace.webp",
+              order: 1,
               productId: "bb3ea36f-fab2-487f-a2a5-7b57461bc3c9",
               product: {
                 id: "bb3ea36f-fab2-487f-a2a5-7b57461bc3c9",
