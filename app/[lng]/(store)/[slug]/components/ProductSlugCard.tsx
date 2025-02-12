@@ -404,13 +404,13 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               "w-full h-full flex justify-center cursor-pointer relative mx-20",
               selectedImage &&
                 selectedImage.type === "IMAGE" &&
-                "md:cursor-zoom-in "
+                "sm:cursor-zoom-in "
             )}
           >
             <MediaPreview alt={product.name} file={selectedImage} />
           </div>
         </div>
-        <div className="flex gap-2 md:hidden mt-4">
+        <div className="flex gap-2 sm:hidden mt-4">
           {product.files
             .slice()
             .sort((a, b) => a.order - b.order)
