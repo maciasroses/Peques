@@ -48,7 +48,7 @@ const InitialModal = ({ lng }: { lng: string }) => {
     <div className="fixed flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-75 inset-0 z-50">
       <div
         ref={menuRef}
-        className="relative bg-accent/80 backdrop-blur-lg p-6 rounded-2xl shadow-lg max-w-lg text-center"
+        className="relative bg-accent/80 backdrop-blur-lg p-6 rounded-2xl shadow-lg max-w-lg text-center w-[80%] md:w-1/2 mt-16"
       >
         <button
           onClick={() => setIsOpen(false)}

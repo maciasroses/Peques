@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import MediaPreview from "./MediaPreview";
 import { cn } from "@/app/shared/utils/cn";
@@ -13,6 +13,7 @@ import {
   useImageZoom,
   useDisableScroll,
   useAuth,
+  useCart,
 } from "@/app/shared/hooks";
 import {
   AddToCart,
@@ -20,6 +21,7 @@ import {
   ImageGallery,
   AddToCustomList,
   GenericInput,
+  Modal,
 } from "@/app/shared/components";
 import type { IProduct, IPromotion } from "@/app/shared/interfaces";
 import { likeOrDislikeReview } from "@/app/shared/services/productReview/controller";
@@ -39,17 +41,84 @@ interface IProductSlugCard {
 }
 
 const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
+  const { cart } = useCart();
   const { user } = useAuth();
   const { isOpen, onOpen, onClose } = useModal();
-  const [selectedImageId, setSelectedImageId] = useState(product.files[0]?.id);
+  const [selectedImageId, setSelectedImageId] = useState(
+    product.files.find((file) => file.order === 1 && file.type === "IMAGE")
+      ?.id ?? product.files[0]?.id
+  );
+  const {
+    isOpen: isCustomOpen,
+    onOpen: onCustomOpen,
+    onClose: onCustomClose,
+  } = useModal();
+  const customProduct = cart.find((item) => item.id === product.key);
+  const [customName, setCustomName] = useState(
+    customProduct?.customRequest
+      ? JSON.parse(customProduct.customRequest).name
+      : ""
+  );
+  const [customFont, setCustomFont] = useState(
+    customProduct?.customRequest
+      ? JSON.parse(customProduct.customRequest).font === "Script 2"
+        ? "'Script 2', cursive"
+        : JSON.parse(customProduct.customRequest).font
+      : ""
+  );
+  const [customColor, setCustomColor] = useState(
+    customProduct?.customRequest
+      ? JSON.parse(customProduct.customRequest).color
+      : ""
+  );
 
-  const selectedImage = product.files.find(
-    (file) => file.id === selectedImageId
-  ) ??
-    product.files[0] ?? {
-      type: "IMAGE",
-      url: "/assets/images/landscape-placeholder.webp",
-    };
+  useEffect(() => {
+    if (customProduct) {
+      setCustomName(
+        customProduct?.customRequest
+          ? JSON.parse(customProduct.customRequest).name
+          : ""
+      );
+      setCustomFont(
+        customProduct?.customRequest
+          ? JSON.parse(customProduct.customRequest).font === "Script 2"
+            ? "'Script 2', cursive"
+            : JSON.parse(customProduct.customRequest).font
+          : ""
+      );
+      setCustomColor(
+        customProduct?.customRequest
+          ? JSON.parse(customProduct.customRequest).color
+          : ""
+      );
+    }
+  }, [customProduct]);
+
+  const handleCustomClose = () => {
+    setCustomName(
+      customProduct?.customRequest
+        ? JSON.parse(customProduct.customRequest).name
+        : ""
+    );
+    setCustomFont(
+      customProduct?.customRequest
+        ? JSON.parse(customProduct.customRequest).font === "Script 2"
+          ? "'Script 2', cursive"
+          : JSON.parse(customProduct.customRequest).font
+        : ""
+    );
+    setCustomColor(
+      customProduct?.customRequest
+        ? JSON.parse(customProduct.customRequest).color
+        : ""
+    );
+    onCustomClose();
+  };
+
+  const selectedImage =
+    product.files.find((file) => file.id === selectedImageId) ??
+    product.files.find((file) => file.order === 1 && file.type === "IMAGE") ??
+    product.files[0];
 
   useDisableScroll(isOpen);
 
@@ -158,10 +227,6 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
     }
   };
 
-  const [customName, setCustomName] = useState("");
-  const [customFont, setCustomFont] = useState("");
-  const [customColor, setCustomColor] = useState("");
-
   return (
     <>
       {isOpen && (
@@ -172,25 +237,163 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
           setSelectedImageId={setSelectedImageId}
         />
       )}
+      {isCustomOpen && (
+        <Modal
+          isOpen={isCustomOpen}
+          onClose={handleCustomClose}
+          backgroundColor="bg-white"
+        >
+          <>
+            <p
+              style={{
+                fontFamily: "'Champagne & Limousines Bold'",
+              }}
+            >
+              Al ser un producto personalizado, esta pieza tiene un tiempo de
+              elaboración de 7 días.
+            </p>
+            <div
+              className="flex flex-col gap-2 mt-2"
+              style={{
+                fontFamily: "'Champagne & Limousines Bold'",
+              }}
+            >
+              <GenericInput
+                type="text"
+                id="customName"
+                placeholder="Regina"
+                ariaLabel="Nombre"
+                defaultValue={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+              />
+              <p className="text-right">
+                (El nombre se bordará tal y como lo escribas, por favor revisa
+                mayúsculas o acentos)
+              </p>
+            </div>
+            <div
+              className="flex flex-col gap-2"
+              style={{
+                fontFamily: "'Champagne & Limousines Bold'",
+              }}
+            >
+              <GenericInput
+                type="select"
+                id="customFont"
+                ariaLabel="Fuente"
+                defaultValue={customFont}
+                placeholder="Selecciona una fuente"
+                onChange={(e) => setCustomFont(e.target.value)}
+                options={[
+                  {
+                    value: "Karin Script",
+                    label: "Karin Script",
+                  },
+                  {
+                    value: "'Script 2', cursive",
+                    label: "Script 2",
+                  },
+                  { value: "Krone", label: "Krone" },
+                ]}
+              />
+            </div>
+            <p
+              className="my-4"
+              style={{
+                fontFamily: "'Champagne & Limousines Bold'",
+              }}
+            >
+              Elige un color
+            </p>
+            <div className="my-4 grid grid-cols-6 md:grid-cols-3 lg:grid-cols-6 gap-2">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <button
+                  key={index}
+                  aria-label="Color"
+                  style={{ backgroundColor: COLORS_CUSTOM[index] }}
+                  onClick={() => setCustomColor(COLORS_CUSTOM[index])}
+                  className={cn(
+                    "rounded-full size-8 md:size-10 xl:size-14",
+                    customColor === COLORS_CUSTOM[index] &&
+                      `border-4 border-black`
+                  )}
+                ></button>
+              ))}
+            </div>
+            {customName && customFont && customColor && (
+              <>
+                <div className="mb-4">
+                  <p
+                    className="text-xl"
+                    style={{
+                      fontFamily: "'Champagne & Limousines Bold'",
+                    }}
+                  >
+                    Resultado:
+                  </p>
+                  <p
+                    className="text-4xl text-center"
+                    style={{
+                      color: customColor,
+                      fontFamily: customFont,
+                    }}
+                  >
+                    {customName}
+                  </p>
+                </div>
+                <AddToCart
+                  product={product}
+                  price={discountedPrice}
+                  discount={discountDescription}
+                  onParentClose={handleCustomClose}
+                  promotionId={selectedPromotion?.id || null}
+                  customRequest={JSON.stringify({
+                    name: customName,
+                    font:
+                      customFont === "'Script 2', cursive"
+                        ? "Script 2"
+                        : customFont,
+                    color: customColor,
+                  })}
+                />
+                <div className="mt-4 flex flex-col">
+                  <small className="font-black">
+                    * Solo puedes agregar varias unidades de un mismo producto
+                    personalizado a la vez. Sin embargo, puedes comprar
+                    diferentes productos personalizados en una misma orden.
+                  </small>
+                  <small className="font-black">
+                    * Si ya agregaste este producto sin personalizar al carrito,
+                    elimínalo y agrégalo nuevamente con la personalización.
+                  </small>
+                </div>
+              </>
+            )}
+          </>
+        </Modal>
+      )}
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full">
         <div className="flex gap-4 w-full md:w-[60%] h-full justify-center md:justify-start">
-          <div className="flex flex-col gap-2">
-            {product.files.map((file) => (
-              <div
-                key={file.id}
-                className={cn(
-                  "size-16 hover:border cursor-pointer hover:border-black rounded-2xl",
-                  selectedImage === file && "border border-black"
-                )}
-              >
-                <MediaPreview
-                  file={file}
-                  isAllGallery
-                  alt={product.name}
-                  onMouseEnter={() => setSelectedImageId(file.id)}
-                />
-              </div>
-            ))}
+          <div className="hidden sm:flex flex-col gap-2">
+            {product.files
+              .slice()
+              .sort((a, b) => a.order - b.order)
+              .map((file) => (
+                <div
+                  key={file.id}
+                  className={cn(
+                    "size-16 hover:border cursor-pointer hover:border-black rounded-2xl",
+                    selectedImage === file && "border border-black"
+                  )}
+                >
+                  <MediaPreview
+                    file={file}
+                    isAllGallery
+                    alt={product.name}
+                    onMouseEnter={() => setSelectedImageId(file.id)}
+                  />
+                </div>
+              ))}
           </div>
           <div
             ref={zoomRef}
@@ -206,6 +409,27 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
           >
             <MediaPreview alt={product.name} file={selectedImage} />
           </div>
+        </div>
+        <div className="flex gap-2 md:hidden mt-4">
+          {product.files
+            .slice()
+            .sort((a, b) => a.order - b.order)
+            .map((file) => (
+              <div
+                key={file.id}
+                className={cn(
+                  "size-8 hover:border cursor-pointer hover:border-black rounded-2xl",
+                  selectedImage === file && "border border-black"
+                )}
+              >
+                <MediaPreview
+                  file={file}
+                  isAllGallery
+                  alt={product.name}
+                  onMouseEnter={() => setSelectedImageId(file.id)}
+                />
+              </div>
+            ))}
         </div>
         <div className="relative w-full md:w-[40%]">
           <div className="flex flex-col gap-2">
@@ -252,130 +476,42 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                 rating={averageRating}
                 totalReviews={product.reviews.length}
               />
+
+              {/* {(!product.isCustomizable ||
+                (customName && customFont && customColor)) && ( */}
+              <AddToCart
+                product={product}
+                price={discountedPrice}
+                discount={discountDescription}
+                promotionId={selectedPromotion?.id || null}
+                // customRequest={
+                //   customName && customFont && customColor
+                //     ? JSON.stringify({
+                //         name: customName,
+                //         font:
+                //           customFont === "'Script 2', cursive"
+                //             ? "Script 2"
+                //             : customFont,
+                //         color: customColor,
+                //       })
+                //     : null
+                // }
+              />
+              {/* )} */}
+              {product.isCustomizable && (
+                <div>
+                  <button
+                    onClick={onCustomOpen}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+                  >
+                    Personalizar
+                  </button>
+                </div>
+              )}
               {product.description && (
                 <div
                   className="ql-editor"
                   dangerouslySetInnerHTML={{ __html: product.description }}
-                />
-              )}
-              {product.isCustomizable && (
-                <div className="border border-gray-300 dark:border-gray-600 p-4">
-                  <p
-                    style={{
-                      fontFamily: "'Champagne & Limousines Bold'",
-                    }}
-                  >
-                    Al ser un producto personalizado, esta pieza tiene un tiempo
-                    de elaboración de 7 días.
-                  </p>
-                  <div
-                    className="flex flex-col gap-2 mt-2"
-                    style={{
-                      fontFamily: "'Champagne & Limousines Bold'",
-                    }}
-                  >
-                    <GenericInput
-                      type="text"
-                      id="customName"
-                      placeholder="Regina"
-                      ariaLabel="Nombre"
-                      onChange={(e) => setCustomName(e.target.value)}
-                    />
-                    <p className="text-right">
-                      (El nombre se bordará tal y como lo escribas, por favor
-                      revisa mayúsculas o acentos)
-                    </p>
-                  </div>
-                  <div
-                    className="flex flex-col gap-2"
-                    style={{
-                      fontFamily: "'Champagne & Limousines Bold'",
-                    }}
-                  >
-                    <GenericInput
-                      type="select"
-                      id="customFont"
-                      ariaLabel="Fuente"
-                      placeholder="Selecciona una fuente"
-                      onChange={(e) => setCustomFont(e.target.value)}
-                      options={[
-                        {
-                          value: "Karin Script",
-                          label: "Karin Script",
-                        },
-                        {
-                          value: "'Script 2', cursive",
-                          label: "Script 2",
-                        },
-                        { value: "Krone", label: "Krone" },
-                      ]}
-                    />
-                  </div>
-                  <p
-                    className="my-4"
-                    style={{
-                      fontFamily: "'Champagne & Limousines Bold'",
-                    }}
-                  >
-                    Elige un color
-                  </p>
-                  <div className="my-4 grid grid-cols-6 md:grid-cols-3 lg:grid-cols-6 gap-2">
-                    {Array.from({ length: 6 }).map((_, index) => (
-                      <button
-                        key={index}
-                        aria-label="Color"
-                        style={{ backgroundColor: COLORS_CUSTOM[index] }}
-                        onClick={() => setCustomColor(COLORS_CUSTOM[index])}
-                        className={cn(
-                          "rounded-full size-8 md:size-10 xl:size-14",
-                          customColor === COLORS_CUSTOM[index] &&
-                            `border-4 border-black`
-                        )}
-                      ></button>
-                    ))}
-                  </div>
-                  {customName && customFont && customColor && (
-                    <div>
-                      <p
-                        className="text-xl"
-                        style={{
-                          fontFamily: "'Champagne & Limousines Bold'",
-                        }}
-                      >
-                        Resultado:
-                      </p>
-                      <p
-                        className="text-4xl text-center"
-                        style={{
-                          color: customColor,
-                          fontFamily: customFont,
-                        }}
-                      >
-                        {customName}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-              {(!product.isCustomizable ||
-                (customName && customFont && customColor)) && (
-                <AddToCart
-                  product={product}
-                  price={discountedPrice}
-                  discount={discountDescription}
-                  promotionId={selectedPromotion?.id || null}
-                  customRequest={
-                    customName && customFont && customColor
-                      ? JSON.stringify({
-                          name: customName,
-                          font:
-                            customFont === "'Script 2', cursive"
-                              ? "Script 2"
-                              : customFont,
-                          color: customColor,
-                        })
-                      : null
-                  }
                 />
               )}
             </div>

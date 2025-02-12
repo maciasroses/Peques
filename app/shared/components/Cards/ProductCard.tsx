@@ -117,43 +117,47 @@ const ProductCard = ({
           alt={product.name}
           className="w-full h-64 object-contain"
           src={
-            product.files[0]?.url || "/assets/images/landscape-placeholder.webp"
+            product.files.find(
+              (file) => file.order === 1 && file.type === "IMAGE"
+            )?.url || "/assets/images/landscape-placeholder.webp"
           }
         />
       </Link>
-      <div className="flex flex-col gap-2 p-5">
+      <div className="flex flex-col gap-2 sm:p-5">
         <div className="flex gap-2 justify-between">
           <StarRating
             rating={averageRating}
             totalReviews={product.reviews.length}
           />
-          {isForCustomList && customListId ? (
-            <DeleteFromCustomList
-              lng={lng}
-              product={product}
-              customListId={customListId}
-            />
-          ) : (
-            <AddToCustomList
-              lng={lng}
-              user={user}
-              productId={product.id}
-              isFavorite={isFavorite}
-            />
-          )}
+          <div className="hidden sm:block">
+            {isForCustomList && customListId ? (
+              <DeleteFromCustomList
+                lng={lng}
+                product={product}
+                customListId={customListId}
+              />
+            ) : (
+              <AddToCustomList
+                lng={lng}
+                user={user}
+                productId={product.id}
+                isFavorite={isFavorite}
+              />
+            )}
+          </div>
         </div>
         <Link href={`/${lng}/${product.key}`}>
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
             {product.name}
           </h1>
           <div className="flex flex-col">
             <div className="flex items-baseline gap-2">
               {selectedPromotion && (
-                <span className="text-lg font-semibold line-through text-gray-500 dark:text-gray-400">
+                <span className="text-base sm:text-lg font-semibold line-through text-gray-500 dark:text-gray-400">
                   {formatCurrency(product.salePriceMXN, "MXN")}
                 </span>
               )}
-              <span className="text-3xl font-bold text-gray-900 dark:text-white">
+              <span className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                 {formatCurrency(discountedPrice, "MXN")}
               </span>
             </div>
@@ -164,20 +168,12 @@ const ProductCard = ({
             )}
           </div>
         </Link>
-        {!product.isCustomizable ? (
-          <AddToCart
-            product={product}
-            price={discountedPrice}
-            discount={discountDescription}
-            promotionId={selectedPromotion?.id || null}
-          />
-        ) : (
-          <Link href={`/${lng}/${product.key}`}>
-            <p className="w-full px-4 py-2 rounded-lg bg-accent text-center text-sm">
-              Personalizar
-            </p>
-          </Link>
-        )}
+        <AddToCart
+          product={product}
+          price={discountedPrice}
+          discount={discountDescription}
+          promotionId={selectedPromotion?.id || null}
+        />
       </div>
     </div>
   );

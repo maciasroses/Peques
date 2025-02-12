@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { cn } from "@/app/shared/utils/cn";
 import type { ICollection } from "@/app/shared/interfaces";
+import { useEffect, useRef, useState } from "react";
+import { LeftChevron, RightChevron } from "../../icons";
 
 interface ICollectionsList {
   lng: string;
@@ -9,10 +13,45 @@ interface ICollectionsList {
 }
 
 const CollectionsList = ({ lng, layDown, collections }: ICollectionsList) => {
+  const listRef = useRef<HTMLUListElement>(null);
+  const [cardWidth, setCardWidth] = useState(layDown ? 250 : 150);
+
+  useEffect(() => {
+    const updateCardWidth = () => {
+      setCardWidth(
+        window.innerWidth >= 768 ? (layDown ? 500 : 300) : layDown ? 250 : 150
+      );
+    };
+
+    updateCardWidth();
+    window.addEventListener("resize", updateCardWidth);
+
+    return () => window.removeEventListener("resize", updateCardWidth);
+  }, [layDown]);
+
   if (collections.length === 0) return null;
+
+  const scroll = (direction: "left" | "right" = "right") => {
+    if (listRef.current) {
+      listRef.current.scrollBy({
+        left: direction === "left" ? -cardWidth : cardWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
-    <section>
-      <ul className="flex pr-5 overflow-x-auto items-start w-full max-w-min mx-auto">
+    <section className="relative w-full flex items-center">
+      <button
+        className="absolute left-5 z-10 bg-white dark:bg-gray-800 p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
+        onClick={() => scroll("left")}
+      >
+        <LeftChevron />
+      </button>
+      <ul
+        ref={listRef}
+        className="flex pr-5 overflow-x-auto items-start w-full max-w-min mx-auto scroll-smooth"
+      >
         {collections.map((collection) => (
           <li
             key={collection.id}
@@ -50,6 +89,12 @@ const CollectionsList = ({ lng, layDown, collections }: ICollectionsList) => {
           </li>
         ))}
       </ul>
+      <button
+        className="absolute right-5 z-10 bg-white dark:bg-gray-800 p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
+        onClick={() => scroll("right")}
+      >
+        <RightChevron />
+      </button>
     </section>
   );
 };

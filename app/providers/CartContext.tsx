@@ -57,8 +57,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             finalPrice: item.finalPriceMXN,
             customRequest: item.customRequest,
             file:
-              item.product.files[0]?.url ||
-              "/assets/images/landscape-placeholder.webp",
+              item.product.files.find(
+                (file) => file.order === 1 && file.type === "IMAGE"
+              )?.url || "/assets/images/landscape-placeholder.webp",
           }))
         );
       } else if (typeof window !== "undefined") {

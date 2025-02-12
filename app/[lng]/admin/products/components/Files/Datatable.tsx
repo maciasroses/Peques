@@ -13,6 +13,7 @@ import {
 import type { IProductFile, IProductHistory } from "@/app/shared/interfaces";
 import Form from "./Form";
 import Image from "next/image";
+import { updateProductFileOrder } from "@/app/shared/services/product/controller";
 
 interface IDatatable {
   productId: string;
@@ -20,6 +21,13 @@ interface IDatatable {
 }
 
 const Datatable = ({ files, productId }: IDatatable) => {
+  const handleChangeOrder = async (id: string, order: number) => {
+    await updateProductFileOrder({
+      order,
+      productId,
+      fileId: id,
+    });
+  };
   const columns = [
     {
       name: "Acciones",
@@ -31,6 +39,27 @@ const Datatable = ({ files, productId }: IDatatable) => {
             <Form productId={productId} file={row} />
           </Action>
         </div>
+      ),
+    },
+    {
+      name: "Orden de muestra",
+      width: "100px",
+      selector: (row: { order: number }) => row.order,
+      sortable: true,
+      cell: (row: { id: string; order: number }) => (
+        <select
+          defaultValue={row.order}
+          onChange={(e) => handleChangeOrder(row.id, parseInt(e.target.value))}
+          className="bg-accent text-white rounded-md p-3 border border-white"
+        >
+          {Array.from({ length: files.length }, (_, i) => i + 1).map(
+            (value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            )
+          )}
+        </select>
       ),
     },
     {

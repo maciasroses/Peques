@@ -179,9 +179,18 @@ const Form = ({ lng, productId, myLists, handleClose }: IForm) => {
                             <div className="size-full flex items-center justify-center">
                               <Heart isFilled />
                             </div>
-                          ) : list.products[0]?.product.files[0] ? (
+                          ) : list.products[0]?.product.files.find(
+                              (file) =>
+                                file.order === 1 && file.type === "IMAGE"
+                            ) ? (
                             <Image
-                              src={list.products[0]?.product.files[0].url}
+                              src={
+                                list.products[0]?.product.files.find(
+                                  (file) =>
+                                    file.order === 1 && file.type === "IMAGE"
+                                )?.url ??
+                                "/assets/images/landscape-placeholder.webp"
+                              }
                               alt="Main list image"
                               width={50}
                               height={50}

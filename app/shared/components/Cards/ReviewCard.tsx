@@ -18,7 +18,9 @@ const ReviewCard = ({ lng, product }: IReviewCard) => {
           alt={product.name}
           className="size-auto rounded-t-lg"
           src={
-            product.files[0]?.url || "/assets/images/landscape-placeholder.webp"
+            product.files.find(
+              (file) => file.order === 1 && file.type === "IMAGE"
+            )?.url || "/assets/images/landscape-placeholder.webp"
           }
         />
         <div className="flex flex-col gap-2 items-center p-5">

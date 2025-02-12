@@ -3,14 +3,16 @@
 import { XMark } from "@/app/shared/icons";
 import { useDisableScroll } from "@/app/shared/hooks";
 import { useCallback, useEffect, useRef } from "react";
+import { cn } from "../utils/cn";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  backgroundColor?: string;
   children: React.ReactNode;
 }
 
-const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+const Modal = ({ isOpen, onClose, children, backgroundColor }: ModalProps) => {
   const menuRef = useRef(null);
 
   useDisableScroll(isOpen);
@@ -40,7 +42,10 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   return (
     <div className="fixed flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-75 inset-0 z-50">
       <div
-        className="relative bg-accent-light dark:bg-neutral p-8 rounded-lg shadow-lg dark:shadow-gray-900 w-[80%] md:w-1/2 h-auto max-h-[80%] overflow-y-auto overflow-x-hidden"
+        className={cn(
+          "relative p-8 rounded-lg shadow-lg dark:shadow-gray-900 w-[80%] md:w-1/2 h-auto max-h-[80%] overflow-y-auto overflow-x-hidden",
+          backgroundColor || "bg-accent-light dark:bg-neutral"
+        )}
         ref={menuRef}
       >
         <button

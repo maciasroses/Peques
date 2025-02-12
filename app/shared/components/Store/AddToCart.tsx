@@ -10,6 +10,7 @@ interface IAddToCart {
   price: number;
   product: IProduct;
   discount?: string | null;
+  onParentClose?: () => void;
   promotionId?: string | null;
   customRequest?: string | null;
 }
@@ -19,6 +20,7 @@ const AddToCart = ({
   product,
   discount,
   promotionId,
+  onParentClose,
   customRequest,
 }: IAddToCart) => {
   const theme = useResolvedTheme();
@@ -47,7 +49,8 @@ const AddToCart = ({
       name: product.name,
       discount: discount,
       file:
-        product.files[0]?.url ?? "/assets/images/landscape-placeholder.webp",
+        product.files.find((file) => file.order === 1 && file.type === "IMAGE")
+          ?.url ?? "/assets/images/landscape-placeholder.webp",
       price: product.salePriceMXN,
     });
 
@@ -59,6 +62,7 @@ const AddToCart = ({
 
     // Resetea la cantidad al valor inicial (opcional)
     setQuantity(1);
+    onParentClose && onParentClose();
   };
 
   const handleIncrement = () => {
