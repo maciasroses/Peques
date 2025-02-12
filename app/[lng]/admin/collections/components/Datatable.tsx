@@ -30,10 +30,12 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<ICollection>> = ({
       </h1>
       <ProductDatatable
         collectionId={data.id}
-        products={data.products.map((product: IProductOnCollection) => ({
-          ...product.product,
-          order: product.order,
-        }))}
+        products={data.products
+          .map((product: IProductOnCollection) => ({
+            ...product.product,
+            order: product.order,
+          }))
+          .sort((a, b) => a.order - b.order)}
       />
     </div>
   );

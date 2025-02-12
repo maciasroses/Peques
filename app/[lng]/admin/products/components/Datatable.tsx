@@ -58,7 +58,10 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IProduct>> = ({
         </li>
       </ul>
       {tab === "files" && (
-        <FilesDatatable files={data.files} productId={data.id} />
+        <FilesDatatable
+          files={data.files.sort((a, b) => a.order - b.order)}
+          productId={data.id}
+        />
       )}
       {tab === "history" && (
         <HistoryDatatable
