@@ -12,6 +12,7 @@ import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
+import { generateFileKey } from "../../utils/generateFileKey";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const resend_email = process.env.RESEND_EMAIL as string;
@@ -388,9 +389,10 @@ export async function updateProfilePicture(formData: FormData) {
 
     const imageUrl = formData.get("image") as File;
 
+    const fileKey = generateFileKey(imageUrl as File);
     const url = await uploadFile({
       file: imageUrl,
-      fileKey: `User-profile-pictures/${session.userId}-${imageUrl.name.split(".")[0]}-${new Date().getTime()}.${imageUrl.name.split(".")[1]}`,
+      fileKey: `User-profile-pictures/${session.userId}-${fileKey}`,
     });
 
     await update({
