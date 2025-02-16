@@ -79,6 +79,7 @@ const UserPicture = ({ image, onParentClose }: IUserPicture) => {
                 ) : (
                   <GenericInput
                     id="image"
+                    multiple={false}
                     ariaLabel="Subir foto de perfil"
                     type="file"
                     fileAccept="image/*"

@@ -59,7 +59,7 @@ const Footer = () => {
               width={40}
               height={40}
               alt="Peques logo"
-              src="https://ilidf54ifchqqkqe.public.blob.vercel-storage.com/logo-mini-618H1j8ecia4nZOF8sSrr5dM6NlNK1.webp"
+              src="https://pequesbucket.s3.us-east-2.amazonaws.com/logo-mini.webp"
               style={{
                 display: "block",
                 margin: "0 auto",

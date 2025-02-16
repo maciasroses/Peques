@@ -1,12 +1,12 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { del, put } from "@vercel/blob";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
 import { create, deleteById, read, update } from "./model";
+import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
 import type { IHero } from "@/app/shared/interfaces";
 
 export async function getHeroes({
@@ -61,14 +61,18 @@ export async function createHero(formData: FormData) {
 
     const { imageUrl, ...rest } = dataToValidate;
 
-    const { url } = await put(
-      `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-      imageUrl as File,
-      {
-        access: "public",
-        contentType: "image/webp",
-      }
-    );
+    // const { url } = await put(
+    //   `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
+    //   imageUrl as File,
+    //   {
+    //     access: "public",
+    //     contentType: "image/webp",
+    //   }
+    // );
+    const url = await uploadFile({
+      file: imageUrl as File,
+      fileKey: `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.${(imageUrl as File).name.split(".")[1]}`,
+    });
 
     const finalData = {
       ...rest,
@@ -123,14 +127,10 @@ export async function updateHeroById({
     if ((dataToValidate.imageUrl as File).size > 0) {
       const { imageUrl, ...rest } = dataToValidate;
 
-      const { url } = await put(
-        `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-        imageUrl as File,
-        {
-          access: "public",
-          contentType: "image/webp",
-        }
-      );
+      const url = await uploadFile({
+        file: imageUrl as File,
+        fileKey: `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.${(imageUrl as File).name.split(".")[1]}`,
+      });
 
       const finalData = {
         ...rest,
@@ -138,7 +138,9 @@ export async function updateHeroById({
       };
 
       await update({ id, data: finalData });
-      await del(prevHero.imageUrl);
+
+      const urlObj = new URL(prevHero.imageUrl);
+      await deleteFile(urlObj.pathname.substring(1));
     } else {
       const { imageUrl, ...rest } = dataToValidate;
 
@@ -204,7 +206,9 @@ export async function deleteHero({ id }: { id: string }) {
       return null;
     }
     await deleteById({ id });
-    await del(hero.imageUrl);
+
+    const urlObj = new URL(hero.imageUrl);
+    await deleteFile(urlObj.pathname.substring(1));
   } catch (error) {
     console.error(error);
     throw new Error("Failed to delete hero");

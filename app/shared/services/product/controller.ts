@@ -2,12 +2,12 @@
 
 import * as XLSX from "xlsx";
 import { cookies } from "next/headers";
-import { del, put } from "@vercel/blob";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
 import formatdateExcel from "@/app/shared/utils/formatdate-excel";
+import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
 import { getProviderByAlias } from "@/app/shared/services/provider/controller";
 import {
   read,
@@ -752,19 +752,11 @@ export async function addFileToProduct(productId: string, formData: FormData) {
     }
 
     const urls: string[] = [];
-
     for (const file of files) {
-      const { url } = await put(
-        `Products/${product.id}/${file.name.split(".")[0]}-${new Date().getTime()}.${
-          file.type.includes("image") ? "webp" : "mp4"
-        }`,
+      const url = await uploadFile({
         file,
-        {
-          access: "public",
-          contentType: file.type,
-        }
-      );
-
+        fileKey: `Products/${product.id}/${file.name.split(".")[0]}-${new Date().getTime()}.${file.name.split(".")[1]}`,
+      });
       urls.push(url);
     }
 
@@ -825,7 +817,8 @@ export async function removeFileFromProduct(productId: string, fileId: string) {
       },
     });
 
-    await del(file.url);
+    const urlObj = new URL(file.url);
+    await deleteFile(urlObj.pathname.substring(1));
 
     return {
       success: true,
@@ -876,7 +869,8 @@ export async function removeMassiveFilesFromProduct(
     });
 
     for (const file of files) {
-      await del(file.url);
+      const urlObj = new URL(file.url);
+      await deleteFile(urlObj.pathname.substring(1));
     }
 
     return {

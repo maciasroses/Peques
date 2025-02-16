@@ -4,12 +4,12 @@ import bcrypt from "bcrypt";
 import { Resend } from "resend";
 import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
-import { del, put } from "@vercel/blob";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { create, read, update } from "./model";
 import { createMyNewCart } from "../cart/controller";
 import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
+import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
 
@@ -388,15 +388,10 @@ export async function updateProfilePicture(formData: FormData) {
 
     const imageUrl = formData.get("image") as File;
 
-    const { url } = await put(
-      `User profile pictures/${session.userId}.${imageUrl.name
-        .split(".")
-        .pop()}`,
-      imageUrl,
-      {
-        access: "public",
-      }
-    );
+    const url = await uploadFile({
+      file: imageUrl,
+      fileKey: `User-profile-pictures/${session.userId}-${imageUrl.name.split(".")[0]}-${new Date().getTime()}.${imageUrl.name.split(".")[1]}`,
+    });
 
     await update({
       id: session.userId as string,
@@ -404,7 +399,11 @@ export async function updateProfilePicture(formData: FormData) {
         image: url,
       },
     });
-    await del(user.image as string);
+
+    if (user.image !== "/assets/images/profilepic.webp") {
+      const urlObj = new URL(user.image as string);
+      await deleteFile(urlObj.pathname.substring(1));
+    }
 
     return {
       success: true,
@@ -437,7 +436,8 @@ export async function removeProfilePicture() {
       },
     });
 
-    await del(user.image as string);
+    const urlObj = new URL(user.image as string);
+    await deleteFile(urlObj.pathname.substring(1));
 
     return {
       success: true,

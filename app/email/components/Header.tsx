@@ -34,7 +34,7 @@ const Header = ({ title }: IHeader) => {
           width={150}
           height={70}
           alt="Peques logo"
-          src="https://ilidf54ifchqqkqe.public.blob.vercel-storage.com/logo-color-9xETxiG2pvAMLO8T7lJL6xrxGwc1iM.webp"
+          src="https://pequesbucket.s3.us-east-2.amazonaws.com/logo-color.webp"
         />
         <p
           className="header-title"

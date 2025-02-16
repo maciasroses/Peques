@@ -97,7 +97,7 @@ const GenericInput: React.FC<IGenericInput> = ({
           </div>
           <input
             id={id}
-            multiple
+            multiple={multiple}
             name={id}
             type="file"
             className="hidden"

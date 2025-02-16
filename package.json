@@ -19,12 +19,12 @@
     "email:react-email": "cp .env ./node_modules/react-email && email dev --dir app/email --port 3001"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.749.0",
     "@hello-pangea/dnd": "^17.0.0",
     "@prisma/client": "^6.3.1",
     "@react-email/components": "^0.0.31",
     "@stripe/react-stripe-js": "^3.1.1",
     "@stripe/stripe-js": "^5.4.0",
-    "@vercel/blob": "^0.27.0",
     "accept-language": "3.0.20",
     "bcrypt": "5.1.1",
     "chart.js": "^4.4.7",
