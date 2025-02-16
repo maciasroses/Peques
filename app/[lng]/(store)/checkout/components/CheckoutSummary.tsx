@@ -58,8 +58,6 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
     setPickUp(pickUpAddress);
   };
 
-  console.log(pickUp);
-
   if (isLoading) return <LoadingScreen />;
   if (cart.length === 0) return <EmptyCart lng={lng} />;
 

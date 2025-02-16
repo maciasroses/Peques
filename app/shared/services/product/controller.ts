@@ -27,6 +27,7 @@ import type {
   IProductHistory,
   IProductSearchParams,
 } from "@/app/shared/interfaces";
+import { generateFileKey } from "../../utils/generateFileKey";
 
 export async function getProducts({
   q,
@@ -753,9 +754,10 @@ export async function addFileToProduct(productId: string, formData: FormData) {
 
     const urls: string[] = [];
     for (const file of files) {
+      const fileKey = generateFileKey(file as File);
       const url = await uploadFile({
         file,
-        fileKey: `Products/${product.id}/${file.name.split(".")[0]}-${new Date().getTime()}.${file.name.split(".")[1]}`,
+        fileKey: `Products/${product.id}/${fileKey}`,
       });
       urls.push(url);
     }
@@ -950,7 +952,6 @@ export async function updateProductFileOrder({
     };
   }
 
-  console.log("TODO GOOD");
   const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/admin/products`);
   redirect(`/${lng}/admin/products`);

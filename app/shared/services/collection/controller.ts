@@ -12,6 +12,7 @@ import type {
   ICollection,
   ICollectionSearchParams,
 } from "@/app/shared/interfaces";
+import { generateFileKey } from "../../utils/generateFileKey";
 
 export async function getCollections({ q }: ICollectionSearchParams) {
   try {
@@ -119,9 +120,10 @@ export async function createCollection(formData: FormData) {
 
     const { imageUrl, ...rest } = dataToValidate;
 
+    const fileKey = generateFileKey(imageUrl as File);
     const url = await uploadFile({
       file: imageUrl as File,
-      fileKey: `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.${(imageUrl as File).name.split(".")[1]}`,
+      fileKey: `Collections/${fileKey}`,
     });
 
     const productIds = await getProductIdsByKeys(products);
@@ -214,9 +216,10 @@ export async function updateCollection({
     if ((dataToValidate.imageUrl as File).size > 0) {
       const { imageUrl, ...rest } = dataToValidate;
 
+      const fileKey = generateFileKey(imageUrl as File);
       const url = await uploadFile({
         file: imageUrl as File,
-        fileKey: `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.${(imageUrl as File).name.split(".")[1]}`,
+        fileKey: `Collections/${fileKey}`,
       });
 
       const finalData = {

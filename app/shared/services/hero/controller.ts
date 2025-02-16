@@ -8,6 +8,7 @@ import { isAdmin } from "@/app/shared/services/auth";
 import { create, deleteById, read, update } from "./model";
 import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
 import type { IHero } from "@/app/shared/interfaces";
+import { generateFileKey } from "../../utils/generateFileKey";
 
 export async function getHeroes({
   isAdminRequest,
@@ -61,17 +62,10 @@ export async function createHero(formData: FormData) {
 
     const { imageUrl, ...rest } = dataToValidate;
 
-    // const { url } = await put(
-    //   `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-    //   imageUrl as File,
-    //   {
-    //     access: "public",
-    //     contentType: "image/webp",
-    //   }
-    // );
+    const fileKey = generateFileKey(imageUrl as File);
     const url = await uploadFile({
       file: imageUrl as File,
-      fileKey: `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.${(imageUrl as File).name.split(".")[1]}`,
+      fileKey: `Heroes/${fileKey}`,
     });
 
     const finalData = {
@@ -127,9 +121,10 @@ export async function updateHeroById({
     if ((dataToValidate.imageUrl as File).size > 0) {
       const { imageUrl, ...rest } = dataToValidate;
 
+      const fileKey = generateFileKey(imageUrl as File);
       const url = await uploadFile({
         file: imageUrl as File,
-        fileKey: `Heroes/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.${(imageUrl as File).name.split(".")[1]}`,
+        fileKey: `Heroes/${fileKey}`,
       });
 
       const finalData = {
