@@ -28,7 +28,7 @@ interface ISharedForm {
 const SharedForm = ({ onClose, productId }: ISharedForm) => {
   const [isPending, setIsPending] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
-  const [tab, setTab] = useState<"history" | "files">("history");
+  const [tab, setTab] = useState<"files" | "history">("files");
   const [badResponse, setBadResponse] = useState<
     ISharedState | ICreateNUpdateProductHistoryState
   >(INITIAL_STATE_RESPONSE);
@@ -65,17 +65,6 @@ const SharedForm = ({ onClose, productId }: ISharedForm) => {
         <button
           onClick={() => {
             setBadResponse(INITIAL_STATE_RESPONSE);
-            setTab("history");
-          }}
-          className={`${
-            tab === "history" ? "bg-accent text-white" : "bg-white text-accent"
-          } px-4 py-2 rounded-md`}
-        >
-          Historial
-        </button>
-        <button
-          onClick={() => {
-            setBadResponse(INITIAL_STATE_RESPONSE);
             setTab("files");
           }}
           className={`${
@@ -84,11 +73,34 @@ const SharedForm = ({ onClose, productId }: ISharedForm) => {
         >
           Archivos
         </button>
+        <button
+          onClick={() => {
+            setBadResponse(INITIAL_STATE_RESPONSE);
+            setTab("history");
+          }}
+          className={`${
+            tab === "history" ? "bg-accent text-white" : "bg-white text-accent"
+          } px-4 py-2 rounded-md`}
+        >
+          Historial
+        </button>
       </div>
       <form onSubmit={submitAction}>
         <fieldset disabled={isPending}>
           <div className="flex flex-col gap-4 text-xl">
-            {tab === "history" ? (
+            {tab === "files" ? (
+              <GenericInput
+                multiple
+                id="files"
+                type="file"
+                ariaLabel="Archivos"
+                fileAccept=".webp, .mp4"
+                file={files?.length ? files[0] : undefined}
+                onChange={(event) =>
+                  setFiles((event.target as HTMLInputElement).files)
+                }
+              />
+            ) : (
               <>
                 <GenericPairDiv>
                   <GenericDiv>
@@ -174,18 +186,6 @@ const SharedForm = ({ onClose, productId }: ISharedForm) => {
                   </GenericDiv>
                 </GenericPairDiv>
               </>
-            ) : (
-              <GenericInput
-                multiple
-                id="files"
-                type="file"
-                ariaLabel="Archivos"
-                fileAccept=".webp, .mp4"
-                file={files?.length ? files[0] : undefined}
-                onChange={(event) =>
-                  setFiles((event.target as HTMLInputElement).files)
-                }
-              />
             )}
           </div>
           <div className="text-center mt-4">

@@ -372,7 +372,7 @@ OrderReceipt.PreviewProps = {
       {
         id: "anticaida-azul",
         name: "mordedera anticaida azul",
-        file: "https://ilidf54ifchqqkqe.public.blob.vercel-storage.com/Products/test-P6foS1ey0j134TE2BEQVSxotMzaxNO.webp",
+        file: "https://pequesbucket.s3.us-east-2.amazonaws.com/logo-mini.webp",
         price: 220,
         // discount: "Descuento de $50.00",
         quantity: 1,

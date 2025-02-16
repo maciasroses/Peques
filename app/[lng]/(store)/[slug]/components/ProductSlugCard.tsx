@@ -46,7 +46,9 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
   const { isOpen, onOpen, onClose } = useModal();
   const [selectedImageId, setSelectedImageId] = useState(
     product.files.find((file) => file.order === 1 && file.type === "IMAGE")
-      ?.id ?? product.files[0]?.id
+      ?.id ??
+      product.files[0]?.id ??
+      "/assets/images/landscape-placeholder.webp"
   );
   const {
     isOpen: isCustomOpen,
@@ -118,7 +120,8 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
   const selectedImage =
     product.files.find((file) => file.id === selectedImageId) ??
     product.files.find((file) => file.order === 1 && file.type === "IMAGE") ??
-    product.files[0];
+    product.files[0] ??
+    "/assets/images/landscape placeholder.webp";
 
   useDisableScroll(isOpen);
 

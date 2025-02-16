@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/app/shared/services/prisma";
-import type { IProductSearchParams } from "@/app/shared/interfaces";
+import type { IProduct, IProductSearchParams } from "@/app/shared/interfaces";
 
 export async function create({
   data,
@@ -246,8 +246,6 @@ export async function read({
 
   const take = Number(limit);
   const skip = (Number(page) - 1) * Number(limit);
-  const totalCount = await prisma.product.count({ where });
-  const totalPages = Math.ceil(totalCount / Number(limit));
 
   if (isAdminRequest) {
     return await prisma.product.findMany({
@@ -256,18 +254,73 @@ export async function read({
       include: globalInclude,
     });
   } else {
-    const products = await prisma.product.findMany({
-      take,
-      skip,
-      where,
-      orderBy,
-      include: globalInclude,
-    });
-    return {
-      products,
-      totalPages,
-      totalCount,
-    };
+    if (collection) {
+      const totalCount = await prisma.$queryRaw`
+        SELECT COUNT(*) as count
+        FROM "Product" p
+        JOIN "ProductOnCollection" pc ON p.id = pc."productId"
+        JOIN "Collection" c ON pc."collectionId" = c.id
+        WHERE c.link = ${collection};
+      `;
+      const totalPages = Math.ceil(
+        Number((totalCount as { count: number }[])[0].count) / Number(limit)
+      );
+
+      const rawProducts = (await prisma.$queryRaw`
+        SELECT p.*
+        FROM "Product" p
+        JOIN "ProductOnCollection" pc ON p.id = pc."productId"
+        JOIN "Collection" c ON pc."collectionId" = c.id
+        WHERE c.link = ${collection}
+        ORDER BY pc."order" ASC
+        LIMIT ${take} OFFSET ${skip};
+      `) as IProduct[];
+
+      const productIds = rawProducts.map((product) => product.id);
+
+      const allProducts = await prisma.product.findMany({
+        where: {
+          id: { in: productIds },
+        },
+        include: globalInclude,
+      });
+
+      const productIndexMap = new Map(
+        rawProducts.map((product, index) => [product.id, index])
+      );
+
+      const enrichedProducts = allProducts
+        .map((product) => ({
+          ...rawProducts.find((p) => p.id === product.id),
+          ...product,
+        }))
+        .sort(
+          (a, b) =>
+            (productIndexMap.get(a.id) ?? 0) - (productIndexMap.get(b.id) ?? 0)
+        );
+
+      return {
+        products: enrichedProducts,
+        totalPages,
+        totalCount: Number((totalCount as { count: number }[])[0].count),
+      };
+    } else {
+      const totalCount = await prisma.product.count({ where });
+      const totalPages = Math.ceil(totalCount / Number(limit));
+
+      const products = await prisma.product.findMany({
+        take,
+        skip,
+        where,
+        orderBy,
+        include: globalInclude,
+      });
+      return {
+        products,
+        totalPages,
+        totalCount,
+      };
+    }
   }
 }
 

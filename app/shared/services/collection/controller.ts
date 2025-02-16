@@ -1,11 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { del, put } from "@vercel/blob";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
+import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
 import { create, deleteById, deleteMassive, read, update } from "./model";
 import { getProductIdsByKeys } from "@/app/shared/services/product/controller";
 import type {
@@ -119,14 +119,10 @@ export async function createCollection(formData: FormData) {
 
     const { imageUrl, ...rest } = dataToValidate;
 
-    const { url } = await put(
-      `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-      imageUrl as File,
-      {
-        access: "public",
-        contentType: "image/webp",
-      }
-    );
+    const url = await uploadFile({
+      file: imageUrl as File,
+      fileKey: `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.${(imageUrl as File).name.split(".")[1]}`,
+    });
 
     const productIds = await getProductIdsByKeys(products);
 
@@ -218,14 +214,10 @@ export async function updateCollection({
     if ((dataToValidate.imageUrl as File).size > 0) {
       const { imageUrl, ...rest } = dataToValidate;
 
-      const { url } = await put(
-        `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.webp`,
-        imageUrl as File,
-        {
-          access: "public",
-          contentType: "image/webp",
-        }
-      );
+      const url = await uploadFile({
+        file: imageUrl as File,
+        fileKey: `Collections/${(imageUrl as File).name.split(".")[0]}-${new Date().getTime()}.${(imageUrl as File).name.split(".")[1]}`,
+      });
 
       const finalData = {
         ...rest,
@@ -233,7 +225,9 @@ export async function updateCollection({
       };
 
       await update({ id, data: finalData });
-      await del(collection.imageUrl);
+
+      const urlObj = new URL(collection.imageUrl);
+      await deleteFile(urlObj.pathname.substring(1));
     } else {
       const { imageUrl, ...rest } = dataToValidate;
 
@@ -468,7 +462,9 @@ export async function deleteCollection({ id }: { id: string }) {
     }
 
     await deleteById({ id });
-    await del(collection.imageUrl);
+
+    const urlObj = new URL(collection.imageUrl);
+    await deleteFile(urlObj.pathname.substring(1));
   } catch (error) {
     console.error(error);
     // throw new Error("Failed to delete collection");
@@ -494,7 +490,12 @@ export async function deleteMassiveCollections({ ids }: { ids: string[] }) {
     }
 
     await deleteMassive({ ids });
-    await Promise.all(collectionImages.map((image) => del(image)));
+    await Promise.all(
+      collectionImages.map((image) => {
+        const urlObj = new URL(image);
+        return deleteFile(urlObj.pathname.substring(1));
+      })
+    );
   } catch (error) {
     console.error(error);
     return {
