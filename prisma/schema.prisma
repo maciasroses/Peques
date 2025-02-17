@@ -160,6 +160,7 @@ model Product {
   description               String? @db.Text
   salePriceMXN              Float
   isCustomizable            Boolean @default(false)
+  name_normalized           String?
   availableQuantity         Int     @default(0)
   minimumAcceptableQuantity Int
 
