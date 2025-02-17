@@ -187,6 +187,7 @@ OrderStatus.PreviewProps = {
           transactions: [],
           id: "bb3ea36f-fab2-487f-a2a5-7b57461bc3c9",
           name: "Custom Name Necklace",
+          name_normalized: "Custom Name Necklace",
           description: "Custom Name Necklace",
           salePriceMXN: 89,
           isActive: true,
@@ -201,6 +202,7 @@ OrderStatus.PreviewProps = {
               product: {
                 id: "bb3ea36f-fab2-487f-a2a5-7b57461bc3c9",
                 name: "Custom Name Necklace",
+                name_normalized: "Custom Name Necklace",
                 description: "Custom Name Necklace",
                 salePriceMXN: 89,
                 isActive: true,
