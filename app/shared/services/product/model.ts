@@ -2,6 +2,7 @@
 
 import prisma from "@/app/shared/services/prisma";
 import type { IProduct, IProductSearchParams } from "@/app/shared/interfaces";
+import { normalizeString } from "../../utils/normalize-string";
 
 export async function create({
   data,
@@ -237,10 +238,12 @@ export async function read({
     };
 
   if (q) {
+    const searchQuery = normalizeString(q);
     where.OR = [
       { key: { contains: q, mode: "insensitive" } },
       { name: { contains: q, mode: "insensitive" } },
       { description: { contains: q, mode: "insensitive" } },
+      { name_normalized: { contains: searchQuery, mode: "insensitive" } },
     ];
   }
 
@@ -260,7 +263,7 @@ export async function read({
         FROM "Product" p
         JOIN "ProductOnCollection" pc ON p.id = pc."productId"
         JOIN "Collection" c ON pc."collectionId" = c.id
-        WHERE c.link = ${collection};
+        WHERE c.link = ${collection} AND p."isActive" = true;
       `;
       const totalPages = Math.ceil(
         Number((totalCount as { count: number }[])[0].count) / Number(limit)
@@ -271,7 +274,7 @@ export async function read({
         FROM "Product" p
         JOIN "ProductOnCollection" pc ON p.id = pc."productId"
         JOIN "Collection" c ON pc."collectionId" = c.id
-        WHERE c.link = ${collection}
+        WHERE c.link = ${collection} AND p."isActive" = true
         ORDER BY pc."order" ASC
         LIMIT ${take} OFFSET ${skip};
       `) as IProduct[];

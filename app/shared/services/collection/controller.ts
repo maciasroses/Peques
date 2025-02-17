@@ -272,9 +272,6 @@ export async function updateCollectionOrderById({
       message: "Ha ocurrido un error al actualizar el orden de la colección",
     };
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`/${lng}/admin/collections`);
-  redirect(`/${lng}/admin/collections`);
 }
 
 export async function updateProductOnCollectionOrder({
@@ -328,9 +325,6 @@ export async function updateProductOnCollectionOrder({
       message: "Ha ocurrido un error al actualizar el orden del producto",
     };
   }
-  const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`/${lng}/admin/collections`);
-  redirect(`/${lng}/admin/collections`);
 }
 
 export async function addProductsToCollection({

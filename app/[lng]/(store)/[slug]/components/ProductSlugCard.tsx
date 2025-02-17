@@ -404,7 +404,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             className={cn(
-              "w-full h-full flex justify-center cursor-pointer relative mx-20",
+              "w-full h-full flex justify-center cursor-pointer relative",
               selectedImage &&
                 selectedImage.type === "IMAGE" &&
                 "sm:cursor-zoom-in "

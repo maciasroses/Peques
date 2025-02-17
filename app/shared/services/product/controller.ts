@@ -28,6 +28,7 @@ import type {
   IProductSearchParams,
 } from "@/app/shared/interfaces";
 import { generateFileKey } from "../../utils/generateFileKey";
+import { normalizeString } from "../../utils/normalize-string";
 
 export async function getProducts({
   q,
@@ -237,6 +238,7 @@ export async function createProduct(formData: FormData) {
 
   const updatedData = {
     name,
+    name_normalized: normalizeString(name as string),
     key,
     description,
     isCustomizable,
@@ -347,6 +349,7 @@ export async function createMassiveProduct(formData: FormData) {
 
         const updatedData = {
           name,
+          name_normalized: normalizeString(name as string),
           key,
           minimumAcceptableQuantity,
           availableQuantity: data.quantityPerCarton,
@@ -502,7 +505,13 @@ export async function updateProduct(formData: FormData, productId: string) {
       };
     }
 
-    await update({ id: productId, data });
+    await update({
+      id: productId,
+      data: {
+        ...data,
+        name_normalized: normalizeString(data.name as string),
+      },
+    });
   } catch (error) {
     console.error(error);
     // throw new Error("An internal error occurred");
@@ -951,8 +960,4 @@ export async function updateProductFileOrder({
       message: "An internal error occurred",
     };
   }
-
-  const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`/${lng}/admin/products`);
-  redirect(`/${lng}/admin/products`);
 }
