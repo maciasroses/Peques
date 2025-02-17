@@ -137,6 +137,7 @@ OrderReceipt.PreviewProps = {
             id: "bb3ea36f-fab2-487f-a2a5-7b57461bc3c9",
             key: "anticaida-azul",
             name: "mordedera anticaida azul",
+            name_normalized: "mordedera anticaida azul",
             isCustomizable: true,
             description: null,
             salePriceMXN: 220,
