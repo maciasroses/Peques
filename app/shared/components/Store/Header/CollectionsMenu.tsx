@@ -57,7 +57,7 @@ const CollectionsMenu = ({
         <button
           onClick={() => handleTabClick(index)}
           className={cn(
-            "py-2 px-4 md:hover:bg-neutral md:dark:hover:bg-primary w-full text-left inline-flex justify-between items-center gap-2"
+            "py-2 px-4 md:hover:bg-neutral w-full text-left inline-flex justify-between items-center gap-2"
           )}
         >
           {collection.name}
@@ -76,7 +76,7 @@ const CollectionsMenu = ({
               <Link
                 href={`/${lng}/collections/${collection.link}`}
                 onClick={handleClick}
-                className="py-2 pl-8 pr-4 md:hover:bg-neutral md:dark:hover:bg-primary block"
+                className="py-2 pl-8 pr-4 md:hover:bg-neutral block"
               >
                 Ver todo
               </Link>
@@ -89,7 +89,7 @@ const CollectionsMenu = ({
                       ? setSubTabSelected(-1)
                       : setSubTabSelected(index)
                   }
-                  className="py-2 pl-8 pr-4 md:hover:bg-neutral md:dark:hover:bg-primary w-full text-left inline-flex justify-between items-center gap-2"
+                  className="py-2 pl-8 pr-4 md:hover:bg-neutral w-full text-left inline-flex justify-between items-center gap-2"
                 >
                   {filter.group.name}
                   <span
@@ -108,7 +108,7 @@ const CollectionsMenu = ({
                         <Link
                           onClick={handleClick}
                           href={`/${lng}/collections/${collection.link}?filters=${filter.group.key}_${option.key}`}
-                          className="py-2 pl-12 pr-4 md:hover:bg-neutral md:dark:hover:bg-primary block"
+                          className="py-2 pl-12 pr-4 md:hover:bg-neutral block"
                         >
                           {option.name}
                         </Link>
@@ -143,12 +143,12 @@ const CollectionsMenu = ({
         </span>
       </button>
       {menuOpen && (
-        <ul className="z-10 w-52 md:w-auto max-h-[calc(100vh-200px)] md:max-h-[calc(100vh-100px)] overflow-y-auto mt-2 absolute md:bg-neutral-light md:dark:bg-primary-dark md:rounded-md md:shadow-md text-gray-600 dark:text-white md:text-white">
+        <ul className="z-10 w-52 md:w-auto max-h-[calc(100vh-200px)] md:max-h-[calc(100vh-100px)] overflow-y-auto mt-2 absolute md:bg-neutral-light md:rounded-md md:shadow-md text-gray-600 md:text-white">
           <li>
             <Link
               href={`/${lng}/collections`}
               onClick={handleClick}
-              className="py-2 px-4 md:hover:bg-neutral md:dark:hover:bg-primary block"
+              className="py-2 px-4 md:hover:bg-neutral block"
             >
               Ver todas las colecciones
             </Link>

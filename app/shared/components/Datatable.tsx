@@ -13,25 +13,25 @@ const customStyles = (theme: string): TableStyles => {
   return {
     headRow: {
       style: {
-        backgroundColor: theme === "dark" ? "#AEB898" : "#EADA88",
+        backgroundColor: "#EADA88",
         color: "#000000",
       },
     },
     rows: {
       style: {
-        backgroundColor: theme === "dark" ? "#D2D8C0" : "#F7EDE6",
-        color: theme === "dark" ? "#000000" : "#000000",
+        backgroundColor: "#F7EDE6",
+        color: "#000000",
       },
     },
     pagination: {
       style: {
-        backgroundColor: theme === "dark" ? "#8C9E8C" : "#EADA88",
-        color: theme === "dark" ? "#F7EDE6" : "#000000",
+        backgroundColor: "#EADA88",
+        color: "#000000",
       },
       pageButtonsStyle: {
-        fill: theme === "dark" ? "#D2D8C0" : "#778586",
+        fill: "#778586",
         "&:hover:not(:disabled)": {
-          fill: theme === "dark" ? "#F7EDE6" : "#000000",
+          fill: "#000000",
         },
       },
     },

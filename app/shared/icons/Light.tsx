@@ -12,7 +12,7 @@ const LightIcon = ({ theme }: { theme: string }) => {
         "size-6 transition duration-75",
         theme === "light"
           ? "text-gray-600 group-hover:text-primary-light"
-          : "text-gray-600 dark:text-accent group-hover:text-primary-light"
+          : "text-gray-600 group-hover:text-primary-light"
       )}
     >
       <path

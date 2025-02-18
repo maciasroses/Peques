@@ -11,7 +11,7 @@ const DarkIcon = ({ theme }: { theme: string }) => (
       "size-6 transition duration-75",
       theme === "dark"
         ? "text-accent group-hover:text-primary-light"
-        : "text-primary-light dark:text-accent group-hover:text-primary-light"
+        : "text-primary-light group-hover:text-primary-light"
     )}
   >
     <path

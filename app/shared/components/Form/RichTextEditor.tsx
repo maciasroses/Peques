@@ -24,7 +24,7 @@ const RichTextEditor = ({ value, onChange }: IRichTextEditor) => {
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-light rounded-md text-black dark:text-white max-h-[320px] overflow-y-auto">
+    <div className="bg-white rounded-md text-black max-h-[320px] overflow-y-auto">
       <ReactQuill
         value={value}
         onChange={onChange}

@@ -85,15 +85,13 @@ const AddToCart = ({
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
-      <div className="flex items-center justify-between space-x-2 border border-gray-300 dark:border-gray-700 rounded-lg w-full md:w-1/3">
+      <div className="flex items-center justify-between space-x-2 border border-gray-300 rounded-lg w-full md:w-1/3">
         <button
           disabled={quantity <= 1}
           onClick={handleDecrement}
           className={cn(
             "w-8 h-8 flex items-center justify-center text-2xl",
-            quantity > 1
-              ? "text-gray-700 dark:text-gray-200"
-              : "text-gray-400 cursor-not-allowed"
+            quantity > 1 ? "text-gray-700" : "text-gray-400 cursor-not-allowed"
           )}
         >
           -
@@ -107,7 +105,7 @@ const AddToCart = ({
           className={cn(
             "w-8 h-8 flex items-center justify-center text-2xl",
             quantity + currentQuantityInCart < product.availableQuantity
-              ? "text-gray-700 dark:text-gray-200"
+              ? "text-gray-700"
               : "text-gray-400 cursor-not-allowed"
           )}
         >
@@ -120,7 +118,7 @@ const AddToCart = ({
           "font-medium rounded-lg text-sm px-4 py-2 w-full md:w-2/3",
           product.availableQuantity > 0
             ? "bg-accent"
-            : "text-gray-600 dark:text-gray-200 bg-gray-300 cursor-not-allowed dark:bg-gray-700"
+            : "text-gray-600 bg-gray-300 cursor-not-allowed"
         )}
       >
         {product.availableQuantity > 0

@@ -46,9 +46,9 @@ const CheckoutTab = ({
   setSelectedMethod,
 }: ICheckoutTab) => {
   const appearance: {
-    theme: "night" | "stripe";
+    theme: "stripe";
   } = {
-    theme: theme === "dark" ? "night" : "stripe",
+    theme: "stripe",
   };
 
   const options = {
@@ -237,9 +237,7 @@ const StripeForm = ({
         )}
       >
         {errorMessage && (
-          <p className="text-[#cb3544] dark:text-[#c87688] font-bold mb-2">
-            {errorMessage}
-          </p>
+          <p className="text-[#cb3544] font-bold mb-2">{errorMessage}</p>
         )}
 
         {/* Lista de métodos de pago guardados */}
@@ -251,7 +249,7 @@ const StripeForm = ({
                 className={cn(
                   "w-full border-2 rounded-lg text-left",
                   selectedMethod === method.stripePaymentMethodId
-                    ? "border-primary bg-primary-light dark:border-primary-dark dark:bg-primary-dark/50"
+                    ? "border-primary bg-primary-light"
                     : "border-gray-200"
                 )}
                 onClick={() =>
@@ -272,7 +270,7 @@ const StripeForm = ({
               className={cn(
                 "inline-flex gap-2 items-center justify-center",
                 isLoading || isLoadingFromHook
-                  ? "py-2 px-4 bg-gray-300 dark:bg-gray-800 cursor-not-allowed rounded-md"
+                  ? "py-2 px-4 bg-gray-300 cursor-not-allowed rounded-md"
                   : "link-button-primary"
               )}
             >
@@ -290,10 +288,10 @@ const StripeForm = ({
             options={{
               style: {
                 base: {
-                  color: theme === "dark" ? "#ffffff" : "#000000",
+                  color: "#000000",
                   fontSize: "16px",
                   "::placeholder": {
-                    color: theme === "dark" ? "#cfcfcf" : "#a0a0a0",
+                    color: "#a0a0a0",
                   },
                 },
               },
@@ -309,7 +307,7 @@ const StripeForm = ({
           className={cn(
             "w-full mt-4",
             stripe == null || elements == null || isLoading || isLoadingFromHook
-              ? "py-2 bg-gray-300 dark:bg-gray-800 cursor-not-allowed rounded-md"
+              ? "py-2 bg-gray-300 cursor-not-allowed rounded-md"
               : "link-button-primary"
           )}
         >

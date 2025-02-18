@@ -29,7 +29,7 @@ const PickUpAddressTab = ({
             className={cn(
               "w-full border-2 rounded-lg text-left",
               pickUpAddressSelected?.id === address.id
-                ? "border-primary bg-primary-light dark:border-primary-dark dark:bg-primary-dark/50"
+                ? "border-primary bg-primary-light"
                 : "border-gray-200"
             )}
             onClick={() => setPickUpAddress(address)}
@@ -46,7 +46,7 @@ export default PickUpAddressTab;
 
 const PickUpAddressCard = ({ address }: { address: IPickUpAddress }) => {
   return (
-    <div className="shadow-lg dark:shadow-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
+    <div className="shadow-lg border border-gray-200 rounded-lg p-4">
       <p>
         <strong>Dirección:</strong>
       </p>

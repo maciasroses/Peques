@@ -258,26 +258,72 @@ export async function read({
     });
   } else {
     if (collection) {
-      const totalCount = await prisma.$queryRaw`
-        SELECT COUNT(*) as count
-        FROM "Product" p
-        JOIN "ProductOnCollection" pc ON p.id = pc."productId"
-        JOIN "Collection" c ON pc."collectionId" = c.id
-        WHERE c.link = ${collection} AND p."isActive" = true;
-      `;
-      const totalPages = Math.ceil(
-        Number((totalCount as { count: number }[])[0].count) / Number(limit)
-      );
+      const whereClauses: string[] = [];
+      const params: any[] = [];
 
-      const rawProducts = (await prisma.$queryRaw`
-        SELECT p.*
+      whereClauses.push(`c.link = $${params.length + 1}`);
+      params.push(collection);
+
+      if (!isAdminRequest) {
+        whereClauses.push(`p."isActive" = $${params.length + 1}`);
+        params.push(true);
+      }
+
+      if (filters) {
+        const filtersSplitted = filters.split(",").map((filter) => {
+          const [key, value] = filter.split("_");
+          return { group: key, filter: value };
+        });
+
+        filtersSplitted.forEach((filter) => {
+          whereClauses.push(`
+            EXISTS (
+              SELECT 1 
+              FROM "ProductFilterOnProduct" pfop
+              JOIN "ProductFilter" pf ON pfop."filterId" = pf.id
+              JOIN "FilterGroup" fg ON pf."groupId" = fg.id
+              WHERE pfop."productId" = p.id
+              AND pf.key = $${params.length + 1}
+              AND fg.key = $${params.length + 2}
+            )
+          `);
+          params.push(filter.filter, filter.group);
+        });
+      }
+
+      if (salePriceMXNFrom || salePriceMXNTo) {
+        whereClauses.push(
+          `p."salePriceMXN" BETWEEN $${params.length + 1} AND $${params.length + 2}`
+        );
+        params.push(salePriceMXNFrom ?? 0, salePriceMXNTo ?? 100000000);
+      }
+
+      const whereSQL = whereClauses.length
+        ? `WHERE ${whereClauses.join(" AND ")}`
+        : "";
+
+      const totalCount = await prisma.$queryRawUnsafe<{ count: number }[]>(
+        `SELECT COUNT(*) as count
         FROM "Product" p
         JOIN "ProductOnCollection" pc ON p.id = pc."productId"
         JOIN "Collection" c ON pc."collectionId" = c.id
-        WHERE c.link = ${collection} AND p."isActive" = true
+        ${whereSQL};`,
+        ...params
+      );
+      const totalPages = Math.ceil(Number(totalCount[0].count) / Number(limit));
+
+      const rawProducts = await prisma.$queryRawUnsafe<IProduct[]>(
+        `SELECT p.*
+        FROM "Product" p
+        JOIN "ProductOnCollection" pc ON p.id = pc."productId"
+        JOIN "Collection" c ON pc."collectionId" = c.id
+        ${whereSQL}
         ORDER BY pc."order" ASC
-        LIMIT ${take} OFFSET ${skip};
-      `) as IProduct[];
+        LIMIT $${params.length + 1} OFFSET $${params.length + 2};`,
+        ...params,
+        take,
+        skip
+      );
 
       const productIds = rawProducts.map((product) => product.id);
 

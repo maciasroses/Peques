@@ -80,7 +80,7 @@ const CartSummary = ({
         {cart.map((item) => (
           <li
             key={item.id}
-            className="flex items-center justify-between gap-2 border-b-2 border-b-gray-200 dark:border-b-gray-700 p-2"
+            className="flex items-center justify-between gap-2 border-b-2 border-b-gray-200 p-2"
           >
             <div className="flex items-center gap-2">
               <div className="size-24">
@@ -97,10 +97,10 @@ const CartSummary = ({
             <div className="flex flex-col items-end gap-2">
               {item.discount && (
                 <>
-                  <p className="text-sm line-through text-gray-500 dark:text-gray-400">
+                  <p className="text-sm line-through text-gray-500">
                     {formatCurrency(item.price, "MXN")}
                   </p>
-                  <p className="text-sm text-green-600 dark:text-green-400 text-right">
+                  <p className="text-sm text-green-600 text-right">
                     {item.discount}
                   </p>
                 </>
@@ -147,10 +147,7 @@ const CartSummary = ({
         <p className="text-sm sm:text-lg text-right">
           Envío:{" "}
           <span
-            className={cn(
-              "font-bold",
-              shippingCost === 0 && "text-green-600 dark:text-green-400"
-            )}
+            className={cn("font-bold", shippingCost === 0 && "text-green-600")}
           >
             {formatCurrency(shippingCost / 100, "MXN")}
           </span>
@@ -162,7 +159,7 @@ const CartSummary = ({
           {formatCurrency(subTotal, "MXN")}
         </span>
         {discountCode && (
-          <span className="ml-2 font-bold text-green-600 dark:text-green-400">
+          <span className="ml-2 font-bold text-green-600">
             {formatCurrency(subTotalWithDiscount, "MXN")}
           </span>
         )}
@@ -180,7 +177,7 @@ const CartSummary = ({
           )}
         </span>
         {discountCode && (
-          <span className="ml-2 font-bold text-green-600 dark:text-green-400">
+          <span className="ml-2 font-bold text-green-600">
             {formatCurrency(subTotalWithDiscount + shippingCost / 100, "MXN")}
           </span>
         )}

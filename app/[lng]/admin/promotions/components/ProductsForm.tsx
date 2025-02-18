@@ -75,7 +75,7 @@ const ProductsForm = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 text-left dark:text-white">
+    <div className="flex flex-col items-center gap-4 text-left">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-center text-xl md:text-4xl">
           Quitando Producto(s) de la Promoción

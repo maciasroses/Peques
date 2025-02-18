@@ -14,7 +14,7 @@ const FullCollection = ({ lng, collection, imageSide }: IFullCollection) => {
   const isTextLeft = imageSide === "left";
 
   return (
-    <section className="w-full h-auto md:h-[400px] flex flex-col md:flex-row px-5 md:px-20 bg-primary-light dark:bg-accent text-black">
+    <section className="w-full h-auto md:h-[400px] flex flex-col md:flex-row px-5 md:px-20 bg-primary-light text-black">
       <div
         className={cn(
           "w-full md:w-1/2 lg:w-2/3 md:pt-10",

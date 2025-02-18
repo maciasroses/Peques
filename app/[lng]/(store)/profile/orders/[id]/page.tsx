@@ -41,7 +41,7 @@ const OrderPage = async ({ params: { id, lng } }: IOrderPage) => {
         <Link
           href={`/${lng}/profile/orders`}
           aria-label="Volver a la lista de pedidos"
-          className="text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-400 mt-1"
+          className="text-blue-600 hover:text-blue-700 mt-1"
         >
           <LeftArrow size="size-6 md:size-8" />
         </Link>

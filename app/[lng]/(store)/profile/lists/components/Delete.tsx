@@ -47,10 +47,7 @@ const Delete = ({ lng, customList, handleClose }: IDelete) => {
 
   return (
     <>
-      <button
-        className="block w-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-        onClick={onOpen}
-      >
+      <button className="block w-full p-2 hover:bg-gray-100" onClick={onOpen}>
         {lng === "en" ? "Delete" : "Eliminar"}
       </button>
       <Modal isOpen={isOpen} onClose={handleClose}>
@@ -65,7 +62,7 @@ const Delete = ({ lng, customList, handleClose }: IDelete) => {
               disabled={isSubmitting}
               className={cn("text-center", isSubmitting && "opacity-50")}
             >
-              <h2 className="text-red-600 dark:text-red-300 text-xl">
+              <h2 className="text-red-600 text-xl">
                 ⚠️ Esta acción no se puede deshacer ⚠️
               </h2>
               <p className="text-2xl">

@@ -73,7 +73,7 @@ const SharedForm = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 text-left dark:text-white">
+    <div className="flex flex-col items-center gap-4 text-left">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-center text-xl md:text-4xl">
           Agregando al grupo de filtros
@@ -93,8 +93,8 @@ const SharedForm = ({
                 className={cn(
                   "w-full inline-block p-4 rounded-t-lg border-b-2",
                   tab === "product"
-                    ? "border-blue-400 dark:border-blue-300 text-blue-400 dark:text-blue-300"
-                    : "border-gray-400 dark:border-gray-300"
+                    ? "border-blue-400 text-blue-400"
+                    : "border-gray-400"
                 )}
               >
                 <p className="line-clamp-1">Filtro de Producto</p>
@@ -108,8 +108,8 @@ const SharedForm = ({
                 className={cn(
                   "w-full inline-block p-4 rounded-t-lg border-b-2",
                   tab === "collection"
-                    ? "border-blue-400 dark:border-blue-300 text-blue-400 dark:text-blue-300"
-                    : "border-gray-400 dark:border-gray-300"
+                    ? "border-blue-400 text-blue-400"
+                    : "border-gray-400"
                 )}
               >
                 <p className="line-clamp-1">Colección</p>

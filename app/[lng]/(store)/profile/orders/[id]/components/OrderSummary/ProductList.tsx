@@ -35,7 +35,7 @@ const ProductList = ({ lng, order }: IProductList) => {
               onOpen();
             }}
           >
-            <div className="flex items-center justify-between gap-2 p-4 shadow-lg dark:shadow-gray-800 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg">
+            <div className="flex items-center justify-between gap-2 p-4 shadow-lg border border-gray-200 hover:bg-gray-50 rounded-lg">
               <div className="flex items-center gap-2">
                 <div className="size-24">
                   <Image
@@ -54,7 +54,7 @@ const ProductList = ({ lng, order }: IProductList) => {
               </div>
               <div className="flex flex-col items-end gap-1">
                 {product.discount !== 0 && (
-                  <p className="line-through text-xs sm:text-base text-gray-500 dark:text-gray-400">
+                  <p className="line-through text-xs sm:text-base text-gray-500">
                     {formatCurrency(product.costMXN, "MXN")}
                   </p>
                 )}
@@ -73,7 +73,7 @@ const ProductList = ({ lng, order }: IProductList) => {
                   </span>
                 </p>
                 {product.discount !== 0 && (
-                  <p className="text-xs sm:text-base font-medium text-green-600 dark:text-green-400 text-right">
+                  <p className="text-xs sm:text-base font-medium text-green-600 text-right">
                     Descuento aplicado
                   </p>
                 )}

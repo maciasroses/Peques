@@ -24,7 +24,7 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<ICollection>> = ({
   data,
 }) => {
   return (
-    <div className="pl-12 py-4 dark:bg-black dark:text-white">
+    <div className="pl-12 py-4">
       <h1 className="text-2xl">
         Productos de la colección: {`"${data.name}"`}
       </h1>

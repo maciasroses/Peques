@@ -125,7 +125,7 @@ const Filters = ({ filters, collection }: IFiltersComp) => {
           (searchParams.get("filters") ||
             searchParams.get("salePriceMXNTo") ||
             searchParams.get("salePriceMXNFrom")) &&
-            "block text-lg text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-300"
+            "block text-lg text-gray-800 hover:text-blue-600"
         )}
       >
         <button
@@ -147,11 +147,11 @@ const Filters = ({ filters, collection }: IFiltersComp) => {
               <li key={option.id}>
                 <button
                   className={cn(
-                    "text-sm text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-300 ml-5",
+                    "text-sm text-gray-800 hover:text-blue-600 ml-5",
                     searchParams
                       .get("filters")
                       ?.includes(`${filter.key}_${option.key}`) &&
-                      "text-blue-600 dark:text-blue-300"
+                      "text-blue-600"
                   )}
                   onClick={() => {
                     handleFilter(option.key, filter.key);
@@ -165,7 +165,7 @@ const Filters = ({ filters, collection }: IFiltersComp) => {
               className={cn(
                 "hidden",
                 searchParams.get("filters")?.includes(filter.key) &&
-                  "block mt-2 ml-5 text-sm text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-300"
+                  "block mt-2 ml-5 text-sm text-gray-800 hover:text-blue-600"
               )}
             >
               <button
@@ -249,6 +249,6 @@ const InputField = ({
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className="w-full p-2 rounded-lg focus:outline-none border bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white dark:placeholder-gray-400 border-gray-300 focus:border-gray-500 dark:focus:border-gray-100"
+    className="w-full p-2 rounded-lg focus:outline-none border bg-gray-50 text-gray-900 border-gray-300 focus:border-gray-500"
   />
 );

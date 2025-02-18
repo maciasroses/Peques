@@ -60,10 +60,8 @@ const ProductAlertCard = ({
   return (
     <div
       className={clsx(
-        "w-full rounded-lg shadow border border-gray-200 dark:border-gray-500 flex flex-col items-center justify-center p-4 space-y-4 text-white",
-        isAtRisk
-          ? "bg-yellow-400 dark:bg-yellow-900"
-          : "bg-red-400 dark:bg-red-900",
+        "w-full rounded-lg shadow border border-gray-200 flex flex-col items-center justify-center p-4 space-y-4 text-white",
+        isAtRisk ? "bg-yellow-400" : "bg-red-400",
         !isJustOne && "md:w-1/2"
       )}
     >

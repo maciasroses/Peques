@@ -31,7 +31,7 @@ const OrderSummary = ({ lng, order }: IOrderSummary) => {
           <span
             className={cn(
               "font-bold",
-              order.shippingCost === 0 && "text-green-600 dark:text-green-400"
+              order.shippingCost === 0 && "text-green-600"
             )}
           >
             {formatCurrency(order.shippingCost ?? 190, "MXN")}
@@ -45,7 +45,7 @@ const OrderSummary = ({ lng, order }: IOrderSummary) => {
             {formatCurrency(roundUpNumber(subtotal), "MXN")}
           </span>
           {hasGlobalDiscount && (
-            <span className="ml-2 font-bold text-green-600 dark:text-green-400">
+            <span className="ml-2 font-bold text-green-600">
               {formatCurrency(order.total - (order.shippingCost ?? 190), "MXN")}
             </span>
           )}
@@ -61,14 +61,14 @@ const OrderSummary = ({ lng, order }: IOrderSummary) => {
             )}
           </span>
           {hasGlobalDiscount && (
-            <span className="ml-2 font-bold text-green-600 dark:text-green-400">
+            <span className="ml-2 font-bold text-green-600">
               {formatCurrency(order.total, "MXN")}
             </span>
           )}
         </p>
         {hasGlobalDiscount && (
           <div className="flex flex-col gap-1 mt-2">
-            <p className="text-xs sm:text-base font-medium text-green-600 dark:text-green-400">
+            <p className="text-xs sm:text-base font-medium text-green-600">
               Descuento aplicado
             </p>
             <p className="text-base sm:text-xl">

@@ -17,7 +17,7 @@ const AuthTemplate = ({ children }: IAuthTemplate) => {
           className="w-full max-w-[300px] h-auto"
         />
       </div>
-      <div className="w-full sm:w-1/2 flex flex-col items-center dark:text-white max-h-full overflow-y-auto">
+      <div className="w-full sm:w-1/2 flex flex-col items-center max-h-full overflow-y-auto">
         {children}
       </div>
     </div>

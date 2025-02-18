@@ -58,7 +58,7 @@ const SearchPage = async ({ searchParams, params: { lng } }: ISearchPage) => {
           <p className="font-medium text-lg md:text-2xl">
             {q ? `Buscando: ${q}` : `Todos los productos`}
           </p>
-          <p className="text-sm md:text-lg text-gray-800 dark:text-gray-200">
+          <p className="text-sm md:text-lg text-gray-800">
             {totalCount} resultado
             {totalCount > 1 || totalCount === 0 ? "s" : ""}
           </p>

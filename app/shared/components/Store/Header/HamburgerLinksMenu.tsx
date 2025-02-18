@@ -5,7 +5,7 @@ import { cn } from "@/app/shared/utils/cn";
 import CollectionsMenu from "./CollectionsMenu";
 import { BarsII, XMark } from "@/app/shared/icons";
 import { useDisableScroll } from "@/app/shared/hooks";
-import Logo from "@/public/assets/images/logo-color.webp";
+import LogoMini from "@/public/assets/images/logo-mini.webp";
 import type { ICollection } from "@/app/shared/interfaces";
 
 interface IHamburgerLinksMenu {
@@ -29,7 +29,7 @@ const HamburgerLinksMenu = ({ lng, collections }: IHamburgerLinksMenu) => {
       </button>
       <div
         className={cn(
-          "bg-white dark:bg-gray-800 fixed top-0 left-0 h-screen w-64 shadow-lg transform transition-transform z-40",
+          "bg-white fixed top-0 left-0 h-screen w-64 shadow-lg transform transition-transform z-40",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -38,11 +38,11 @@ const HamburgerLinksMenu = ({ lng, collections }: IHamburgerLinksMenu) => {
             <div className="rounded-full bg-white h-[50px] min-h-[50px]">
               <Link href={`/${lng}`}>
                 <Image
-                  src={Logo}
+                  src={LogoMini}
                   width={50}
                   height={50}
                   alt="Peques logo"
-                  className="size-full object-cover rounded-full"
+                  className="size-full object-cover "
                 />
               </Link>
             </div>
@@ -53,7 +53,7 @@ const HamburgerLinksMenu = ({ lng, collections }: IHamburgerLinksMenu) => {
           <ul className="flex flex-col gap-4">
             <li className="mx-2">
               <Link href={`/${lng}`} onClick={toggleMenu}>
-                <p className="cursor-pointer text-black font-extralight hover:underline">
+                <p className="cursor-pointer text-black font-thin hover:underline text-lg">
                   INICIO
                 </p>
               </Link>

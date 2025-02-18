@@ -45,9 +45,8 @@ const LinkComp = ({ to, span, icon }: ILinkComp) => {
     <Link
       href={to}
       className={clsx(
-        "flex items-center p-2 group hover:text-blue-600 dark:hover:text-blue-300 border-l-2 border-transparent hover:border-l-blue-600 dark:hover:border-l-blue-300",
-        isActive &&
-          "text-blue-600 dark:text-blue-300 border-l-2 border-l-blue-600 dark:border-l-blue-300"
+        "flex items-center p-2 group hover:text-blue-600 border-l-2 border-transparent hover:border-l-blue-600",
+        isActive && "text-blue-600 border-l-2 border-l-blue-600"
       )}
     >
       {icon === "home" ? (

@@ -40,7 +40,7 @@ const ListPage = async ({ params: { lng, name } }: IListPage) => {
         <Link
           aria-label="Go back"
           href={`/${lng}/profile/lists`}
-          className="text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-400 mt-1"
+          className="text-blue-600 hover:text-blue-700 mt-1"
         >
           <LeftArrow size="size-6 md:size-8" />
         </Link>
@@ -49,7 +49,7 @@ const ListPage = async ({ params: { lng, name } }: IListPage) => {
           <p className="text-base md:text-2xl text-gray-500 ml-1">
             {customList.description}
           </p>
-          <p className="text-xs md:text-base text-gray-500 dark:text-gray-400 mt-2 ml-1">
+          <p className="text-xs md:text-base text-gray-500 mt-2 ml-1">
             {customList.products.length}{" "}
             {customList.products.length === 1 ? "producto" : "productos"}
           </p>

@@ -177,7 +177,7 @@ const UserPicture = ({ image, onParentClose }: IUserPicture) => {
               setAction("edit");
               onOpen();
             }}
-            className="text-blue-600 dark:text-blue-400"
+            className="text-blue-600"
           >
             <PencilIcon />
           </button>
@@ -188,7 +188,7 @@ const UserPicture = ({ image, onParentClose }: IUserPicture) => {
               onOpen();
             }}
             className={cn(
-              "text-red-600 dark:text-red-400",
+              "text-red-600",
               image === "/assets/images/profilepic.webp" &&
                 "cursor-not-allowed opacity-50"
             )}

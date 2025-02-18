@@ -5,6 +5,7 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -21,31 +22,40 @@ interface IUploadFile {
 
 export async function uploadFile({ file, fileKey }: IUploadFile) {
   try {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET!,
+      Key: fileKey,
+      ContentType: file.type,
+    });
 
-    await s3.send(
-      new PutObjectCommand({
-        Key: fileKey,
-        Body: buffer,
-        Bucket: process.env.AWS_S3_BUCKET!,
-        ContentType: file.type,
-      })
-    );
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    const response = await fetch(signedUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al subir el archivo a S3");
+    }
 
     const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
 
     return fileUrl;
   } catch (error) {
-    throw new Error("Error al subir el archivo");
+    console.error("Error en uploadFile:", error);
+    throw new Error("No se pudo subir el archivo");
   }
 }
 
-export async function deleteFile(fileUrl: string) {
+export async function deleteFile(fileKey: string) {
   try {
     await s3.send(
       new DeleteObjectCommand({
-        Key: fileUrl,
+        Key: fileKey,
         Bucket: process.env.AWS_S3_BUCKET!,
       })
     );

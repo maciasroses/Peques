@@ -43,7 +43,7 @@ const CollectionsList = ({ lng, layDown, collections }: ICollectionsList) => {
   return (
     <section className="relative w-full flex items-center">
       <button
-        className="absolute left-5 z-10 bg-white dark:bg-gray-800 p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
+        className="absolute left-5 z-10 bg-white p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
         onClick={() => scroll("left")}
       >
         <LeftChevron />
@@ -90,7 +90,7 @@ const CollectionsList = ({ lng, layDown, collections }: ICollectionsList) => {
         ))}
       </ul>
       <button
-        className="absolute right-5 z-10 bg-white dark:bg-gray-800 p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
+        className="absolute right-5 z-10 bg-white p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
         onClick={() => scroll("right")}
       >
         <RightChevron />

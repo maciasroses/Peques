@@ -4,13 +4,13 @@ const OrderCardSkeleton = () => {
   return (
     <div
       role="status"
-      className="p-4 border border-gray-200 rounded shadow animate-pulse md:p-6 dark:border-gray-700"
+      className="p-4 border border-gray-200 rounded shadow animate-pulse md:p-6"
     >
       <div className="flex justify-between mb-4">
         {Array.from({ length: 2 }).map((_, index) => (
           <div
             key={index}
-            className="h-2.5 w-64 bg-gray-200 rounded-full dark:bg-gray-700"
+            className="h-2.5 w-64 bg-gray-200 rounded-full"
           ></div>
         ))}
       </div>
@@ -18,7 +18,7 @@ const OrderCardSkeleton = () => {
         {Array.from({ length: randomInt(1, 3) }).map((_, index) => (
           <div key={index} className="flex items-center">
             <svg
-              className="w-20 h-20 text-gray-200 dark:text-gray-600"
+              className="w-20 h-20 text-gray-200"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
@@ -28,14 +28,14 @@ const OrderCardSkeleton = () => {
               <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.98 2.98 0 0 0 .13 5H5Z" />
             </svg>
             <div>
-              <div className="h-2.5 w-28 bg-gray-200 rounded-full dark:bg-gray-700 mb-2"></div>
-              <div className="h-2.5 w-14 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+              <div className="h-2.5 w-28 bg-gray-200 rounded-full mb-2"></div>
+              <div className="h-2.5 w-14 bg-gray-200 rounded-full"></div>
             </div>
           </div>
         ))}
       </div>
       <div className="w-full flex justify-end mt-4">
-        <div className="h-2 w-20 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+        <div className="h-2 w-20 bg-gray-200 rounded-full"></div>
       </div>
       <span className="sr-only">Loading...</span>
     </div>

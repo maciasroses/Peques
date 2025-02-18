@@ -30,7 +30,7 @@ const FiltersMenu = ({ filters_available }: IFiltersMenu) => {
       </button>
       <div
         className={cn(
-          "bg-white dark:bg-gray-800 fixed top-0 right-0 h-screen w-64 shadow-lg transform transition-transform z-40",
+          "bg-white fixed top-0 right-0 h-screen w-64 shadow-lg transform transition-transform z-40",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >

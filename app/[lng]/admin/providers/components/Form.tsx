@@ -36,12 +36,12 @@ const Form = ({ provider, action, onClose }: IForm) => {
       action === "create"
         ? await createProvider(formData)
         : action === "update"
-        ? await updateProvider(formData, (provider as IProvider).id)
-        : action === "delete"
-        ? await deleteProvider((provider as IProvider).id)
-        : await deleteMassiveProviders(
-            (provider as IProvider[]).map((p) => p.id)
-          );
+          ? await updateProvider(formData, (provider as IProvider).id)
+          : action === "delete"
+            ? await deleteProvider((provider as IProvider).id)
+            : await deleteMassiveProviders(
+                (provider as IProvider[]).map((p) => p.id)
+              );
     if (res && !res.success) {
       setBadResponse(res);
     } else {
@@ -52,14 +52,14 @@ const Form = ({ provider, action, onClose }: IForm) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 text-left dark:text-white">
+    <div className="flex flex-col items-center gap-4 text-left">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-center text-xl md:text-4xl">
           {action === "create"
             ? "Creando"
             : action === "update"
-            ? "Actualizando"
-            : "Eliminando"}{" "}
+              ? "Actualizando"
+              : "Eliminando"}{" "}
           proveedor
         </h1>
       </div>
@@ -127,8 +127,8 @@ const Form = ({ provider, action, onClose }: IForm) => {
                 action === "create"
                   ? "Crear"
                   : action === "update"
-                  ? "Actualizar"
-                  : "Eliminar"
+                    ? "Actualizar"
+                    : "Eliminar"
               }
               color="accent"
               pending={isPending}

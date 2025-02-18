@@ -91,7 +91,7 @@ const PieChart = ({ sales }: { sales: IOrder[] }) => {
   };
 
   return (
-    <div className="w-full md:w-1/3 bg-black bg-opacity-5 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-500 flex flex-col justify-center gap-2">
+    <div className="w-full md:w-1/3 bg-black bg-opacity-5 p-4 rounded-lg shadow border border-gray-200 flex flex-col justify-center gap-2">
       <h1 className="text-center text-2xl font-extrabold">
         Ventas por producto
       </h1>

@@ -7,7 +7,7 @@ interface IPaymentMethodCard {
 
 const PaymentMethodCard = ({ paymentMethod }: IPaymentMethodCard) => {
   return (
-    <div className="relative shadow-lg dark:shadow-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
+    <div className="relative shadow-lg border border-gray-200 rounded-lg p-4">
       <p>
         {paymentMethod.brand} •••• {paymentMethod.last4Digits}
       </p>
