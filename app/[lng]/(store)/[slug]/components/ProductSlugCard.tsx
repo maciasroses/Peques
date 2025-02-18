@@ -461,16 +461,16 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               >
                 <div className="flex items-baseline gap-2">
                   {selectedPromotion && (
-                    <span className="text-xs md:text-base lg:text-xl font-semibold line-through text-gray-500 dark:text-gray-400">
+                    <span className="text-xs md:text-base lg:text-xl font-semibold line-through text-gray-500">
                       {formatCurrency(product.salePriceMXN, "MXN")}
                     </span>
                   )}
-                  <span className="text-base md:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
+                  <span className="text-base md:text-xl lg:text-2xl font-bold text-gray-900">
                     {formatCurrency(discountedPrice, "MXN")}
                   </span>
                 </div>
                 {discountDescription && (
-                  <span className="text-sm md:text-lg lg:text-3xl font-medium text-green-600 dark:text-green-400">
+                  <span className="text-sm md:text-lg lg:text-3xl font-medium text-green-600">
                     {discountDescription}
                   </span>
                 )}
@@ -505,7 +505,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                 <div>
                   <button
                     onClick={onCustomOpen}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+                    className="px-4 py-2 border border-gray-300 rounded-lg"
                   >
                     Personalizar
                   </button>
@@ -522,9 +522,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
         </div>
       </div>
       <div className="mt-4">
-        <p className="text-4xl mt-6 mb-4 text-gray-600 dark:text-gray-400">
-          Reviews
-        </p>
+        <p className="text-4xl mt-6 mb-4 text-gray-600">Reviews</p>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-1/3">
             <StarRating
@@ -585,11 +583,11 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                           className={cn(
                             "px-4 py-2 inline-flex items-center gap-2 rounded-full border",
                             review.userId === user?.id
-                              ? "border-gray-300 dark:border-gray-600 text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                              ? "border-gray-300 text-gray-300 cursor-not-allowed"
                               : review.likes.filter(
                                   (like) => like.userId === user?.id
                                 ).length > 0 &&
-                                  "bg-blue-600 border-blue-600 dark:border-blue-300 text-white"
+                                  "bg-blue-600 border-blue-600 text-white"
                           )}
                         >
                           Es útil

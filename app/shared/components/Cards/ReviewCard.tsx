@@ -10,7 +10,7 @@ interface IReviewCard {
 
 const ReviewCard = ({ lng, product }: IReviewCard) => {
   return (
-    <div className="w-full h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <div className="w-full h-full bg-white border border-gray-200 rounded-lg shadow">
       <Link href={`/${lng}/${product.key}`}>
         <Image
           width={500}

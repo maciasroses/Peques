@@ -54,13 +54,13 @@ const Pagination = ({ totalPages }: IPagination) => {
             className={`flex items-center justify-center px-3 h-8 leading-tight border ${
               currentPage === page
                 ? "link-button-blue !rounded-none"
-                : "text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                : "text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700"
             }`}
           >
             {page}
           </Link>
         ) : (
-          <span className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 dark:text-gray-400 select-none">
+          <span className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 select-none">
             {page}
           </span>
         )}
@@ -76,14 +76,14 @@ const Pagination = ({ totalPages }: IPagination) => {
             <Link
               href={createPageURL(currentPage - 1)}
               passHref
-              className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700"
             >
               <p className="hidden md:block">Anterior</p>
               <LeftChevron customClass="block md:hidden" />
             </Link>
           ) : (
             <p
-              className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-300 bg-gray-100 border border-e-0 border-gray-300 rounded-s-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-500 cursor-not-allowed select-none"
+              className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-300 bg-gray-100 border border-e-0 border-gray-300 rounded-s-lg cursor-not-allowed select-none"
               aria-disabled="true"
             >
               <span className="hidden md:block">Anterior</span>
@@ -97,14 +97,14 @@ const Pagination = ({ totalPages }: IPagination) => {
             <Link
               href={createPageURL(currentPage + 1)}
               passHref
-              className="flex items-center justify-center px-3 h-8 leading-tight border rounded-e-lg text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              className="flex items-center justify-center px-3 h-8 leading-tight border rounded-e-lg text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700"
             >
               <p className="hidden md:block">Siguiente</p>
               <RightChevron customClass="block md:hidden" />
             </Link>
           ) : (
             <p
-              className="flex items-center justify-center px-3 h-8 leading-tight text-gray-300 bg-gray-100 border rounded-e-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-500 cursor-not-allowed select-none"
+              className="flex items-center justify-center px-3 h-8 leading-tight text-gray-300 bg-gray-100 border rounded-e-lg border-gray-300 cursor-not-allowed select-none"
               aria-disabled="true"
             >
               <span className="hidden md:block">Siguiente</span>

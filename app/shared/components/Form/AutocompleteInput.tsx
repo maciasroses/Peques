@@ -101,17 +101,17 @@ const AutocompleteInput: React.FC<IAutocompleteInput> = ({
           "border w-full p-2.5 text-sm rounded-lg",
           customClassName,
           error
-            ? "bg-[#F2AFAF] border-[#E38787] text-red-600 placeholder-red-500 focus:ring-[#E38787] focus:border-[#E38787] dark:bg-red-900 dark:bg-opacity-25 dark:text-red-400 dark:placeholder-red-500 dark:focus:ring-red-400 dark:focus:border-red-400"
-            : "bg-white dark:bg-neutral-light border-neutral-dark text-neutral-dark dark:text-primary-light placeholder-neutral dark:placeholder-primary-light focus:ring-accent focus:border-accent dark:focus:ring-primary-light dark:focus:border-primary-light"
+            ? "bg-[#F2AFAF] border-[#E38787] text-red-600 placeholder-red-500 focus:ring-[#E38787] focus:border-[#E38787]"
+            : "bg-white border-neutral-dark text-neutral-dark placeholder-neutral focus:ring-accent focus:border-accent"
         )}
       />
       {filteredSuggestions.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 max-h-40 overflow-y-auto bg-white border border-neutral-dark rounded-lg shadow-lg dark:bg-neutral-light dark:border-primary-light">
+        <ul className="absolute z-10 w-full mt-1 max-h-40 overflow-y-auto bg-white border border-neutral-dark rounded-lg shadow-lg">
           {filteredSuggestions.map((suggestion) => (
             <li
               key={suggestion.value}
               onClick={() => handleSelect(suggestion)}
-              className="p-2.5 cursor-pointer hover:bg-neutral-light dark:hover:bg-primary-light"
+              className="p-2.5 cursor-pointer hover:bg-neutral-light"
             >
               {suggestion.label}
             </li>

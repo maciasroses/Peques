@@ -109,7 +109,7 @@ const ProductCard = ({
     : null;
 
   return (
-    <div className="w-full bg-white rounded-lg dark:bg-gray-800">
+    <div className="w-full bg-white rounded-lg">
       <Link href={`/${lng}/${product.key}`} className="flex justify-center">
         <Image
           width={500}
@@ -147,22 +147,22 @@ const ProductCard = ({
           </div>
         </div>
         <Link href={`/${lng}/${product.key}`}>
-          <h1 className="sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="sm:text-xl font-semibold tracking-tight text-gray-900">
             {product.name}
           </h1>
           <div className="flex flex-col">
             <div className="flex items-baseline gap-2">
               {selectedPromotion && (
-                <span className="text-base sm:text-lg font-semibold line-through text-gray-500 dark:text-gray-400">
+                <span className="text-base sm:text-lg font-semibold line-through text-gray-500">
                   {formatCurrency(product.salePriceMXN, "MXN")}
                 </span>
               )}
-              <span className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+              <span className="text-xl sm:text-3xl font-bold text-gray-900">
                 {formatCurrency(discountedPrice, "MXN")}
               </span>
             </div>
             {discountDescription && (
-              <span className="text-sm font-medium text-green-600 dark:text-green-400">
+              <span className="text-sm font-medium text-green-600">
                 {discountDescription}
               </span>
             )}

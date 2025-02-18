@@ -27,7 +27,7 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IProductFilter>> = ({
   data,
 }) => {
   return (
-    <div className="pl-12 py-4 dark:bg-black dark:text-white">
+    <div className="pl-12 py-4">
       <h1 className="text-2xl">
         Productos del filtro de producto: {`"${data.name}"`}
       </h1>

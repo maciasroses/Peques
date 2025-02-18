@@ -20,7 +20,7 @@ const Loading: React.FC<ILoading> = ({ color = "blue", size = "size-6" }) => {
       <svg
         aria-hidden="true"
         className={clsx(
-          "text-gray-200 animate-spin dark:text-gray-600",
+          "text-gray-200 animate-spin",
           size,
           fillColorMap[color]
         )}

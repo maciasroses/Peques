@@ -39,12 +39,12 @@ const ProductList = ({ lng, title, products }: IProductList) => {
 
   return (
     <section>
-      <h1 className="text-2xl sm:text-4xl mb-2 md:mb-4 pl-4 text-gray-600 dark:text-gray-400">
+      <h1 className="text-2xl sm:text-4xl mb-2 md:mb-4 pl-4 text-gray-600">
         {title}
       </h1>
       <div className="relative w-full flex items-center">
         <button
-          className="absolute left-2 z-10 bg-white dark:bg-gray-800 p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
+          className="absolute left-2 z-10 bg-white p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
           onClick={() => scroll("left")}
         >
           <LeftChevron />
@@ -60,7 +60,7 @@ const ProductList = ({ lng, title, products }: IProductList) => {
           ))}
         </ul>
         <button
-          className="absolute right-2 z-10 bg-white dark:bg-gray-800 p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
+          className="absolute right-2 z-10 bg-white p-2 shadow-lg rounded-full opacity-50 hover:opacity-100 transition-opacity duration-300"
           onClick={() => scroll("right")}
         >
           <RightChevron />

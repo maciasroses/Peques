@@ -286,7 +286,10 @@ export async function updateProductOnCollectionOrder({
   try {
     await isAdmin();
 
-    const collection = (await read({ id: collectionId })) as ICollection;
+    const collection = (await read({
+      id: collectionId,
+      isAdminRequest: true,
+    })) as ICollection;
     if (!collection) {
       throw new Error("Collection not found");
     }

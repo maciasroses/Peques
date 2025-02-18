@@ -45,14 +45,14 @@ const InitialModal = ({ lng }: { lng: string }) => {
   if (!delayedOpen || !isOpen) return null;
 
   return (
-    <div className="fixed flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-75 inset-0 z-50">
+    <div className="fixed flex items-center justify-center bg-black bg-opacity-50 inset-0 z-50">
       <div
         ref={menuRef}
         className="relative bg-accent/80 backdrop-blur-lg p-6 rounded-2xl shadow-lg max-w-lg text-center w-[80%] md:w-1/2 mt-16"
       >
         <button
           onClick={() => setIsOpen(false)}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-100 dark:hover:text-gray-300 z-50"
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 z-50"
         >
           <XMark />
         </button>

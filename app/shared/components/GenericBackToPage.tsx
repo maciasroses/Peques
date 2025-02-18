@@ -24,9 +24,7 @@ const GenericBackToPage = ({
       )}
     >
       <h1 className="text-3xl md:text-6xl font-bold">{title}</h1>
-      <p className="text-gray-500 dark:text-gray-200 text-xl md:text-3xl">
-        {description}
-      </p>
+      <p className="text-gray-500 text-xl md:text-3xl">{description}</p>
       <Link href={link} className="link-button-blue text-base md:text-xl mt-4">
         {linkText}
       </Link>

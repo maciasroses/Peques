@@ -89,9 +89,7 @@ const Form = ({ lng }: { lng: string }) => {
                   error={badResponse.errors?.lastName}
                 />
                 {badResponse.message && (
-                  <p className="text-red-600 dark:text-red-300">
-                    {badResponse.message}
-                  </p>
+                  <p className="text-red-600">{badResponse.message}</p>
                 )}
               </div>
             </fieldset>
@@ -105,9 +103,7 @@ const Form = ({ lng }: { lng: string }) => {
             icon={<PencilIcon />}
           />
           <p className="mb-1 mt-3 text-lg font-semibold">{user?.username}</p>
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-            {user?.email}
-          </p>
+          <p className="text-sm font-medium text-gray-600">{user?.email}</p>
           <p className="text-2xl">{`${user?.firstName} ${user?.lastName}`}</p>
         </>
       )}
@@ -136,12 +132,12 @@ const CustomBtn = ({
       aria-label="Editar"
       type={isEditing ? "submit" : "button"}
       className={cn(
-        "absolute top-0 hover:bg-black/10 dark:hover:bg-white/10 p-2 rounded-full",
+        "absolute top-0 hover:bg-black/10 p-2 rounded-full",
         isEditing
-          ? "text-green-600 dark:text-green-300 hover:text-green-700 dark:hover:text-green-400 border border-transparent hover:border-green-700 dark:hover:border-green-400 right-14"
+          ? "text-green-600 hover:text-green-700 border border-transparent hover:border-green-700 right-14"
           : isCancelAction
-            ? "text-red-600 dark:text-red-300 hover:text-red-700 dark:hover:text-red-400 border border-transparent hover:border-red-700 dark:hover:border-red-400 right-5"
-            : "text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-400 border border-transparent hover:border-blue-700 dark:hover:border-blue-400 right-5"
+            ? "text-red-600 hover:text-red-700 border border-transparent hover:border-red-700 right-5"
+            : "text-blue-600 hover:text-blue-700 border border-transparent hover:border-blue-700 right-5"
       )}
     >
       {icon}

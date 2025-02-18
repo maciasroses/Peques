@@ -53,7 +53,7 @@ const DeleteFromCustomList = ({
         type="button"
         aria-label="Delete product"
         onClick={() => setIsOpen(true)}
-        className="text-red-600 dark:text-red-300 hover:text-red-700 dark:hover:text-red-400"
+        className="text-red-600 hover:text-red-700"
       >
         <TrashIcon />
       </button>
@@ -70,7 +70,7 @@ const DeleteFromCustomList = ({
             <button
               type="button"
               onClick={handleConfirm}
-              className="mt-4 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 text-white dark:tex-red-300 bg-red-600 dark:bg-red-950 hover:bg-red-700 dark:hover:bg-red-900 focus:ring-red-600 dark:focus:ring-red-300 border border-red-600 hover:border-red-700 dark:border-red-300"
+              className="mt-4 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 text-white bg-red-600 hover:bg-red-700 focus:ring-red-600 border border-red-600 hover:border-red-700"
             >
               {lng === "en" ? "Delete" : "Eliminar"}
             </button>

@@ -11,7 +11,7 @@ const SystemIcon = ({ theme }: { theme: string }) => (
       "size-6 transition duration-75",
       theme === "system"
         ? "text-accent group-hover:text-primary-light"
-        : "text-primary-light dark:text-accent group-hover:text-primary-light"
+        : "text-primary-light group-hover:text-primary-light"
     )}
   >
     <path

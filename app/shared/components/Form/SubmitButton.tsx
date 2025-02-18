@@ -9,7 +9,7 @@ const colorMap: { [key: string]: string } = {
   green: "bg-green-500 hover:bg-green-600 focus:ring-green-500",
 
   primary:
-    "text-gray-600 dark:text-white hover:text-white dark:hover:text-gray-600 bg-primary dark:bg-primary-dark hover:bg-primary-dark dark:hover:bg-primary border-gray-600 hover:border-white dark:border-white/70 dark:hover:border-gray-600",
+    "text-gray-600 hover:text-white bg-primary hover:bg-primary-dark border-gray-600 hover:border-white",
   accent: "bg-accent hover:bg-accent-dark focus:ring-accent",
 };
 

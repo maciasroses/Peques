@@ -21,10 +21,10 @@ const MainInfo = ({ lng }: { lng: string }) => {
           onParentClose={() => onClose()}
         />
       </Modal>
-      <div className="w-full md:max-w-lg flex flex-col overflow-hidden rounded-lg dark:bg-gray-800 dark:text-gray-100 shadow-lg dark:shadow-gray-800 ">
-        <div className="mb-8 bg-gray-200 dark:bg-gray-600">
+      <div className="w-full md:max-w-lg flex flex-col overflow-hidden rounded-lg shadow-lg">
+        <div className="mb-8 bg-gray-200">
           <div className="flex h-32 items-end justify-center">
-            <div className="-mb-12 rounded-full bg-gray-200 p-2 dark:bg-gray-600 relative group">
+            <div className="-mb-12 rounded-full bg-gray-200 p-2 relative group">
               <Image
                 priority
                 width={80}

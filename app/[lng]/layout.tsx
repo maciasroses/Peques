@@ -54,7 +54,7 @@ export default async function RootLayout({
     <html lang={lng} dir={dir(lng)}>
       <body
         suppressHydrationWarning
-        className="bg-neutral-light dark:bg-neutral dark:text-white transition-colors duration-300"
+        className="bg-neutral-light transition-colors duration-300"
       >
         <ThemeComponent>
           <CartComponent>
@@ -67,7 +67,7 @@ export default async function RootLayout({
                 collections={collections}
                 filters={available_filters}
               />
-              <main className="bg-white dark:bg-gray-900 w-full min-h-screen mx-auto">
+              <main className="bg-white w-full min-h-screen mx-auto">
                 {children}
               </main>
               <Footer user={me} lng={lng} />

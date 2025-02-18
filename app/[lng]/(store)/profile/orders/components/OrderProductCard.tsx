@@ -28,7 +28,7 @@ const OrderProductCard = ({ order, product }: IOrderProductCard) => {
         </div>
         <div>
           <h1 className="text-xl md:text-2xl">{product.name}</h1>
-          <p className="text-gray-400 dark:text-gray-500 text-sm md:text-base">
+          <p className="text-gray-400 text-sm md:text-base">
             {order.deliveryStatus === "PENDING"
               ? "Pendiente de entrega"
               : order.deliveryStatus === "CANCELLED"

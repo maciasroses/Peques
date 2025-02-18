@@ -106,7 +106,7 @@ const Form = ({ lng, onClose, products, order, action }: IForm) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 text-left dark:text-white">
+    <div className="flex flex-col items-center gap-4 text-left">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-center text-xl md:text-4xl">
           {action === "create"
@@ -118,16 +118,14 @@ const Form = ({ lng, onClose, products, order, action }: IForm) => {
         </h1>
       </div>
       {action === "create" && (
-        <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+        <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
           <ul className="flex flex-wrap">
             <li className="w-1/2">
               <button
                 onClick={onChangeView}
                 className={clsx(
                   "w-full inline-block p-4 rounded-t-lg border-b-2",
-                  formView
-                    ? "border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500"
-                    : "border-gray-200 dark:border-gray-700"
+                  formView ? "border-blue-600 text-blue-600" : "border-gray-200"
                 )}
               >
                 Form
@@ -139,8 +137,8 @@ const Form = ({ lng, onClose, products, order, action }: IForm) => {
                 className={clsx(
                   "w-full inline-block p-4 rounded-t-lg border-b-2",
                   !formView
-                    ? "border-blue-600 text-blue-600 dark:text-blue-500 dark:border-blue-500"
-                    : "border-gray-200 dark:border-gray-700"
+                    ? "border-blue-600 text-blue-600"
+                    : "border-gray-200"
                 )}
               >
                 Excel
@@ -333,7 +331,7 @@ const Form = ({ lng, onClose, products, order, action }: IForm) => {
           {badResponse.errors && (
             <div className="h-auto max-h-[60px] overflow-y-auto">
               {Object.entries(badResponse.errors).map(([key, value]) => (
-                <p key={key} className="text-red-500 dark:text-red-400">
+                <p key={key} className="text-red-500">
                   {key}: {value as string}
                 </p>
               ))}
@@ -349,9 +347,9 @@ const Form = ({ lng, onClose, products, order, action }: IForm) => {
                     file
                       ? badResponse.errors &&
                         Object.keys(badResponse.errors as object).length > 0
-                        ? "bg-red-50 dark:bg-red-700 dark:border-red-600 border-red-500"
-                        : "bg-green-50 dark:bg-green-700 dark:border-green-600 border-green-500"
-                      : "bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500"
+                        ? "bg-red-50 border-red-500"
+                        : "bg-green-50 border-green-500"
+                      : "bg-gray-50 hover:bg-gray-100"
                   )}
                 >
                   <div className="flex flex-col items-center justify-center p-5">
@@ -371,9 +369,9 @@ const Form = ({ lng, onClose, products, order, action }: IForm) => {
                         file
                           ? badResponse.errors &&
                             Object.keys(badResponse.errors as object).length > 0
-                            ? "text-red-500 dark:text-red-400"
-                            : "text-green-500 dark:text-green-400"
-                          : "text-gray-500 dark:text-gray-400"
+                            ? "text-red-500"
+                            : "text-green-500"
+                          : "text-gray-500"
                       )}
                     >
                       <span className="font-semibold">Click para subir</span>

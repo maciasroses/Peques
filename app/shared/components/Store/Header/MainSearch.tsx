@@ -50,7 +50,7 @@ const MainSearch = forwardRef(
       <search>
         <label
           htmlFor={id}
-          className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+          className="mb-2 text-sm font-medium text-gray-900 sr-only"
         >
           Buscar
         </label>
@@ -64,7 +64,7 @@ const MainSearch = forwardRef(
             onKeyDown={handleEnter}
             onChange={handleQChange}
             defaultValue={searchParams.get("q") || ""}
-            className="block w-full p-4 focus:outline-none text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 focus:border-gray-500 dark:focus:border-gray-400 dark:text-white"
+            className="block w-full p-4 focus:outline-none text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:border-gray-500"
           />
           <button
             aria-label="Search"

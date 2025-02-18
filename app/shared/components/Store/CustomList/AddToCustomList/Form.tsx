@@ -81,7 +81,7 @@ const Form = ({ lng, productId, myLists, handleClose }: IForm) => {
                 onClick={handleChangeView}
                 disabled={isPending}
                 className={cn(
-                  "text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-400",
+                  "text-blue-600 hover:text-blue-700",
                   isPending && "opacity-50"
                 )}
               >
@@ -129,13 +129,11 @@ const Form = ({ lng, productId, myLists, handleClose }: IForm) => {
           <div className="flex flex-col gap-2">
             <h1 className="text-xl md:text-4xl">Añadir a lista(s)</h1>
             {response.message && (
-              <p className="text-red-600 dark:text-red-300">
-                {response.message}
-              </p>
+              <p className="text-red-600">{response.message}</p>
             )}
             {Array.isArray(response.errors) &&
               response.errors[0]?.customListId && (
-                <p className="text-red-600 dark:text-red-300">
+                <p className="text-red-600">
                   {response.errors[0]?.customListId}
                 </p>
               )}
@@ -145,13 +143,13 @@ const Form = ({ lng, productId, myLists, handleClose }: IForm) => {
               onClick={handleChangeView}
               disabled={isPending}
               className={cn(
-                "flex items-center group gap-2 text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-400 mb-2",
+                "flex items-center group gap-2 text-blue-600 hover:text-blue-700 mb-2",
                 isPending && "opacity-50 cursor-not-allowed"
               )}
             >
               <Plus
                 size="size-10"
-                customClass="border border-blue-600 dark:border-blue-300 group-hover:border-blue-700 dark:group-hover:border-blue-400 rounded-md p-1"
+                customClass="border border-blue-600 group-hover:border-blue-700 rounded-md p-1"
               />
               <span>Nueva lista</span>
             </button>

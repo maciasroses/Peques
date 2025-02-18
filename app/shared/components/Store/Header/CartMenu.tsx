@@ -51,7 +51,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
       </button>
       <div
         className={cn(
-          "bg-white dark:bg-gray-800 dark:text-white fixed top-0 right-0 h-screen w-64 shadow-lg transform transition-transform z-40",
+          "bg-white fixed top-0 right-0 h-screen w-64 shadow-lg transform transition-transform z-40",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -64,9 +64,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
               </button>
             </div>
             {cart.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-200">
-                Tu carrito está vacío
-              </p>
+              <p className="text-gray-500">Tu carrito está vacío</p>
             ) : (
               <ul className=" overflow-y-auto">
                 {cart.map((item) => (
@@ -91,7 +89,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                             ?.availableQuantity ?? 0) > item.quantity && (
                             <button
                               aria-label="Add one more"
-                              className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-500"
+                              className="text-green-600 hover:text-green-700"
                               onClick={() =>
                                 addToCart({
                                   ...item,
@@ -105,7 +103,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                         {item.quantity > 1 && (
                           <button
                             aria-label="Remove one"
-                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500"
+                            className="text-red-600 hover:text-red-700"
                             onClick={() =>
                               addToCart({
                                 ...item,
@@ -120,15 +118,15 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                       <p className="font-semibold">{item.name}</p>
                       {item.discount && (
                         <>
-                          <p className="text-sm line-through text-gray-500 dark:text-gray-400">
+                          <p className="text-sm line-through text-gray-500">
                             {formatCurrency(item.price, "MXN")}
                           </p>
-                          <p className="text-sm text-green-600 dark:text-green-400">
+                          <p className="text-sm text-green-600">
                             {item.discount}
                           </p>
                         </>
                       )}
-                      <p className="text-sm text-gray-800 dark:text-gray-200">
+                      <p className="text-sm text-gray-800">
                         {item.quantity} x{" "}
                         {formatCurrency(item.finalPrice, "MXN")}
                       </p>
@@ -163,7 +161,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                         </>
                       )}
                       <button
-                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500"
+                        className="text-red-600 hover:text-red-700"
                         onClick={() => removeFromCart(item.id)}
                       >
                         Borrar

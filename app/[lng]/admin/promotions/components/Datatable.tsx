@@ -35,16 +35,14 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IPromotion>> = ({
   );
 
   return (
-    <div className="pl-12 py-4 dark:bg-black dark:text-white">
+    <div className="pl-12 py-4">
       <ul className="flex flex-row gap-4">
         <li>
           <button
             onClick={() => setTab("products")}
             className={cn(
               "px-4 py-2 rounded-md",
-              tab === "products"
-                ? "bg-primary dark:bg-primary-dark"
-                : "bg-gray-200 text-gray-700"
+              tab === "products" ? "bg-primary" : "bg-gray-200 text-gray-700"
             )}
           >
             Productos
@@ -55,9 +53,7 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IPromotion>> = ({
             onClick={() => setTab("collections")}
             className={cn(
               "px-4 py-2 rounded-md",
-              tab === "collections"
-                ? "bg-primary dark:bg-primary-dark"
-                : "bg-gray-200 text-gray-700"
+              tab === "collections" ? "bg-primary" : "bg-gray-200 text-gray-700"
             )}
           >
             Colecciones
@@ -69,7 +65,7 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IPromotion>> = ({
             className={cn(
               "px-4 py-2 rounded-md",
               tab === "discountCodes"
-                ? "bg-primary dark:bg-primary-dark"
+                ? "bg-primary"
                 : "bg-gray-200 text-gray-700"
             )}
           >

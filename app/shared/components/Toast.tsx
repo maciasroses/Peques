@@ -20,7 +20,7 @@ const Toast = ({
     transition: Slide,
     closeOnClick: true,
     hideProgressBar: true,
-    theme: theme === "dark" ? "dark" : "light",
+    theme: "light",
   };
 
   switch (type) {

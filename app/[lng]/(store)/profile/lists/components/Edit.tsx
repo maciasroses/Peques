@@ -57,10 +57,7 @@ const Edit = ({ lng, customList, handleClose }: IEdit) => {
 
   return (
     <>
-      <button
-        className="block w-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-        onClick={onOpen}
-      >
+      <button className="block w-full p-2 hover:bg-gray-100" onClick={onOpen}>
         {lng === "en" ? "Edit" : "Editar"}
       </button>
       <Modal isOpen={isOpen} onClose={handleClose}>
@@ -70,9 +67,7 @@ const Edit = ({ lng, customList, handleClose }: IEdit) => {
               {lng === "en" ? "Edit list" : "Editar lista"}
             </h1>
             {badResponse.message && (
-              <p className="text-red-600 dark:text-red-300">
-                {badResponse.message}
-              </p>
+              <p className="text-red-600">{badResponse.message}</p>
             )}
           </div>
           <form onSubmit={submitAction} className="px-4">

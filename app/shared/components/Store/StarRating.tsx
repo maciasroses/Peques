@@ -44,7 +44,7 @@ const StarRating = ({
         </div>
         {totalReviews && (
           <span
-            className="text-sm text-gray-500 dark:text-gray-400"
+            className="text-sm text-gray-500"
             title={`${totalReviews} reseñas`}
           >
             (
@@ -66,10 +66,10 @@ const StarRating = ({
 
             return (
               <div key={starCount} className="flex items-center gap-2">
-                <div className="w-8 text-sm text-gray-600 dark:text-gray-400 flex justify-between gap-2">
+                <div className="w-8 text-sm text-gray-600 flex justify-between gap-2">
                   <p>{starCount}</p>★
                 </div>
-                <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded">
+                <div className="flex-1 bg-gray-200 rounded">
                   <div
                     className="bg-primary h-2 rounded"
                     style={{ width: `${percentage}%` }}

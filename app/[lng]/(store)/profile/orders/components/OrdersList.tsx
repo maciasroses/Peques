@@ -21,8 +21,8 @@ const OrdersList = async ({ lng, searchParams }: IOrderListComp) => {
         <>
           {myOrders.map((order) => (
             <Link key={order.id} href={`/${lng}/profile/orders/${order.id}`}>
-              <div className="shadow-lg dark:shadow-gray-800 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg mt-4 p-4 group">
-                <div className="flex flex-col sm:flex-row gap-2 justify-between text-xl border-b border-gray-200 dark:border-gray-800 pb-4">
+              <div className="shadow-lg border border-gray-200 hover:bg-gray-50 rounded-lg mt-4 p-4 group">
+                <div className="flex flex-col sm:flex-row gap-2 justify-between text-xl border-b border-gray-200 pb-4">
                   <p>{formatDateLatinAmerican(order.createdAt)}</p>
                   <p className="text-right">
                     Total:{" "}
@@ -40,7 +40,7 @@ const OrdersList = async ({ lng, searchParams }: IOrderListComp) => {
                     />
                   ))}
                 </div>
-                <p className="flex items-center justify-end gap-0.5 text-blue-600 group-hover:text-blue-700 dark:text-blue-500 dark:group-hover:text-blue-600">
+                <p className="flex items-center justify-end gap-0.5 text-blue-600 group-hover:text-blue-700">
                   Ver detalles
                   <RightArrow
                     size="size-5"

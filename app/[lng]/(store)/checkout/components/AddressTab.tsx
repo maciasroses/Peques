@@ -47,7 +47,7 @@ const AddressTab = ({
                   className={cn(
                     "w-full border-2 rounded-lg text-left",
                     addressSelected?.id === address.id
-                      ? "border-primary bg-primary-light dark:border-primary-dark dark:bg-primary-dark/50"
+                      ? "border-primary bg-primary-light"
                       : "border-gray-200"
                   )}
                   onClick={() => setAddress(address)}

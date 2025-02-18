@@ -97,7 +97,7 @@ const Searchbar = ({ providers }: { providers: IProvider[] }) => {
           <button
             type="button"
             onClick={clearFilters}
-            className="bg-red-500 text-white text-sm p-2.5 w-full sm:w-1/3 border border-red-300 focus:ring-red-500 focus:border-red-500 dark:bg-red-500 dark:border-red-500 dark:text-white dark:focus:border-red-500"
+            className="bg-red-500 text-white text-sm p-2.5 w-full sm:w-1/3 border border-red-300 focus:ring-red-500 focus:border-red-500"
           >
             Limpiar filtros
           </button>

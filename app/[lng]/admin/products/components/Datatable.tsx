@@ -28,16 +28,14 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IProduct>> = ({
   const [tab, setTab] = useState<"files" | "history">("files");
 
   return (
-    <div className="pl-12 py-4 dark:bg-black dark:text-white">
+    <div className="pl-12 py-4">
       <ul className="flex flex-row gap-4">
         <li>
           <button
             onClick={() => setTab("files")}
             className={cn(
               "px-4 py-2 rounded-md",
-              tab === "files"
-                ? "bg-primary dark:bg-primary-dark"
-                : "bg-gray-200 text-gray-700"
+              tab === "files" ? "bg-primary" : "bg-gray-200 text-gray-700"
             )}
           >
             Archivos
@@ -48,9 +46,7 @@ const ExpandedComponent: React.FC<ExpanderComponentProps<IProduct>> = ({
             onClick={() => setTab("history")}
             className={cn(
               "px-4 py-2 rounded-md",
-              tab === "history"
-                ? "bg-primary dark:bg-primary-dark"
-                : "bg-gray-200 text-gray-700"
+              tab === "history" ? "bg-primary" : "bg-gray-200 text-gray-700"
             )}
           >
             Historial de pedidos
@@ -79,7 +75,7 @@ const conditionalRowStyles = (theme: string): ConditionalStyles<IProduct>[] => {
       when: (row: IProduct) =>
         row.availableQuantity > row.minimumAcceptableQuantity,
       style: {
-        backgroundColor: theme === "dark" ? "#BCFBBF" : "#BCFBBF",
+        backgroundColor: "#BCFBBF",
       },
     },
     {
@@ -87,13 +83,13 @@ const conditionalRowStyles = (theme: string): ConditionalStyles<IProduct>[] => {
         row.availableQuantity <= row.minimumAcceptableQuantity &&
         row.availableQuantity > 0,
       style: {
-        backgroundColor: theme === "dark" ? "#FBF2BC" : "#FBF2BC",
+        backgroundColor: "#FBF2BC",
       },
     },
     {
       when: (row: IProduct) => row.availableQuantity === 0,
       style: {
-        backgroundColor: theme === "dark" ? "#FBBCC0" : "#FBBCC0",
+        backgroundColor: "#FBBCC0",
       },
     },
   ];

@@ -38,7 +38,7 @@ const Datatable = ({ filters, collections, products }: IDatatable) => {
     );
 
     return (
-      <div className="pl-12 py-4 dark:bg-black dark:text-white">
+      <div className="pl-12 py-4">
         <ul className="flex flex-row gap-4">
           <li>
             <button
@@ -46,7 +46,7 @@ const Datatable = ({ filters, collections, products }: IDatatable) => {
               className={cn(
                 "px-4 py-2 rounded-md",
                 tab === "productsFilters"
-                  ? "bg-primary dark:bg-primary-dark"
+                  ? "bg-primary"
                   : "bg-gray-200 text-gray-700"
               )}
             >
@@ -59,7 +59,7 @@ const Datatable = ({ filters, collections, products }: IDatatable) => {
               className={cn(
                 "px-4 py-2 rounded-md",
                 tab === "collections"
-                  ? "bg-primary dark:bg-primary-dark"
+                  ? "bg-primary"
                   : "bg-gray-200 text-gray-700"
               )}
             >

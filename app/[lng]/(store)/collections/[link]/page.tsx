@@ -80,7 +80,7 @@ const CollectionNamePage = async ({
       </aside>
       <section className="w-full md:w-3/4 lg:w-4/5">
         <div className="mb-4">
-          <p className="text-sm md:text-lg text-gray-800 dark:text-gray-200">
+          <p className="text-sm md:text-lg text-gray-800">
             {totalCount} resultado
             {totalCount > 1 || totalCount === 0 ? "s" : ""}
           </p>

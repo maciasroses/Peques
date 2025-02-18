@@ -7,7 +7,7 @@ interface IAddressCard {
 
 const AddressCard = ({ address }: IAddressCard) => {
   return (
-    <div className="relative shadow-lg dark:shadow-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
+    <div className="relative shadow-lg border border-gray-200 rounded-lg p-4">
       <h3 className="font-bold text-lg line-clamp-1 pr-5">
         {address.fullName}
       </h3>

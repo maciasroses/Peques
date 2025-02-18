@@ -1,9 +1,9 @@
 import clsx from "clsx";
 
 const colorMap: { [key: string]: string } = {
-  gray: "text-gray-500 dark:text-gray-400",
-  red: "text-red-500 dark:text-red-400",
-  green: "text-green-500 dark:text-green-400",
+  gray: "text-gray-500",
+  red: "text-red-500",
+  green: "text-green-500",
 };
 
 const Upload = ({ color = "gray" }: { color?: string }) => {
@@ -28,5 +28,3 @@ const Upload = ({ color = "gray" }: { color?: string }) => {
 };
 
 export default Upload;
-
-// text-gray-500 dark:text-gray-400
