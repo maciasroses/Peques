@@ -29,6 +29,7 @@ export async function uploadFile({ file, fileKey }: IUploadFile) {
     });
 
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    console.log("signedUrl:", signedUrl);
 
     const response = await fetch(signedUrl, {
       method: "PUT",
@@ -37,6 +38,8 @@ export async function uploadFile({ file, fileKey }: IUploadFile) {
         "Content-Type": file.type,
       },
     });
+    console.log("response:", response);
+    console.log("response.json", await response.json());
 
     if (!response.ok) {
       throw new Error("Error al subir el archivo a S3");
