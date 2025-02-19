@@ -761,54 +761,27 @@ export async function addFileToProduct(productId: string, formData: FormData) {
       };
     }
 
-    // const urls: string[] = [];
+    const urls: string[] = [];
     for (const file of files) {
-      console.log("TESTING S3");
       const fileKey = generateFileKey(file as File);
-
-      const res = await fetch("/api/aws-s3-signed-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileKey, contentType: file.type }),
+      const url = await uploadFile({
+        file,
+        fileKey: `Products/${product.id}/${fileKey}`,
       });
-
-      console.log(res);
-      console.log("res.json", await res.json());
-      if (!res.ok) {
-        return {
-          success: false,
-          message: "Error al obtener la URL firmada",
-        };
-      }
-
-      const { signedUrl } = await res.json();
-
-      console.log(signedUrl);
-
-      await fetch(signedUrl, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
-      });
-
-      // const url = await uploadFile({
-      //   file,
-      //   fileKey: `Products/${product.id}/${fileKey}`,
-      // });
-      // urls.push(url);
+      urls.push(url);
     }
 
-    // await update({
-    //   id: productId,
-    //   data: {
-    //     files: {
-    //       create: files.map((file, index) => ({
-    //         type: file.type.includes("image") ? "IMAGE" : "VIDEO",
-    //         url: urls[index],
-    //       })),
-    //     },
-    //   },
-    // });
+    await update({
+      id: productId,
+      data: {
+        files: {
+          create: files.map((file, index) => ({
+            type: file.type.includes("image") ? "IMAGE" : "VIDEO",
+            url: urls[index],
+          })),
+        },
+      },
+    });
 
     return {
       success: true,

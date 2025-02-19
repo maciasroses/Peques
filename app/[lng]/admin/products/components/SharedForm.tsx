@@ -18,6 +18,7 @@ import {
 import { GenericInput, SubmitButton } from "@/app/shared/components";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
+import { generateFileKey } from "@/app/shared/utils/generateFileKey";
 
 interface ISharedForm {
   action: "create";
@@ -39,6 +40,34 @@ const SharedForm = ({ onClose, productId }: ISharedForm) => {
     setIsPending(true);
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+
+    const files = formData.getAll("files") as File[];
+    const fileKey = generateFileKey(files[0]);
+    const resSignedUrl = await fetch("/api/aws-s3-signed-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileKey, contentType: files[0].type }),
+    });
+
+    console.log(resSignedUrl);
+    console.log("res.json", await resSignedUrl.json());
+    if (!resSignedUrl.ok) {
+      return {
+        success: false,
+        message: "Error al obtener la URL firmada",
+      };
+    }
+
+    const { signedUrl } = await resSignedUrl.json();
+
+    console.log(signedUrl);
+
+    await fetch(signedUrl, {
+      method: "PUT",
+      body: files[0],
+      headers: { "Content-Type": files[0].type },
+    });
+
     const res =
       tab === "history"
         ? await createHistoryProduct(formData, productId as string)
