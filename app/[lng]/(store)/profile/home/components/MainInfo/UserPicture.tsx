@@ -5,11 +5,12 @@ import React, { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { GenericInput, Modal, Toast } from "@/app/shared/components";
 import { PencilIcon, TrashIcon } from "@/app/shared/icons";
-import { useModal, useResolvedTheme } from "@/app/shared/hooks";
+import { useAuth, useModal, useResolvedTheme } from "@/app/shared/hooks";
 import {
   removeProfilePicture,
   updateProfilePicture,
 } from "@/app/shared/services/user/controller";
+import { generateFileKey } from "@/app/shared/utils/generateFileKey";
 
 interface IUserPicture {
   image: string;
@@ -17,6 +18,7 @@ interface IUserPicture {
 }
 
 const UserPicture = ({ image, onParentClose }: IUserPicture) => {
+  const { user } = useAuth();
   const theme = useResolvedTheme();
   const { isOpen, onClose, onOpen } = useModal();
   const [isPending, setIsPending] = useState(false);
@@ -45,7 +47,27 @@ const UserPicture = ({ image, onParentClose }: IUserPicture) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     formData.append("image", imageUpload as File);
-    const res = await updateProfilePicture(formData);
+    const imageUrl = formData.get("image") as File;
+    const fileKey = generateFileKey(imageUrl);
+
+    const signedRes = await fetch("/api/aws-s3-signed-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileKey: `User-profile-pictures/${user?.id}-${fileKey}`,
+        contentType: imageUrl.type,
+      }),
+    });
+
+    const { signedUrl } = await signedRes.json();
+
+    await fetch(signedUrl, {
+      method: "PUT",
+      body: imageUrl,
+      headers: { "Content-Type": imageUrl.type },
+    });
+
+    const res = await updateProfilePicture(fileKey);
     Toast({
       theme,
       type: res.success ? "success" : "error",

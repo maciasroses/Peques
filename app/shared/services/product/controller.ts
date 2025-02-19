@@ -6,8 +6,9 @@ import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
+import { deleteFile } from "@/app/shared/services/aws/s3";
 import formatdateExcel from "@/app/shared/utils/formatdate-excel";
-import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
+import { normalizeString } from "@/app/shared/utils/normalize-string";
 import { getProviderByAlias } from "@/app/shared/services/provider/controller";
 import {
   read,
@@ -27,8 +28,6 @@ import type {
   IProductHistory,
   IProductSearchParams,
 } from "@/app/shared/interfaces";
-import { generateFileKey } from "../../utils/generateFileKey";
-import { normalizeString } from "../../utils/normalize-string";
 
 export async function getProducts({
   q,
@@ -175,9 +174,15 @@ export async function getSimilarProducts({
   }
 }
 
-export async function getProductById({ id }: { id: string }) {
+export async function getProductById({
+  id,
+  isAdminRequest = false,
+}: {
+  id: string;
+  isAdminRequest?: boolean;
+}) {
   try {
-    return await read({ id });
+    return await read({ id, isAdminRequest });
   } catch (error) {
     console.error(error);
     return null;
@@ -739,45 +744,17 @@ export async function getProductIdsByKeys(keys: string[]) {
   }
 }
 
-export async function addFileToProduct(productId: string, formData: FormData) {
-  const files = formData.getAll("files") as File[];
-
-  if (files.length === 0 || files.some((file) => file.size === 0)) {
-    return {
-      success: false,
-      message: "No se ha seleccionado ningún archivo",
-    };
-  }
-
+export async function addFileToProduct(productId: string, fileKeys: string[]) {
   try {
     await isAdmin();
-
-    const product = (await read({ id: productId })) as IProduct;
-
-    if (!product) {
-      return {
-        success: false,
-        message: "Producto no encontrado",
-      };
-    }
-
-    const urls: string[] = [];
-    for (const file of files) {
-      const fileKey = generateFileKey(file as File);
-      const url = await uploadFile({
-        file,
-        fileKey: `Products/${product.id}/${fileKey}`,
-      });
-      urls.push(url);
-    }
 
     await update({
       id: productId,
       data: {
         files: {
-          create: files.map((file, index) => ({
-            type: file.type.includes("image") ? "IMAGE" : "VIDEO",
-            url: urls[index],
+          create: fileKeys.map((file) => ({
+            type: file.includes(".webp") ? "IMAGE" : "VIDEO",
+            url: `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/Products/${productId}/${file}`,
           })),
         },
       },

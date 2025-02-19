@@ -12,12 +12,19 @@ import {
   deleteCollection,
   updateCollection,
   deleteMassiveCollections,
+  getCollectionByName,
+  getCollectionByLink,
+  getCollectionById,
+  getCollections,
 } from "@/app/shared/services/collection/controller";
 import type {
   IProduct,
   ICollection,
   ICollectionState,
 } from "@/app/shared/interfaces";
+import { generateFileKey } from "@/app/shared/utils/generateFileKey";
+import { validateSchema } from "@/app/shared/services/collection/schema";
+import { getProductIdsByKeys } from "@/app/shared/services/product/controller";
 
 interface IForm {
   onClose: () => void;
@@ -33,6 +40,180 @@ const Form = ({ onClose, products, collection, action }: IForm) => {
     INITIAL_STATE_RESPONSE
   );
 
+  const handleCreateCollection = async (formData: FormData) => {
+    const dataToValidate = {
+      name: formData.get("name"),
+      link: formData.get("link"),
+      imageUrl: formData.get("imageUrl"),
+    };
+
+    const errors = validateSchema("create", dataToValidate);
+
+    if (Object.keys(errors).length !== 0) {
+      return {
+        errors,
+        success: false,
+      };
+    }
+
+    const products = formData.getAll("product") as string[];
+
+    if (!products.length) {
+      return {
+        success: false,
+        message: "No hay productos para agregar",
+      };
+    }
+
+    if (products.some((productId) => productId === "")) {
+      return {
+        success: false,
+        message: "Seleccione los productos válidos",
+      };
+    }
+
+    const collectionExistsByName = await getCollectionByName({
+      name: dataToValidate.name as string,
+    });
+    if (collectionExistsByName) {
+      return {
+        success: false,
+        message: "La colección con ese nombre ya existe",
+      };
+    }
+
+    const collectionExistsByLink = await getCollectionByLink({
+      link: dataToValidate.link as string,
+    });
+    if (collectionExistsByLink) {
+      return {
+        success: false,
+        message: "La colección con ese link ya existe",
+      };
+    }
+
+    const productIds = await getProductIdsByKeys(products);
+
+    if (productIds.length !== products.length) {
+      return {
+        success: false,
+        message: "Algunos productos no se encontraron",
+      };
+    }
+
+    const image = formData.get("imageUrl") as File;
+
+    const fileKey = generateFileKey(image);
+
+    const signedRes = await fetch("/api/aws-s3-signed-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileKey: `Collections/${fileKey}`,
+        contentType: image.type,
+      }),
+    });
+
+    const { signedUrl } = await signedRes.json();
+
+    await fetch(signedUrl, {
+      method: "PUT",
+      body: image,
+      headers: { "Content-Type": image.type },
+    });
+
+    const finalData = {
+      productIds,
+      imageKey: fileKey,
+      name: dataToValidate.name as string,
+      link: dataToValidate.link as string,
+    };
+
+    return await createCollection(finalData);
+  };
+
+  const handleUpdateCollection = async (id: string, formData: FormData) => {
+    const dataToValidate = {
+      name: formData.get("name"),
+      link: formData.get("link"),
+      imageUrl: formData.get("imageUrl"),
+    };
+
+    const errors = validateSchema("update", dataToValidate);
+
+    if (Object.keys(errors).length !== 0) {
+      return {
+        errors,
+        success: false,
+      };
+    }
+
+    const collection = (await getCollectionById({ id })) as ICollection;
+    if (!collection) {
+      throw new Error("Collection not found");
+    }
+
+    const collections = (await getCollections({})) as ICollection[];
+
+    const collectionsWithoutCurrent = collections.filter((c) => c.id !== id);
+
+    const collectionExistsByName = collectionsWithoutCurrent.find(
+      (c) => c.name === dataToValidate.name
+    );
+    if (collectionExistsByName) {
+      return {
+        success: false,
+        message: "La colección con ese nombre ya existe",
+      };
+    }
+
+    const collectionExistsByLink = collectionsWithoutCurrent.find(
+      (c) => c.link === dataToValidate.link
+    );
+    if (collectionExistsByLink) {
+      return {
+        success: false,
+        message: "La colección con ese link ya existe",
+      };
+    }
+
+    const image = formData.get("imageUrl") as File;
+
+    let fileKey = "";
+    if (image.size > 0) {
+      fileKey = generateFileKey(image);
+
+      const signedRes = await fetch("/api/aws-s3-signed-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileKey: `Collections/${fileKey}`,
+          contentType: image.type,
+        }),
+      });
+
+      const { signedUrl } = await signedRes.json();
+
+      await fetch(signedUrl, {
+        method: "PUT",
+        body: image,
+        headers: { "Content-Type": image.type },
+      });
+    }
+
+    const data = {
+      name: dataToValidate.name as string,
+      link: dataToValidate.link as string,
+      imageKey: fileKey.length > 0 ? fileKey : null,
+      prevCollectionImageUrl: fileKey.length > 0 ? collection.imageUrl : null,
+    };
+
+    return await updateCollection({
+      id,
+      data,
+    });
+  };
+
   const submitAction: React.FormEventHandler<HTMLFormElement> = async (
     event
   ) => {
@@ -41,12 +222,12 @@ const Form = ({ onClose, products, collection, action }: IForm) => {
     const formData = new FormData(event.currentTarget);
     const res =
       action === "create"
-        ? await createCollection(formData)
+        ? await handleCreateCollection(formData)
         : action === "update"
-          ? await updateCollection({
-              id: (collection as ICollection).id,
-              formData,
-            })
+          ? await handleUpdateCollection(
+              (collection as ICollection).id,
+              formData
+            )
           : action === "delete"
             ? await deleteCollection({ id: (collection as ICollection).id })
             : action === "massiveDelete" &&
