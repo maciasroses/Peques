@@ -43,7 +43,6 @@ const SharedForm = ({ onClose, productId }: ISharedForm) => {
       tab === "history"
         ? await createHistoryProduct(formData, productId as string)
         : await addFileToProduct(productId as string, formData);
-    console.log(res);
     if (res && !res.success) {
       setBadResponse(res);
     } else {
