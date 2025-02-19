@@ -1,28 +1,24 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
-import formatdateInput from "@/app/shared/utils/formatdate-input";
-import type {
-  ICreateNUpdateProductHistoryState,
-  IProductHistory,
-  ISharedState,
-} from "@/app/shared/interfaces";
+import { generateFileKey } from "@/app/shared/utils/generateFileKey";
+import { GenericInput, SubmitButton } from "@/app/shared/components";
 import {
+  getProductById,
   addFileToProduct,
   createHistoryProduct,
-  deleteHistoryProduct,
-  deleteMassiveProductsHistory,
-  updateHistoryProduct,
 } from "@/app/shared/services/product/controller";
-import { GenericInput, SubmitButton } from "@/app/shared/components";
-import formatCurrency from "@/app/shared/utils/format-currency";
-import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
+import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
+import type {
+  IProduct,
+  ISharedState,
+  ICreateNUpdateProductHistoryState,
+} from "@/app/shared/interfaces";
 
 interface ISharedForm {
   action: "create";
-  onClose: () => void;
   productId?: string;
+  onClose: () => void;
 }
 
 const SharedForm = ({ onClose, productId }: ISharedForm) => {
@@ -33,6 +29,53 @@ const SharedForm = ({ onClose, productId }: ISharedForm) => {
     ISharedState | ICreateNUpdateProductHistoryState
   >(INITIAL_STATE_RESPONSE);
 
+  const handlerUploadFile = async (productId: string, formData: FormData) => {
+    const files = formData.getAll("files") as File[];
+
+    if (files.length === 0 || files.some((file) => file.size === 0)) {
+      return {
+        success: false,
+        message: "No se ha seleccionado ningún archivo",
+      };
+    }
+
+    const product = (await getProductById({
+      id: productId,
+      isAdminRequest: true,
+    })) as IProduct;
+
+    if (!product) {
+      return {
+        success: false,
+        message: "Producto no encontrado",
+      };
+    }
+
+    const fileKeys: string[] = [];
+    for (const file of files) {
+      const fileKey = generateFileKey(file);
+      const res = await fetch("/api/aws-s3-signed-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileKey: `Products/${product.id}/${fileKey}`,
+          contentType: file.type,
+        }),
+      });
+
+      const { signedUrl } = await res.json();
+
+      await fetch(signedUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+      fileKeys.push(fileKey);
+    }
+
+    return await addFileToProduct(productId, fileKeys);
+  };
+
   const submitAction: React.FormEventHandler<HTMLFormElement> = async (
     event
   ) => {
@@ -42,7 +85,7 @@ const SharedForm = ({ onClose, productId }: ISharedForm) => {
     const res =
       tab === "history"
         ? await createHistoryProduct(formData, productId as string)
-        : await addFileToProduct(productId as string, formData);
+        : await handlerUploadFile(productId as string, formData);
     if (res && !res.success) {
       setBadResponse(res);
     } else {

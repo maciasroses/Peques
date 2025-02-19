@@ -20,6 +20,7 @@ interface IUploadFile {
   fileKey: string;
 }
 
+// ON VERCEL, LIMIT OF 4.5MB IN TOTAL PAYLOAD SIZE
 export async function uploadFile({ file, fileKey }: IUploadFile) {
   try {
     const command = new PutObjectCommand({

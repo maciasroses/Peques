@@ -5,10 +5,9 @@ import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
+import { deleteFile } from "@/app/shared/services/aws/s3";
 import { create, deleteById, read, update } from "./model";
-import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
 import type { IHero } from "@/app/shared/interfaces";
-import { generateFileKey } from "../../utils/generateFileKey";
 
 export async function getHeroes({
   isAdminRequest,
@@ -36,45 +35,28 @@ export async function getHeroById({ id }: { id: string }) {
   }
 }
 
-export async function createHero(formData: FormData) {
-  const dataToValidate = {
-    title: formData.get("title"),
-    subtitle: formData.get("subtitle"),
-    imageUrl: formData.get("imageUrl"),
-    buttonLink: formData.get("buttonLink"),
-    description: formData.get("description"),
-    collectionId: formData.get("collectionId"),
-  };
-
-  const errors = validateSchema("create", dataToValidate);
-
-  if (Object.keys(errors).length !== 0) {
-    return {
-      errors,
-      success: false,
-    };
-  }
-
+export async function createHero(data: {
+  imageKey: string;
+  collectionId: string;
+  title?: string | null;
+  subtitle?: string | null;
+  buttonLink?: string | null;
+  description?: string | null;
+}) {
   try {
     await isAdmin();
 
     const heroesCount = (await read({})) as IHero[];
 
-    const { imageUrl, ...rest } = dataToValidate;
+    const { imageKey, ...rest } = data;
 
-    const fileKey = generateFileKey(imageUrl as File);
-    const url = await uploadFile({
-      file: imageUrl as File,
-      fileKey: `Heroes/${fileKey}`,
+    await create({
+      data: {
+        ...rest,
+        imageUrl: `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/Heroes/${imageKey}`,
+        order: heroesCount.length,
+      },
     });
-
-    const finalData = {
-      ...rest,
-      imageUrl: url,
-      order: heroesCount.length,
-    };
-
-    await create({ data: finalData });
   } catch (error) {
     console.error(error);
     throw new Error("Failed to create hero");
@@ -86,65 +68,47 @@ export async function createHero(formData: FormData) {
 
 export async function updateHeroById({
   id,
-  formData,
+  data,
 }: {
   id: string;
-  formData: FormData;
-}) {
-  const dataToValidate = {
-    title: formData.get("title"),
-    imageUrl: formData.get("imageUrl"),
-    subtitle: formData.get("subtitle"),
-    buttonLink: formData.get("buttonLink"),
-    description: formData.get("description"),
-    collectionId: formData.get("collectionId"),
+  data: {
+    collectionId: string;
+    title?: string | null;
+    imageKey?: string | null;
+    subtitle?: string | null;
+    buttonLink?: string | null;
+    description?: string | null;
+    prevHeroImageUrl?: string | null;
   };
-
-  const errors = validateSchema("update", dataToValidate);
-
-  if (Object.keys(errors).length !== 0) {
-    return {
-      errors,
-      success: false,
-    };
-  }
-
+}) {
   try {
     await isAdmin();
 
-    const prevHero = (await read({ id })) as IHero;
-
-    if (!prevHero) {
-      throw new Error("Hero not found");
-    }
-
-    if ((dataToValidate.imageUrl as File).size > 0) {
-      const { imageUrl, ...rest } = dataToValidate;
-
-      const fileKey = generateFileKey(imageUrl as File);
-      const url = await uploadFile({
-        file: imageUrl as File,
-        fileKey: `Heroes/${fileKey}`,
+    if (data.imageKey && data.prevHeroImageUrl) {
+      await update({
+        id,
+        data: {
+          title: data.title,
+          subtitle: data.subtitle,
+          buttonLink: data.buttonLink,
+          description: data.description,
+          collectionId: data.collectionId,
+          imageUrl: `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/Heroes/${data.imageKey}`,
+        },
       });
-
-      const finalData = {
-        ...rest,
-        imageUrl: url,
-      };
-
-      await update({ id, data: finalData });
-
-      const urlObj = new URL(prevHero.imageUrl);
+      const urlObj = new URL(data.prevHeroImageUrl);
       await deleteFile(urlObj.pathname.substring(1));
     } else {
-      const { imageUrl, ...rest } = dataToValidate;
-
-      const finalData = {
-        ...rest,
-        imageUrl: prevHero.imageUrl,
-      };
-
-      await update({ id, data: finalData });
+      await update({
+        id,
+        data: {
+          title: data.title,
+          subtitle: data.subtitle,
+          buttonLink: data.buttonLink,
+          description: data.description,
+          collectionId: data.collectionId,
+        },
+      });
     }
   } catch (error) {
     console.error(error);

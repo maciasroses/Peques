@@ -380,25 +380,17 @@ export async function addStripeCustomerIdToMe({
   }
 }
 
-export async function updateProfilePicture(formData: FormData) {
+export async function updateProfilePicture(fileKey: string) {
   try {
     const session = await getSession();
     if (!session || !session.userId) throw new Error("No session found");
 
     const user = (await read({ id: session.userId as string })) as IUser;
 
-    const imageUrl = formData.get("image") as File;
-
-    const fileKey = generateFileKey(imageUrl as File);
-    const url = await uploadFile({
-      file: imageUrl,
-      fileKey: `User-profile-pictures/${session.userId}-${fileKey}`,
-    });
-
     await update({
       id: session.userId as string,
       data: {
-        image: url,
+        image: `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/User-profile-pictures/${session.userId}-${fileKey}`,
       },
     });
 

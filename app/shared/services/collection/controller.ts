@@ -5,14 +5,13 @@ import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
-import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
+import { deleteFile } from "@/app/shared/services/aws/s3";
 import { create, deleteById, deleteMassive, read, update } from "./model";
 import { getProductIdsByKeys } from "@/app/shared/services/product/controller";
 import type {
   ICollection,
   ICollectionSearchParams,
 } from "@/app/shared/interfaces";
-import { generateFileKey } from "../../utils/generateFileKey";
 
 export async function getCollections({ q }: ICollectionSearchParams) {
   try {
@@ -63,83 +62,21 @@ export async function getCollectionByLink({ link }: { link: string }) {
   }
 }
 
-export async function createCollection(formData: FormData) {
-  const dataToValidate = {
-    name: formData.get("name"),
-    link: formData.get("link"),
-    imageUrl: formData.get("imageUrl"),
-  };
-
-  const errors = validateSchema("create", dataToValidate);
-
-  if (Object.keys(errors).length !== 0) {
-    return {
-      errors,
-      success: false,
-    };
-  }
-
-  const products = formData.getAll("product") as string[];
-
-  if (!products.length) {
-    return {
-      success: false,
-      message: "No hay productos para agregar",
-    };
-  }
-
-  if (products.some((productId) => productId === "")) {
-    return {
-      success: false,
-      message: "Seleccione los productos válidos",
-    };
-  }
-
+export async function createCollection(data: {
+  productIds: string[];
+  imageKey: string;
+  name: string;
+  link: string;
+}) {
   try {
     await isAdmin();
 
-    const collectionExistsByName = await read({
-      name: dataToValidate.name as string,
-    });
-    if (collectionExistsByName) {
-      return {
-        success: false,
-        message: "La colección con ese nombre ya existe",
-      };
-    }
-
-    const collectionExistsByLink = await read({
-      link: dataToValidate.link as string,
-    });
-    if (collectionExistsByLink) {
-      return {
-        success: false,
-        message: "La colección con ese link ya existe",
-      };
-    }
-
-    const { imageUrl, ...rest } = dataToValidate;
-
-    const fileKey = generateFileKey(imageUrl as File);
-    const url = await uploadFile({
-      file: imageUrl as File,
-      fileKey: `Collections/${fileKey}`,
-    });
-
-    const productIds = await getProductIdsByKeys(products);
-
-    if (productIds.length !== products.length) {
-      return {
-        success: false,
-        message: "Algunos productos no se encontraron",
-      };
-    }
-
     const finalData = {
-      ...rest,
-      imageUrl: url,
+      name: data.name,
+      link: data.link,
+      imageUrl: `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/Collections/${data.imageKey}`,
       products: {
-        create: productIds.map((product) => ({
+        create: data.productIds.map((product) => ({
           productId: product,
         })),
       },
@@ -148,7 +85,6 @@ export async function createCollection(formData: FormData) {
     await create({ data: finalData });
   } catch (error) {
     console.error(error);
-    // throw new Error("Failed to create collection");
     return {
       success: false,
       message: "Ha ocurrido un error al crear la colección",
@@ -161,89 +97,41 @@ export async function createCollection(formData: FormData) {
 
 export async function updateCollection({
   id,
-  formData,
+  data,
 }: {
   id: string;
-  formData: FormData;
-}) {
-  const dataToValidate = {
-    name: formData.get("name"),
-    link: formData.get("link"),
-    imageUrl: formData.get("imageUrl"),
+  data: {
+    name: string;
+    link: string;
+    imageKey?: string | null;
+    prevCollectionImageUrl?: string | null;
   };
-
-  const errors = validateSchema("update", dataToValidate);
-
-  if (Object.keys(errors).length !== 0) {
-    return {
-      errors,
-      success: false,
-    };
-  }
-
+}) {
   try {
     await isAdmin();
 
-    const collection = (await read({ id })) as ICollection;
-    if (!collection) {
-      throw new Error("Collection not found");
-    }
-
-    const collections = (await read({})) as ICollection[];
-
-    const collectionsWithoutCurrent = collections.filter((c) => c.id !== id);
-
-    const collectionExistsByName = collectionsWithoutCurrent.find(
-      (c) => c.name === dataToValidate.name
-    );
-    if (collectionExistsByName) {
-      return {
-        success: false,
-        message: "La colección con ese nombre ya existe",
-      };
-    }
-
-    const collectionExistsByLink = collectionsWithoutCurrent.find(
-      (c) => c.link === dataToValidate.link
-    );
-    if (collectionExistsByLink) {
-      return {
-        success: false,
-        message: "La colección con ese link ya existe",
-      };
-    }
-
-    if ((dataToValidate.imageUrl as File).size > 0) {
-      const { imageUrl, ...rest } = dataToValidate;
-
-      const fileKey = generateFileKey(imageUrl as File);
-      const url = await uploadFile({
-        file: imageUrl as File,
-        fileKey: `Collections/${fileKey}`,
+    if (data.imageKey && data.prevCollectionImageUrl) {
+      await update({
+        id,
+        data: {
+          name: data.name,
+          link: data.link,
+          imageUrl: `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/Collections/${data.imageKey}`,
+        },
       });
-
-      const finalData = {
-        ...rest,
-        imageUrl: url,
-      };
-
-      await update({ id, data: finalData });
-
-      const urlObj = new URL(collection.imageUrl);
+      const urlObj = new URL(data.prevCollectionImageUrl);
       await deleteFile(urlObj.pathname.substring(1));
     } else {
-      const { imageUrl, ...rest } = dataToValidate;
-
-      const finalData = {
-        ...rest,
-        imageUrl: collection.imageUrl,
-      };
-
-      await update({ id, data: finalData });
+      await update({
+        id,
+        data: {
+          name: data.name,
+          link: data.link,
+        },
+      });
     }
   } catch (error) {
     console.error(error);
-    // throw new Error("Failed to update collection");
     return {
       success: false,
       message: "Ha ocurrido un error al actualizar la colección",

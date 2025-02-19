@@ -6,9 +6,12 @@ import {
   deleteHero,
   updateHeroById,
   switchHeroVisibility,
+  getHeroById,
 } from "@/app/shared/services/hero/controller";
+import { generateFileKey } from "@/app/shared/utils/generateFileKey";
 import { GenericInput, SubmitButton } from "@/app/shared/components";
 import type { ICollection, IHero, IHeroState } from "@/app/shared/interfaces";
+import { validateSchema } from "@/app/shared/services/hero/schema";
 
 interface IForm {
   hero: IHero | null;
@@ -24,6 +27,131 @@ const Form = ({ hero, onClose, collections, action }: IForm) => {
     INITIAL_STATE_RESPONSE
   );
 
+  const handleCreateHero = async (formData: FormData) => {
+    const dataToValidate = {
+      title: formData.get("title"),
+      subtitle: formData.get("subtitle"),
+      imageUrl: formData.get("imageUrl"),
+      buttonLink: formData.get("buttonLink"),
+      description: formData.get("description"),
+      collectionId: formData.get("collectionId"),
+    };
+
+    const errors = validateSchema("create", dataToValidate);
+
+    if (Object.keys(errors).length !== 0) {
+      return {
+        errors,
+        success: false,
+      };
+    }
+
+    const image = formData.get("imageUrl") as File;
+    const fileKey = generateFileKey(image);
+
+    const signedRes = await fetch("/api/aws-s3-signed-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileKey: `Heroes/${fileKey}`,
+        contentType: image.type,
+      }),
+    });
+
+    const { signedUrl } = await signedRes.json();
+
+    await fetch(signedUrl, {
+      method: "PUT",
+      body: image,
+      headers: { "Content-Type": image.type },
+    });
+
+    const finalData = {
+      imageKey: fileKey,
+      collectionId: dataToValidate.collectionId as string,
+      title: dataToValidate.title ? (dataToValidate.title as string) : null,
+      subtitle: dataToValidate.subtitle
+        ? (dataToValidate.subtitle as string)
+        : null,
+      buttonLink: dataToValidate.buttonLink
+        ? (dataToValidate.buttonLink as string)
+        : null,
+      description: dataToValidate.description
+        ? (dataToValidate.description as string)
+        : null,
+    };
+
+    return await createHero(finalData);
+  };
+
+  const handleUploadHero = async (id: string, formData: FormData) => {
+    const dataToValidate = {
+      title: formData.get("title"),
+      imageUrl: formData.get("imageUrl"),
+      subtitle: formData.get("subtitle"),
+      buttonLink: formData.get("buttonLink"),
+      description: formData.get("description"),
+      collectionId: formData.get("collectionId"),
+    };
+
+    const errors = validateSchema("update", dataToValidate);
+
+    if (Object.keys(errors).length !== 0) {
+      return {
+        errors,
+        success: false,
+      };
+    }
+
+    const prevHero = (await getHeroById({ id })) as IHero;
+
+    if (!prevHero) {
+      throw new Error("Hero not found");
+    }
+
+    const image = formData.get("imageUrl") as File;
+
+    let fileKey = "";
+    if (image.size > 0) {
+      fileKey = generateFileKey(image);
+
+      const signedRes = await fetch("/api/aws-s3-signed-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileKey: `Heroes/${fileKey}`,
+          contentType: image.type,
+        }),
+      });
+
+      const { signedUrl } = await signedRes.json();
+
+      await fetch(signedUrl, {
+        method: "PUT",
+        body: image,
+        headers: { "Content-Type": image.type },
+      });
+    }
+
+    const data = {
+      imageKey: fileKey.length > 0 ? fileKey : null,
+      prevHeroImageUrl: fileKey.length > 0 ? prevHero.imageUrl : null,
+      collectionId: dataToValidate.collectionId as string,
+      title: dataToValidate.title ? (dataToValidate.title as string) : null,
+      subtitle: dataToValidate.subtitle
+        ? (dataToValidate.subtitle as string)
+        : null,
+      buttonLink: dataToValidate.buttonLink
+        ? (dataToValidate.buttonLink as string)
+        : null,
+      description: dataToValidate.description
+        ? (dataToValidate.description as string)
+        : null,
+    };
+
+    return await updateHeroById({ id, data });
+  };
+
   const submitAction: React.FormEventHandler<HTMLFormElement> = async (
     event
   ) => {
@@ -32,9 +160,9 @@ const Form = ({ hero, onClose, collections, action }: IForm) => {
     const formData = new FormData(event.currentTarget);
     const res =
       action === "create"
-        ? await createHero(formData)
+        ? await handleCreateHero(formData)
         : action === "update"
-          ? await updateHeroById({ id: hero!.id, formData: formData })
+          ? await handleUploadHero(hero!.id, formData)
           : action === "activate" || action === "deactivate"
             ? await switchHeroVisibility({
                 id: hero!.id,
