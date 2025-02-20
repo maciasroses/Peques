@@ -19,7 +19,7 @@ const Footer = ({ lng, user }: IFooter) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-neutral-light text-primary-light">
+    <footer className="w-full bg-neutral-light">
       {!pathname.includes("admin") && (
         <section className="w-[80%] flex flex-col md:flex-row gap-4 justify-around items-center mx-auto py-4">
           <div className="w-full md:w-2/4 flex flex-col items-start">
