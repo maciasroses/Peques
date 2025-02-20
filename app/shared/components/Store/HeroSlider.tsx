@@ -20,7 +20,6 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
     <div>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={20}
         autoplay={{
           delay: 4000,
           pauseOnMouseEnter: true,
@@ -36,6 +35,7 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
           bulletActiveClass: "custom-pagination-bullet-active",
         }}
         loop
+        speed={1000}
       >
         {heroes.map((hero, index) => (
           <SwiperSlide key={index}>
@@ -57,9 +57,11 @@ const HeroSlider = ({ lng, heroes }: IHeroSlider) => {
                   <p className="text-lg md:text-2xl xl:text-4xl font-extralight animate-fade-up animate-delay-1000">
                     {hero.description}
                   </p>
-                  <div className="text-base md:text-lg xl:text-2xl bg-white/20 hover:bg-white/40 p-4 rounded-xl animate-fade-up animate-delay-1000">
-                    {hero.buttonLink}
-                  </div>
+                  {hero.buttonLink && (
+                    <div className="text-base md:text-lg xl:text-2xl bg-white/20 hover:bg-white/40 p-4 rounded-xl animate-fade-up animate-delay-1000">
+                      {hero.buttonLink}
+                    </div>
+                  )}
                 </div>
               </Link>
             </div>

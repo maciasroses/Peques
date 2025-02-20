@@ -116,9 +116,11 @@ const ListDnd = ({ heroes, collections }: IListDnd) => {
                           <small className="font-extralight text-xs">
                             {hero.description}
                           </small>
-                          <p className="border border-white rounded-md py-2 px-4 mt-4 bg-white text-black">
-                            {hero.buttonLink}
-                          </p>
+                          {hero.buttonLink && (
+                            <p className="border border-white rounded-md py-2 px-4 mt-4 bg-white text-black">
+                              {hero.buttonLink}
+                            </p>
+                          )}
                         </div>
                         {!hero.isActive && (
                           <div className="absolute size-full top-0 left-0 p-4 bg-black bg-opacity-50 text-white flex flex-col justify-center items-center">
