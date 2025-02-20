@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/app/shared/utils/cn";
 import { usePathname } from "next/navigation";
-import Logo from "@/public/assets/images/logo-color.webp";
+import Logo from "@/public/assets/images/logo-white.webp";
 import { Facebook, Instagram, TikTok } from "@/app/shared/icons";
 import type { IUser } from "@/app/shared/interfaces";
 
@@ -19,7 +19,7 @@ const Footer = ({ lng, user }: IFooter) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-black text-primary-light">
+    <footer className="w-full bg-neutral-light text-primary-light">
       {!pathname.includes("admin") && (
         <section className="w-[80%] flex flex-col md:flex-row gap-4 justify-around items-center mx-auto py-4">
           <div className="w-full md:w-2/4 flex flex-col items-start">
@@ -66,7 +66,7 @@ const Footer = ({ lng, user }: IFooter) => {
           </div>
           <div className="w-full md:w-2/4 flex flex-col sm:flex-row gap-4 items-start">
             <div className="w-full sm:w-1/2">
-              <p className="text-lg mb-2">Legal</p>
+              <p className="mb-2">Legal</p>
               <ul className="flex flex-col gap-2">
                 <li>
                   <Link href={`/${lng}/terms-of-service`}>
@@ -81,7 +81,7 @@ const Footer = ({ lng, user }: IFooter) => {
               </ul>
             </div>
             <div className="w-full sm:w-1/2">
-              <p className="text-lg mb-2">Soporte</p>
+              <p className="mb-2">Soporte</p>
               <ul className="flex flex-col gap-2">
                 <li>
                   <Link href={`/${lng}/about`}>Acerca de nosotros</Link>
