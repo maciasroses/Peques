@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import { cn } from "@/app/shared/utils/cn";
 import { PlayIcon } from "@/app/shared/icons";
 import type { IProductFile } from "@/app/shared/interfaces";
+import { useState } from "react";
 
 const MediaPreview = ({
   alt,
@@ -14,20 +17,29 @@ const MediaPreview = ({
   isAllGallery?: boolean;
   onMouseEnter?: () => void;
 }) => {
+  const [loading, setLoading] = useState(true);
+
   if (file.type === "IMAGE") {
     return (
-      <Image
-        priority
-        alt={alt}
-        src={file.url}
-        width={isAllGallery ? 64 : 500}
-        height={isAllGallery ? 64 : 300}
-        className={cn(
-          "object-contain, size-full",
-          isAllGallery && "rounded-2xl"
+      <>
+        {loading && (
+          <div className="absolute inset-0 rounded-2xl bg-primary-light animate-pulse"></div>
         )}
-        onMouseEnter={onMouseEnter}
-      />
+        <Image
+          priority
+          alt={alt}
+          src={file.url}
+          onMouseEnter={onMouseEnter}
+          width={isAllGallery ? 64 : 500}
+          onLoad={() => setLoading(false)}
+          height={isAllGallery ? 64 : 300}
+          className={cn(
+            "object-contain size-full transition-opacity duration-300",
+            isAllGallery && "rounded-2xl",
+            loading ? "opacity-0" : "opacity-100"
+          )}
+        />
+      </>
     );
   }
   if (file.type === "VIDEO") {
@@ -42,15 +54,24 @@ const MediaPreview = ({
       );
     } else {
       return (
-        <video
-          muted
-          autoPlay
-          width={500}
-          height={300}
-          src={file.url}
-          className="size-auto object-contain"
-          onMouseEnter={onMouseEnter}
-        />
+        <>
+          {loading && (
+            <div className="absolute inset-0 rounded-2xl bg-primary-light animate-pulse"></div>
+          )}
+          <video
+            muted
+            autoPlay
+            width={500}
+            height={300}
+            src={file.url}
+            onMouseEnter={onMouseEnter}
+            onLoadedData={() => setLoading(false)}
+            className={cn(
+              "size-auto object-contain transition-opacity duration-300",
+              loading ? "opacity-0" : "opacity-100"
+            )}
+          />
+        </>
       );
     }
   }

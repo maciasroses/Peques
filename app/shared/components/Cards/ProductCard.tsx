@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { cn } from "@/app/shared/utils/cn";
 import { useAuth } from "@/app/shared/hooks";
 import formatCurrency from "@/app/shared/utils/format-currency";
 import {
@@ -26,6 +28,7 @@ const ProductCard = ({
   isForCustomList = false,
 }: IProductCard) => {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
 
   const isFavorite =
     user?.customLists.some((list) => {
@@ -43,7 +46,6 @@ const ProductCard = ({
       )
     : 0;
 
-  // Filter active promotions applicable to the product or its category
   const applicablePromotions = [
     ...product.promotions
       .map((promotion) => promotion.promotion)
@@ -65,7 +67,6 @@ const ProductCard = ({
     ),
   ];
 
-  // Select the best promotion based on the total discount
   const selectedPromotion = applicablePromotions.reduce<IPromotion | null>(
     (bestPromo, promo) => {
       const calculateEffectiveDiscount = (promotion: IPromotion) => {
@@ -75,7 +76,7 @@ const ProductCard = ({
         if (promotion.discountType === "FIXED") {
           return promotion.discountValue;
         }
-        return 0; // No discount
+        return 0;
       };
 
       const currentDiscount = calculateEffectiveDiscount(promo);
@@ -92,7 +93,6 @@ const ProductCard = ({
     null
   );
 
-  // Calculate the price with discount (if applicable)
   const discountedPrice = selectedPromotion
     ? product.salePriceMXN -
       (selectedPromotion.discountType === "PERCENTAGE"
@@ -110,17 +110,27 @@ const ProductCard = ({
 
   return (
     <div className="w-full bg-white rounded-lg">
-      <Link href={`/${lng}/${product.key}`} className="flex justify-center">
+      <Link
+        href={`/${lng}/${product.key}`}
+        className="relative flex justify-center"
+      >
+        {loading && (
+          <div className="absolute rounded-lg inset-0 w-full h-64 bg-primary-light animate-pulse"></div>
+        )}
         <Image
           width={500}
           height={300}
           alt={product.name}
-          className="w-full h-64 object-contain"
+          className={cn(
+            "w-full h-64 object-contain transition-opacity duration-300",
+            loading ? "opacity-0" : "opacity-100"
+          )}
           src={
             product.files.find(
               (file) => file.order === 1 && file.type === "IMAGE"
             )?.url || "/assets/images/landscape-placeholder.webp"
           }
+          onLoad={() => setLoading(false)}
         />
       </Link>
       <div className="flex flex-col gap-2 sm:p-5">

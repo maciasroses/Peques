@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LeftChevron, RightChevron, XMark } from "@/app/shared/icons";
 import type { IProduct } from "@/app/shared/interfaces";
+import { cn } from "../../utils/cn";
 
 interface IImageGallery {
   product: IProduct;
@@ -20,6 +21,12 @@ const ImageGallery = ({
 }: IImageGallery) => {
   const leftArrowRef = useRef(null);
   const rightArrowRef = useRef(null);
+  const [loading, setLoading] = useState(true);
+
+  const sortedFiles = useMemo(
+    () => [...product.files].sort((a, b) => a.order - b.order),
+    [product.files]
+  );
 
   const selectedImage =
     product.files.find((file) => file.id === selectedImageId) ??
@@ -27,28 +34,26 @@ const ImageGallery = ({
     product.files[0];
 
   const handleNextImage = () => {
-    const currentIndex = product.files.findIndex(
+    const currentIndex = sortedFiles.findIndex(
       (file) => file === selectedImage
     );
     const nextIndex = currentIndex + 1;
     setSelectedImageId(
-      nextIndex < product.files.length
-        ? product.files[nextIndex].id
-        : (product.files.find(
-            (file) => file.order === 1 && file.type === "IMAGE"
-          )?.id ?? product.files[0].id)
+      nextIndex < sortedFiles.length
+        ? sortedFiles[nextIndex].id
+        : sortedFiles[0].id
     );
   };
 
   const handlePreviousImage = () => {
-    const currentIndex = product.files.findIndex(
+    const currentIndex = sortedFiles.findIndex(
       (file) => file === selectedImage
     );
     const previousIndex = currentIndex - 1;
     setSelectedImageId(
       previousIndex >= 0
-        ? product.files[previousIndex].id
-        : product.files[product.files.length - 1].id
+        ? sortedFiles[previousIndex].id
+        : sortedFiles[sortedFiles.length - 1].id
     );
   };
 
@@ -74,11 +79,14 @@ const ImageGallery = ({
   }, [handleClickOutside]);
 
   return (
-    <div className="fixed top-0 left-0 z-50 w-screen h-screen bg-black/80 p-5 md:p-10 flex justify-center">
+    <div className="fixed top-0 left-0 z-50 w-screen h-screen bg-black/95 p-5 md:p-10 flex justify-center">
       <div className="size-full relative">
         <div className="absolute w-full flex justify-between items-start">
           <p className="text-gray-200 bg-black/50 py-1 px-3 rounded-full">
-            {product.files.findIndex((file) => file === selectedImage) + 1}
+            {product.files
+              .slice()
+              .sort((a, b) => a.order - b.order)
+              .findIndex((file) => file === selectedImage) + 1}
             {" / "}
             {product.files.length}
           </p>
@@ -94,23 +102,41 @@ const ImageGallery = ({
           >
             <LeftChevron />
           </button>
-          <div className="h-[80%] flex items-center">
+          <div className="h-[80%] flex items-center relative">
             {selectedImage.type === "IMAGE" ? (
-              <Image
-                width={600}
-                height={600}
-                src={selectedImage.url}
-                alt={product.name}
-                className="size-full object-contain"
-              />
+              <>
+                {loading && (
+                  <div className="absolute inset-0 rounded-lg bg-primary-light animate-pulse"></div>
+                )}
+                <Image
+                  width={600}
+                  height={600}
+                  alt={product.name}
+                  src={selectedImage.url}
+                  onLoad={() => setLoading(false)}
+                  className={cn(
+                    "size-full object-contain transition-opacity duration-300",
+                    loading ? "opacity-0" : "opacity-100"
+                  )}
+                />
+              </>
             ) : (
-              <video
-                width={600}
-                height={600}
-                src={selectedImage.url}
-                className="size-full object-contain"
-                autoPlay
-              />
+              <>
+                {loading && (
+                  <div className="absolute inset-0 rounded-lg bg-primary-light animate-pulse"></div>
+                )}
+                <video
+                  width={600}
+                  height={600}
+                  src={selectedImage.url}
+                  className={cn(
+                    "size-full object-contain transition-opacity duration-300",
+                    loading ? "opacity-0" : "opacity-100"
+                  )}
+                  autoPlay
+                  onLoadedData={() => setLoading(false)}
+                />
+              </>
             )}
           </div>
           <button

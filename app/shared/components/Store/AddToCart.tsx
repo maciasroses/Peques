@@ -1,10 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { Toast } from "@/app/shared/components";
 import { useCart, useResolvedTheme } from "@/app/shared/hooks";
 import type { IProduct } from "@/app/shared/interfaces";
-import { useState } from "react";
 
 interface IAddToCart {
   price: number;
@@ -54,13 +54,8 @@ const AddToCart = ({
       price: product.salePriceMXN,
     });
 
-    Toast({
-      theme,
-      type: "success",
-      message: "Producto agregado al carrito",
-    });
+    // window.scrollTo({ top: -1, behavior: "smooth" });
 
-    // Resetea la cantidad al valor inicial (opcional)
     setQuantity(1);
     onParentClose && onParentClose();
   };
