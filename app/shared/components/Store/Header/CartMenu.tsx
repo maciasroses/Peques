@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { useRouter } from "next/navigation";
 import { useCart, useDisableScroll } from "@/app/shared/hooks";
@@ -25,6 +25,12 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
   const { cart, addToCart, clearCart, removeFromCart } = useCart();
 
   useDisableScroll(isOpen);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      setIsOpen(true);
+    }
+  }, [cart.length]);
 
   const toggleCart = () => {
     setIsOpen(!isOpen);
@@ -161,10 +167,10 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
                         </>
                       )}
                       <button
-                        className="text-red-600 hover:text-red-700"
+                        className="text-gray-500 hover:text-gray-600"
                         onClick={() => removeFromCart(item.id)}
                       >
-                        Borrar
+                        Quitar
                       </button>
                     </div>
                   </li>
@@ -192,8 +198,11 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
               >
                 Ir a pagar
               </button>
-              <button className="link-button-red" onClick={clearCart}>
+              {/* <button className="link-button-red" onClick={clearCart}>
                 Vaciar carrito
+              </button> */}
+              <button onClick={toggleCart} className="link-button-gray">
+                Continuar comprando
               </button>
             </div>
           )}

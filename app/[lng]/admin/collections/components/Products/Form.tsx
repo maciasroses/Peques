@@ -48,11 +48,6 @@ const Form = ({ onClose, collectionId, product, action }: IForm) => {
     setSelectedProducts(updatedSelections);
   };
 
-  const availableProducts =
-    product instanceof Array
-      ? (product as IProduct[])?.filter((prod) => prod.availableQuantity > 0)
-      : null;
-
   const submitAction: React.FormEventHandler<HTMLFormElement> = async (
     event
   ) => {
@@ -100,7 +95,7 @@ const Form = ({ onClose, collectionId, product, action }: IForm) => {
             <>
               <div className="flex flex-col gap-2 w-full">
                 {Array.from({ length: productsCounter }).map((_, index) => {
-                  const filteredProducts = availableProducts?.filter(
+                  const filteredProducts = (product as IProduct[])?.filter(
                     (product) =>
                       !selectedProducts.includes(product.key) ||
                       product.key === selectedProducts[index]

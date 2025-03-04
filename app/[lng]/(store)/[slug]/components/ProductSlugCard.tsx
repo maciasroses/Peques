@@ -385,7 +385,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                 <div
                   key={file.id}
                   className={cn(
-                    "size-16 hover:border cursor-pointer hover:border-black rounded-2xl",
+                    "size-16 hover:border cursor-pointer hover:border-black rounded-2xl relative",
                     selectedImage === file && "border border-black"
                   )}
                 >
@@ -421,7 +421,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               <div
                 key={file.id}
                 className={cn(
-                  "size-8 hover:border cursor-pointer hover:border-black rounded-2xl",
+                  "size-8 hover:border cursor-pointer hover:border-black rounded-2xl relative",
                   selectedImage === file && "border border-black"
                 )}
               >

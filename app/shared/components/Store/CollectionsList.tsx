@@ -53,40 +53,12 @@ const CollectionsList = ({ lng, layDown, collections }: ICollectionsList) => {
         className="flex pr-5 overflow-x-auto items-start w-full max-w-min mx-auto scroll-smooth"
       >
         {collections.map((collection) => (
-          <li
+          <CollectionLi
+            lng={lng}
+            layDown={layDown}
             key={collection.id}
-            className={cn(
-              "bg-gray-300 relative rounded-md text-center ml-5",
-              layDown
-                ? "w-[250px] md:w-[500px] h-[150px] md:h-[300px]"
-                : "w-[150px] md:w-[300px] h-[250px] md:h-[500px] "
-            )}
-          >
-            <Link
-              href={`/${lng}/collections/${collection.link}`}
-              className="group"
-            >
-              <div
-                className={cn(
-                  "bg-cover rounded-md",
-                  layDown
-                    ? "w-[250px] md:w-[500px] h-[150px] md:h-[300px]"
-                    : "w-[150px] md:w-[300px] h-[250px] md:h-[500px] "
-                )}
-                style={{
-                  backgroundImage: `url(${collection.imageUrl})`,
-                }}
-              />
-              <div className="absolute size-full top-0 left-0 py-10 px-4 bg-black bg-opacity-50 group-hover:bg-opacity-30 transition-all duration-500 flex flex-col justify-end items-center rounded-md">
-                <p className="font-bold text-lg md:text-2xl text-white">
-                  {collection.name}
-                </p>
-                <p className="opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 text-white bg-white/20 hover:bg-white/40 px-4 py-2 rounded-md text-xs md:text-base mt-2">
-                  Ver colección
-                </p>
-              </div>
-            </Link>
-          </li>
+            collection={collection}
+          />
         ))}
       </ul>
       <button
@@ -100,3 +72,67 @@ const CollectionsList = ({ lng, layDown, collections }: ICollectionsList) => {
 };
 
 export default CollectionsList;
+
+const CollectionLi = ({
+  lng,
+  layDown,
+  collection,
+}: {
+  lng: string;
+  layDown?: boolean;
+  collection: ICollection;
+}) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = collection.imageUrl;
+    img.onload = () => setImageLoaded(true);
+  }, [collection.imageUrl]);
+
+  return (
+    <li
+      key={collection.id}
+      className={cn(
+        "bg-gray-300 relative rounded-md text-center ml-5",
+        layDown
+          ? "w-[250px] md:w-[500px] h-[150px] md:h-[300px]"
+          : "w-[150px] md:w-[300px] h-[250px] md:h-[500px] "
+      )}
+    >
+      <Link href={`/${lng}/collections/${collection.link}`} className="group">
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-primary-light animate-pulse rounded-md"></div>
+        )}
+
+        <div
+          className={cn(
+            "bg-cover rounded-md transition-opacity duration-300",
+            imageLoaded ? "opacity-100" : "opacity-0",
+            layDown
+              ? "w-[250px] md:w-[500px] h-[150px] md:h-[300px]"
+              : "w-[150px] md:w-[300px] h-[250px] md:h-[500px] "
+          )}
+          style={{
+            backgroundImage: imageLoaded
+              ? `url(${collection.imageUrl})`
+              : "none",
+          }}
+        />
+        <div
+          className={cn(
+            "absolute size-full top-0 left-0 py-10 px-4 group-hover:bg-opacity-30 transition-all duration-500 flex flex-col justify-end items-center rounded-md",
+            imageLoaded && "bg-black/50"
+          )}
+        >
+          <p className="font-bold text-lg md:text-2xl text-white">
+            {collection.name}
+          </p>
+          <p className="opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 text-white bg-white/20 hover:bg-white/40 px-4 py-2 rounded-md text-xs md:text-base mt-2">
+            Ver colección
+          </p>
+        </div>
+      </Link>
+    </li>
+  );
+};
