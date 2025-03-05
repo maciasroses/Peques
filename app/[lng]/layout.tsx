@@ -35,6 +35,20 @@ export const metadata: Metadata = {
     default: "Peques",
   },
   description: "Growing happy and healthy kids",
+  openGraph: {
+    title: "Peques",
+    description: "Growing happy and healthy kids",
+    url: "https://www.shopeques.com",
+    siteName: "Peques",
+    images: [
+      {
+        url: "https://pequesbucket.s3.us-east-2.amazonaws.com/logo-color.webp",
+        width: 800,
+        height: 600,
+      },
+    ],
+    type: "website",
+  },
 };
 
 interface IRootLayout extends IBaseLangPage {
