@@ -117,6 +117,10 @@ body {
   @apply text-white bg-gray-600 hover:bg-gray-700 border border-gray-600 hover:border-gray-700 px-4 py-2 rounded-md transition-colors duration-300;
 }
 
+.link-button-neutral {
+  @apply text-white bg-neutral hover:bg-neutral-700 border border-neutral-600 hover:border-neutral-700 px-4 py-2 rounded-md transition-colors duration-300;
+}
+
 .custom-prev,
 .custom-next {
   position: absolute;

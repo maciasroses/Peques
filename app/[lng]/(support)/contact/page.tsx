@@ -9,8 +9,8 @@ const ContactPage = () => {
       <ul className="mt-4 list-disc list-inside">
         <li>
           <strong>Correo electrónico: </strong>
-          <a href="mailto:support@shopeques.com" className="text-blue-500">
-            support@shopeques.com
+          <a href="mailto:helloshopeques@gmail.com" className="text-blue-500">
+            helloshopeques@gmail.com
           </a>
         </li>
         <li>

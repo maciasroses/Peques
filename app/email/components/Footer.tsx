@@ -40,14 +40,14 @@ const Footer = () => {
           Si tienes alguna duda, contáctanos en
           <br />
           <a
-            href="mailto:support@shopeques.com"
+            href="mailto:helloshopeques@gmail.com"
             style={{
               color: "#2563eb",
               textDecoration: "none",
               fontWeight: "bold",
             }}
           >
-            support@shopeques.com
+            helloshopeques@gmail.com
           </a>
         </p>
 

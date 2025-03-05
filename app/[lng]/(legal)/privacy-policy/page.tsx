@@ -83,9 +83,9 @@ const PrivacyPolicyPage = () => {
         Tienes derecho a acceder, corregir o eliminar la información personal
         que hemos recopilado sobre tí. Si deseas ejercer alguno de estos
         derechos, puedes ponerte en contacto con nosotros a través de
-        <a href="mailto:support@shopeques.com" className="text-blue-500">
+        <a href="mailto:helloshopeques@gmail.com" className="text-blue-500">
           {" "}
-          support@shopeques.com
+          helloshopeques@gmail.com
         </a>
       </p>
       <h2 className="mt-4 text-lg md:text-xl font-semibold">
