@@ -106,8 +106,8 @@ const TermsOfServicePage = () => {
           Si esto sucede, por favor contáctanos en un plazo máximo de 7 días
           naturales a partir de la recepción de tu pedido, enviando un mail a
           {' "'}
-          <a href="mailto:support@shopeques.com" className="text-blue-500">
-            support@shopeques.com
+          <a href="mailto:helloshopeques@gmail.com" className="text-blue-500">
+            helloshopeques@gmail.com
           </a>
           {'"'}. Te proporcionaremos una guía prepagada para que puedas
           enviarnos el producto defectuoso sin costo adicional. Una vez que
@@ -187,8 +187,8 @@ const TermsOfServicePage = () => {
       <ul className="mt-4 list-disc list-inside">
         <li>
           Correo electrónico:{" "}
-          <a href="mailto:support@shopeques.com" className="text-blue-500">
-            support@shopeques.com
+          <a href="mailto:helloshopeques@gmail.com" className="text-blue-500">
+            helloshopeques@gmail.com
           </a>
         </li>
         <li>Teléfono: 614-253-23-35 / 614-115-71-34</li>

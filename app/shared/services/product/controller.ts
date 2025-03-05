@@ -730,7 +730,7 @@ export async function getProductIdsByKeys(keys: string[]) {
     const productIds: string[] = [];
 
     for (const key of keys) {
-      const product = (await read({ key })) as IProduct;
+      const product = (await read({ key, isAdminRequest: true })) as IProduct;
 
       if (product) {
         productIds.push(product.id);

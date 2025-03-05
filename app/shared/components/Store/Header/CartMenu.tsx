@@ -201,7 +201,7 @@ const CartMenu = ({ lng, products }: ICartMenu) => {
               {/* <button className="link-button-red" onClick={clearCart}>
                 Vaciar carrito
               </button> */}
-              <button onClick={toggleCart} className="link-button-gray">
+              <button onClick={toggleCart} className="link-button-neutral">
                 Continuar comprando
               </button>
             </div>
