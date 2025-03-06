@@ -6,15 +6,15 @@ import CartSummary from "./CartSummary";
 import CheckoutTab from "./CheckoutTab";
 import { cn } from "@/app/shared/utils/cn";
 import { DownChevron } from "@/app/shared/icons";
+import PickUpAddressTab from "./PickUpAddressTab";
 import { useCheckout, useResolvedTheme } from "@/app/shared/hooks";
 import { Loading, GenericBackToPage } from "@/app/shared/components";
 import type {
+  IUser,
   IAddress,
   IDiscountCode,
   IPickUpAddress,
-  IUser,
 } from "@/app/shared/interfaces";
-import PickUpAddressTab from "./PickUpAddressTab";
 
 interface ICheckoutSummary {
   lng: string;
@@ -62,7 +62,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
   if (cart.length === 0) return <EmptyCart lng={lng} />;
 
   return (
-    <section className="pt-32 px-4 pb-4 flex flex-col md:flex-row gap-4">
+    <section className="pt-32 px-4 pb-4 flex flex-col gap-4">
       <CartSummary
         lng={lng}
         cart={cart}
@@ -72,14 +72,16 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
         setDiscountCode={setDiscountCode}
         isShippingInformationSelected={!!address || !!pickUp}
       />
-      <div className="w-full md:w-1/3 flex flex-col gap-4 h-full md:sticky md:top-24">
+      <div className="w-full flex flex-col gap-4 h-full">
         <div>
           <p className="text-2xl font-semibold mb-2">Entrega</p>
           <div className="flex flex-col border rounded-lg">
             <div
               className={cn(
-                "px-4 transition duration-200 mb-4",
-                finished && "opacity-50"
+                "px-4 transition duration-200",
+                finished && "opacity-50",
+                activeTab === 1 &&
+                  "border border-primary bg-primary/20 rounded-t-lg pb-4"
               )}
             >
               <button
@@ -88,14 +90,12 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
                 className="w-full py-4 flex justify-between items-center transition duration-200"
               >
                 <p className="text-xl font-semibold">Dirección de envío</p>
-                <span
+                <div
                   className={cn(
-                    "transform transition-all duration-300",
-                    activeTab === 1 ? "rotate-180" : "rotate-0"
+                    "w-6 h-6 rounded-full border border-black",
+                    activeTab === 1 ? "bg-primary" : "bg-gray-200"
                   )}
-                >
-                  <DownChevron />
-                </span>
+                />
               </button>
               {activeTab === 1 && (
                 <AddressTab
@@ -105,12 +105,12 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
                 />
               )}
             </div>
-            <hr />
             <div
               className={cn(
                 "px-4 transition duration-200",
                 finished && "opacity-50",
-                activeTab === 2 && "mb-4"
+                activeTab === 2 &&
+                  "border border-primary bg-primary/20 rounded-b-lg pb-4"
               )}
             >
               <button
@@ -119,14 +119,12 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
                 className="w-full py-4 flex justify-between items-center transition duration-200"
               >
                 <p className="text-xl font-semibold">Recoger en tienda</p>
-                <span
+                <div
                   className={cn(
-                    "transform transition-all duration-300",
-                    activeTab === 2 ? "rotate-180" : "rotate-0"
+                    "w-6 h-6 rounded-full border border-black",
+                    activeTab === 2 ? "bg-primary" : "bg-gray-200"
                   )}
-                >
-                  <DownChevron />
-                </span>
+                />
               </button>
               {activeTab === 2 && (
                 <PickUpAddressTab
