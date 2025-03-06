@@ -98,7 +98,8 @@ const AddressForm = ({ setAddress }: IAddressForm) => {
       <div className="mt-4 w-full text-center">
         <button
           onClick={onOpen}
-          className="inline-flex gap-2 items-center justify-center link-button-primary"
+          // className="inline-flex gap-2 items-center justify-center link-button-primary"
+          className="bg-accent hover:bg-accent-dark focus:ring-accent py-2 px-4 rounded-lg inline-flex gap-2 items-center justify-center"
         >
           Agregar dirección
           <span>

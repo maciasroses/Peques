@@ -36,6 +36,7 @@ import BulletList from "./BulletList";
 import RightArrow from "./RightArrow";
 import PlusCircle from "./PlusCircle";
 import EyeSlashIcon from "./EyeSlash";
+import CheckCircle from "./CheckCircle";
 import HandThumbUp from "./HandThumbUp";
 import LeftChevron from "./LeftChevron";
 import DownChevron from "./DownChevron";
@@ -74,6 +75,7 @@ export {
   Check,
   TrashIcon,
   LightIcon,
+  CheckCircle,
   PhotoIcon,
   Instagram,
   UserGroup,

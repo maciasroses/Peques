@@ -308,7 +308,7 @@ const StripeForm = ({
             "w-full mt-4",
             stripe == null || elements == null || isLoading || isLoadingFromHook
               ? "py-2 bg-gray-300 cursor-not-allowed rounded-md"
-              : "link-button-primary"
+              : "bg-accent hover:bg-accent-dark focus:ring-accent py-2 px-4 rounded-lg"
           )}
         >
           {isLoading

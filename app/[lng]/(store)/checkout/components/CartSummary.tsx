@@ -1,17 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import formatCurrency from "@/app/shared/utils/format-currency";
+import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
 import { GenericInput, SubmitButton } from "@/app/shared/components";
+import { validateDiscountCodeForUser } from "@/app/shared/services/discountCode/controller";
 import type {
   IDiscountCode,
   IDiscountCodeState,
   ICartItemForFrontend,
 } from "@/app/shared/interfaces";
-import { useState } from "react";
-import { INITIAL_STATE_RESPONSE } from "@/app/shared/constants";
-import { validateDiscountCodeForUser } from "@/app/shared/services/discountCode/controller";
 
 interface ICartSummary {
   lng: string;
@@ -72,7 +72,7 @@ const CartSummary = ({
   }
 
   return (
-    <div className={cn("w-full md:w-2/3", finished && "opacity-50")}>
+    <div className={cn("w-full", finished && "opacity-50")}>
       <h1 className="text-2xl font-bold">
         {lng === "en" ? "Order Summary" : "Resumen del pedido"}
       </h1>
