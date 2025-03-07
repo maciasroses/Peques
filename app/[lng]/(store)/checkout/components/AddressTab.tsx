@@ -37,7 +37,7 @@ const AddressTab = ({
 
   return (
     <>
-      {addresses.length > 0 && (
+      {addresses.length > 0 ? (
         <>
           <p className="text-lg mb-4">Mis direcciones</p>
           <ul className="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
@@ -48,7 +48,7 @@ const AddressTab = ({
                     "w-full border-2 rounded-lg text-left",
                     addressSelected?.id === address.id
                       ? "border-primary bg-primary-light"
-                      : "border-gray-200"
+                      : "hover:bg-primary-light hover:border-primary border-gray-200"
                   )}
                   onClick={() => setAddress(address)}
                 >
@@ -57,7 +57,17 @@ const AddressTab = ({
               </li>
             ))}
           </ul>
+          {!addressSelected && (
+            <p className="text-center mt-4 font-bold text-lg">
+              Selecciona una dirección para poder seleccionar el método de pago.
+            </p>
+          )}
         </>
+      ) : (
+        <p className="text-center">
+          Agrega una dirección para poder seleccionarla como dirección de envío
+          y seleccionar el método de pago.
+        </p>
       )}
       <AddressForm setAddress={setAddress} />
     </>

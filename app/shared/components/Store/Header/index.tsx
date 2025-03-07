@@ -10,10 +10,10 @@ import FiltersMenu from "./FiltersMenu";
 import { cn } from "@/app/shared/utils/cn";
 import { usePathname } from "next/navigation";
 import CollectionsMenu from "./CollectionsMenu";
+import { useToggleMenu } from "@/app/shared/hooks";
 import HamburgerLinksMenu from "./HamburgerLinksMenu";
 import { Search, UserIcon } from "@/app/shared/icons";
 import Logo from "@/public/assets/images/logo-color.webp";
-import { useScrollVisibility, useToggleMenu } from "@/app/shared/hooks";
 import type {
   IUser,
   IProduct,
@@ -40,7 +40,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
     toggle: toggleSearchBar,
   } = useToggleMenu<HTMLUListElement>();
 
-  const isVisible = useScrollVisibility(isAdmin);
+  // const isVisible = useScrollVisibility(isAdmin);
 
   const isAuthPage = [
     `/${lng}/login`,
@@ -65,8 +65,8 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
   return (
     <header
       className={cn(
-        "fixed z-30 top-0 w-full transition-transform duration-300",
-        isVisible ? "translate-y-0" : "-translate-y-full"
+        "fixed z-30 top-0 w-full transition-transform duration-300"
+        // isVisible ? "translate-y-0" : "-translate-y-full"
       )}
     >
       {shouldShowMenus && (
@@ -82,7 +82,12 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
         </div>
       )}
       <nav className="h-full flex flex-col items-center py-2 px-4 mx-auto bg-white border-b-4 border-accent-light">
-        <ul className="w-full flex justify-between items-center gap-4">
+        <ul
+          className={cn(
+            "w-full flex items-center gap-4",
+            shouldShowMenus ? "justify-between" : "justify-center"
+          )}
+        >
           {shouldShowMenus && (
             <li className="flex items-center md:hidden">
               <HamburgerLinksMenu lng={lng} collections={collections} />
