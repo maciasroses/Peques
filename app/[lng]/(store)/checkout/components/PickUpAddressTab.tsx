@@ -22,23 +22,31 @@ const PickUpAddressTab = ({
   }
 
   return (
-    <ul className="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
-      {PICK_UP_ADDRESSES.map((address) => (
-        <li key={address.id}>
-          <button
-            className={cn(
-              "w-full border-2 rounded-lg text-left",
-              pickUpAddressSelected?.id === address.id
-                ? "border-primary bg-primary-light"
-                : "border-gray-200"
-            )}
-            onClick={() => setPickUpAddress(address)}
-          >
-            <PickUpAddressCard address={address} />
-          </button>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
+        {PICK_UP_ADDRESSES.map((address) => (
+          <li key={address.id}>
+            <button
+              className={cn(
+                "w-full border-2 rounded-lg text-left",
+                pickUpAddressSelected?.id === address.id
+                  ? "border-primary bg-primary-light"
+                  : "hover:bg-primary-light hover:border-primary border-gray-200"
+              )}
+              onClick={() => setPickUpAddress(address)}
+            >
+              <PickUpAddressCard address={address} />
+            </button>
+          </li>
+        ))}
+      </ul>
+      {!pickUpAddressSelected && (
+        <p className="text-center mt-4 font-bold text-lg">
+          Selecciona una dirección de recogida para poder seleccionar el método
+          de pago.
+        </p>
+      )}
+    </>
   );
 };
 

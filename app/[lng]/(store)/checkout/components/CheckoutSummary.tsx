@@ -42,6 +42,11 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
 
   const toggleTab = (index: number) => {
     setActiveTab(activeTab === index ? 1 : index);
+    if (index === 1) {
+      setPickUp(null);
+    } else if (index === 2) {
+      setAddress(null);
+    }
   };
 
   const handleFinish = () => {
@@ -62,7 +67,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
   if (cart.length === 0) return <EmptyCart lng={lng} />;
 
   return (
-    <section className="pt-32 px-4 pb-4 flex flex-col gap-4">
+    <section className="pt-32 md:pt-48 px-4 md:px-28 pb-4 md:pb-28 flex flex-col gap-4">
       <CartSummary
         lng={lng}
         cart={cart}
@@ -80,7 +85,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
               className={cn(
                 "px-4 transition duration-200",
                 finished && "opacity-50",
-                activeTab === 1 &&
+                (activeTab === 1 || address) &&
                   "border border-primary bg-primary/20 rounded-t-lg pb-4"
               )}
             >
@@ -93,11 +98,11 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
                 <div
                   className={cn(
                     "w-6 h-6 rounded-full border border-black",
-                    activeTab === 1 ? "bg-primary" : "bg-gray-200"
+                    activeTab === 1 || address ? "bg-primary" : "bg-gray-200"
                   )}
                 />
               </button>
-              {activeTab === 1 && (
+              {(activeTab === 1 || address) && (
                 <AddressTab
                   addressSelected={address}
                   addresses={user.addresses}
@@ -109,7 +114,7 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
               className={cn(
                 "px-4 transition duration-200",
                 finished && "opacity-50",
-                activeTab === 2 &&
+                (activeTab === 2 || pickUp) &&
                   "border border-primary bg-primary/20 rounded-b-lg pb-4"
               )}
             >
@@ -122,11 +127,11 @@ const CheckoutSummary = ({ lng, user }: ICheckoutSummary) => {
                 <div
                   className={cn(
                     "w-6 h-6 rounded-full border border-black",
-                    activeTab === 2 ? "bg-primary" : "bg-gray-200"
+                    activeTab === 2 || pickUp ? "bg-primary" : "bg-gray-200"
                   )}
                 />
               </button>
-              {activeTab === 2 && (
+              {(activeTab === 2 || pickUp) && (
                 <PickUpAddressTab
                   pickUpAddressSelected={pickUp}
                   setPickUpAddress={handleSetPickUpAddress}
