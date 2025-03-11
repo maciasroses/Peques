@@ -85,7 +85,9 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
         <ul
           className={cn(
             "w-full flex items-center gap-4",
-            shouldShowMenus ? "justify-between" : "justify-center"
+            !pathname.startsWith(`/${lng}/checkout`)
+              ? "justify-between"
+              : "justify-center"
           )}
         >
           {shouldShowMenus && (
