@@ -144,6 +144,7 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
                   <GenericPairDiv>
                     <GenericDiv>
                       <GenericInput
+                        step="0.01"
                         type="number"
                         id="salePriceMXN"
                         placeholder="2000"
@@ -156,6 +157,7 @@ const Form = ({ onClose, providers, product, action }: IForm) => {
                     </GenericDiv>
                     <GenericDiv>
                       <GenericInput
+                        step="1"
                         type="number"
                         placeholder="10"
                         id="availableQuantity"

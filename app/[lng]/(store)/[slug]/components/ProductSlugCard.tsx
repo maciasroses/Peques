@@ -27,12 +27,14 @@ import type { IProduct, IPromotion } from "@/app/shared/interfaces";
 import { likeOrDislikeReview } from "@/app/shared/services/productReview/controller";
 
 const COLORS_CUSTOM = [
+  "#C4E5F4",
+  "#FFF56F",
   "#F478AF",
-  "#A2466E",
-  "#DBBA0D",
+  "#D7AFEB",
+  "#DAEBAF",
   "#FDEAD4",
   "#1D1489",
-  "#32620E",
+  "#A2466E",
 ];
 
 interface IProductSlugCard {
@@ -253,7 +255,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               }}
             >
               Al ser un producto personalizado, esta pieza tiene un tiempo de
-              elaboración de 7 días.
+              elaboración de 2-4 días hábiles.
             </p>
             <div
               className="flex flex-col gap-2 mt-2"
@@ -264,7 +266,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
               <GenericInput
                 type="text"
                 id="customName"
-                placeholder="Regina"
+                placeholder="Mariana"
                 ariaLabel="Nombre"
                 defaultValue={customName}
                 onChange={(e) => setCustomName(e.target.value)}
@@ -308,15 +310,15 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
             >
               Elige un color
             </p>
-            <div className="my-4 grid grid-cols-6 md:grid-cols-3 lg:grid-cols-6 gap-2">
-              {Array.from({ length: 6 }).map((_, index) => (
+            <div className="my-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+              {Array.from({ length: 8 }).map((_, index) => (
                 <button
                   key={index}
                   aria-label="Color"
                   style={{ backgroundColor: COLORS_CUSTOM[index] }}
                   onClick={() => setCustomColor(COLORS_CUSTOM[index])}
                   className={cn(
-                    "rounded-full size-8 md:size-10 xl:size-14",
+                    "rounded-full size-8 sm:size-10 xl:size-14",
                     customColor === COLORS_CUSTOM[index] &&
                       `border-4 border-black`
                   )}
