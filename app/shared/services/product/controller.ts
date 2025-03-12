@@ -490,26 +490,6 @@ export async function updateProduct(formData: FormData, productId: string) {
     };
 
   try {
-    const history = (await readHistory({ productId })) as IProductHistory[];
-
-    if (!history) {
-      throw new Error("Product history not found");
-    }
-
-    const totalQuantity = history.reduce(
-      (acc, curr) => acc + curr.quantityPerCarton,
-      0
-    );
-
-    if (totalQuantity < data.availableQuantity) {
-      return {
-        errors: {
-          availableQuantity: `La cantidad disponible no puede ser mayor a la cantidad total de productos en historial (${totalQuantity})`,
-        },
-        success: false,
-      };
-    }
-
     await update({
       id: productId,
       data: {
