@@ -27,7 +27,7 @@ const Form = () => {
   return (
     <>
       <div className="text-center">
-        <h1 className="text-3xl md:text-6xl">Recuperar contraseña</h1>
+        <h1 className="text-xl md:text-3xl">Recuperar contraseña</h1>
         {response.message && (
           <p className={cn(response.success === false && "text-red-600")}>
             {response.message}
@@ -35,9 +35,9 @@ const Form = () => {
         )}
       </div>
       {response.success !== true && (
-        <form onSubmit={submitAction} className="w-[80%] xl:w-1/2 m-auto">
+        <form onSubmit={submitAction} className="w-[80%] xl:w-1/2 m-auto mt-4">
           <fieldset disabled={isPending}>
-            <div className="flex flex-col gap-4 text-base md:text-xl">
+            <div className="flex flex-col gap-4 text-base">
               <GenericInput
                 id="email"
                 ariaLabel="Correo electrónico"

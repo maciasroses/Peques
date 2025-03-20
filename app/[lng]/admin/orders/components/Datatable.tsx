@@ -204,7 +204,16 @@ const Datatable = ({ lng, orders }: IDataTable) => {
         row.user?.firstName || row.user?.lastName
           ? `${row.user?.firstName} ${row.user?.lastName}`
           : (row.user?.username ?? "Sin registro de usuario de e-commerce"),
+    },
+    {
+      name: "Correo Electrónico",
+      selector: (row: { user: IUser }) => row.user?.email || "Sin correo",
       sortable: true,
+    },
+    {
+      name: "Teléfono",
+      selector: (row: { address: IAddress }) =>
+        row.address?.phoneNumber || "Sin teléfono",
     },
     {
       name: "Método de Pago",

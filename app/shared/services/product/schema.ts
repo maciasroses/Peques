@@ -61,8 +61,8 @@ const updateSchame = baseSchema.extend({
   salePriceMXN: z.number().positive({
     message: "El precio de venta debe ser un número positivo",
   }),
-  availableQuantity: z.number().int().positive({
-    message: "La cantidad disponible debe ser un número positivo",
+  availableQuantity: z.number().int().min(0, {
+    message: "La cantidad disponible debe ser mayor o igual a 0",
   }),
 });
 

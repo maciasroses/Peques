@@ -38,3 +38,5 @@ next-env.d.ts
 
 .pgdata
 dump.sql
+stripe.exe
+.react-email
