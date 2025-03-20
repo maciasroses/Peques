@@ -9,10 +9,10 @@ import { redirect } from "next/navigation";
 import { create, read, update } from "./model";
 import { createMyNewCart } from "../cart/controller";
 import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
-import { deleteFile, uploadFile } from "@/app/shared/services/aws/s3";
+import { deleteFile } from "@/app/shared/services/aws/s3";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
-import { generateFileKey } from "../../utils/generateFileKey";
+import WelcomeEmail from "@/app/email/WelcomeEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const resend_email = process.env.RESEND_EMAIL as string;
@@ -97,10 +97,23 @@ export async function register(formData: FormData) {
     await createUserSession((newUser as IUser).id, (newUser as IUser).role);
 
     await createMyNewCart();
-    // return { message: "Successfully registered", success: true };
+
+    const { error } = await resend.emails.send({
+      from: `Peques <${resend_email}>`,
+      to: (newUser as IUser).email,
+      subject: "Bienvenido a Peques",
+      react: WelcomeEmail(),
+    });
+
+    if (error) {
+      console.error(error);
+      return {
+        message: "Error al enviar el correo de bienvenida",
+        success: false,
+      };
+    }
   } catch (error) {
     console.error(error);
-    // throw new Error("An internal error occurred");
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
