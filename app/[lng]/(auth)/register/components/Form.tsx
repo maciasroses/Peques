@@ -29,7 +29,7 @@ const Form = ({ lng }: { lng: string }) => {
   return (
     <>
       <div className="text-center">
-        <h1 className="text-3xl md:text-6xl">Registro</h1>
+        <h1 className="text-xl md:text-3xl mb-2">Registro</h1>
         {badResponse.message && (
           <p className="text-red-600">{badResponse.message}</p>
         )}
