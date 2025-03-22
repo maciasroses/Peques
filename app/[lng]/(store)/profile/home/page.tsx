@@ -1,4 +1,4 @@
-import { Greetings, MainInfo } from "./components";
+import { Greetings, MainInfo, DeleteAccount } from "./components";
 import type { Metadata } from "next";
 import type { IBaseLangPage } from "@/app/shared/interfaces";
 
@@ -12,8 +12,9 @@ const ProfileHomePage = ({ params: { lng } }: IProfileHomePage) => {
   return (
     <>
       <Greetings />
-      <div className="flex flex-col md:flex-row gap-2 justify-center mt-4">
+      <div className="flex flex-col gap-4 items-center justify-center mt-4">
         <MainInfo lng={lng} />
+        <DeleteAccount />
       </div>
     </>
   );

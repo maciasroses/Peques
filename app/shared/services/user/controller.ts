@@ -6,13 +6,13 @@ import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
-import { create, read, update } from "./model";
+import WelcomeEmail from "@/app/email/WelcomeEmail";
 import { createMyNewCart } from "../cart/controller";
-import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { deleteFile } from "@/app/shared/services/aws/s3";
+import { create, deleteById, read, update } from "./model";
+import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
-import WelcomeEmail from "@/app/email/WelcomeEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const resend_email = process.env.RESEND_EMAIL as string;
@@ -457,4 +457,29 @@ export async function removeProfilePicture() {
       success: false,
     };
   }
+}
+
+export async function deleteAccount() {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) throw new Error("No session found");
+
+    const user = (await read({ id: session.userId as string })) as IUser;
+
+    if (user.image !== "/assets/images/profilepic.webp") {
+      const urlObj = new URL(user.image as string);
+      await deleteFile(urlObj.pathname.substring(1));
+    }
+
+    await deleteById({ id: session.userId as string });
+  } catch (error) {
+    console.error("Error deleting account", error);
+    return {
+      message: "Ocurrió un error interno.",
+      success: false,
+    };
+  }
+  cookies().set("session", "", { expires: new Date(0) });
+  const lng = cookies().get("i18next")?.value ?? "es";
+  redirect(`/${lng}`);
 }
