@@ -101,7 +101,7 @@ const Form = ({ lng }: { lng: string }) => {
               <GenericInput
                 type="checkbox"
                 id="wantsNewsletter"
-                ariaLabel="¿Quieres recibir nuestro boletín?"
+                ariaLabel="¿Quieres suscribirte al newsletter?"
               />
             </div>
           </div>
