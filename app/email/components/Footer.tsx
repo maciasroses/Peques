@@ -109,6 +109,16 @@ const Footer = () => {
             >
               Política de Privacidad
             </a>
+            <a
+              href={`${BASE_URL}/unsubscribe`}
+              style={{
+                color: "#2563eb",
+                textDecoration: "none",
+                margin: "0 5px",
+              }}
+            >
+              Unsubscribe
+            </a>
           </p>
         </div>
 

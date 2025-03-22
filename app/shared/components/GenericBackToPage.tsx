@@ -23,9 +23,12 @@ const GenericBackToPage = ({
         isWithMDExtraPadding ? "pt-40 md:pt-40" : "pt-40"
       )}
     >
-      <h1 className="text-3xl md:text-6xl font-bold">{title}</h1>
-      <p className="text-gray-500 text-xl md:text-3xl">{description}</p>
-      <Link href={link} className="link-button-blue text-base md:text-xl mt-4">
+      <h1 className="text-xl md:text-3xl font-bold">{title}</h1>
+      <p className="text-gray-500 text-base md:text-lg">{description}</p>
+      <Link
+        href={link}
+        className="bg-accent hover:bg-accent-dark focus:ring-accent rounded-lg text-base md:text-lg mt-4"
+      >
         {linkText}
       </Link>
     </section>
