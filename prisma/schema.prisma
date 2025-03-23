@@ -2,7 +2,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// TESTING NEW DATABASE v2
+// TESTING NEW DATABASE v3
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
