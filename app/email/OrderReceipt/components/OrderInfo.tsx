@@ -36,7 +36,7 @@ const OrderInfo = ({ order }: { order: IOrderInfoForEmail }) => {
           </div>
           <div style={{ flex: "2" }}>
             <p>
-              <strong>Identificador:</strong>
+              <strong>Número de Orden:</strong>
               <br />
               <span style={{ color: "#2563eb" }}>{order.order.id}</span>
             </p>

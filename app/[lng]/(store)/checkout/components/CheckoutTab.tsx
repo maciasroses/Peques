@@ -268,10 +268,8 @@ const StripeForm = ({
               disabled={isLoading || isLoadingFromHook}
               onClick={() => handleChangePaymentMethod()}
               className={cn(
-                "inline-flex gap-2 items-center justify-center",
-                isLoading || isLoadingFromHook
-                  ? "py-2 px-4 bg-accent-light cursor-not-allowed rounded-md"
-                  : "link-button-primary"
+                "inline-flex gap-2 items-center justify-center py-2 px-4 rounded-md bg-accent-light",
+                isLoading || (isLoadingFromHook && "cursor-not-allowed")
               )}
             >
               Agregar nueva tarjeta

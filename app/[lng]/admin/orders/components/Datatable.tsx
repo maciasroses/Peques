@@ -146,6 +146,11 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       ),
     },
     {
+      name: "Número de Orden",
+      selector: (row: { id: string }) => row.id,
+      sortable: true,
+    },
+    {
       name: "Estado de Entrega",
       selector: (row: { deliveryStatus: string }) => row.deliveryStatus,
       sortable: true,
