@@ -1,7 +1,12 @@
 import { Suspense } from "react";
 import { ProductList } from "./components";
 import { getFilters } from "@/app/shared/services/filter/controller";
-import { Filters, ListSkeleton, Pagination } from "@/app/shared/components";
+import {
+  Filters,
+  FiltersMenu,
+  ListSkeleton,
+  Pagination,
+} from "@/app/shared/components";
 import { getProductsForStore } from "@/app/shared/services/product/controller";
 import type { Metadata } from "next";
 import type {
@@ -54,14 +59,19 @@ const SearchPage = async ({ searchParams, params: { lng } }: ISearchPage) => {
         <Filters filters={available_filters} />
       </aside>
       <section className="w-full md:w-3/4 lg:w-4/5">
-        <div className="mb-4">
-          <p className="font-medium text-lg md:text-2xl">
-            {q ? `Buscando: ${q}` : `Todos los productos`}
-          </p>
-          <p className="text-sm md:text-lg text-gray-800">
-            {totalCount} resultado
-            {totalCount > 1 || totalCount === 0 ? "s" : ""}
-          </p>
+        <div className="w-full mb-4 flex justify-between items-center">
+          <div>
+            <p className="font-medium text-lg md:text-2xl">
+              {q ? `Buscando: ${q}` : `Todos los productos`}
+            </p>
+            <p className="text-sm md:text-lg text-gray-800">
+              {totalCount} resultado
+              {totalCount > 1 || totalCount === 0 ? "s" : ""}
+            </p>
+          </div>
+          <div className="block md:hidden">
+            <FiltersMenu filters_available={available_filters} />
+          </div>
         </div>
         <Suspense
           key={q + page + filters + salePriceMXNTo + salePriceMXNFrom}
