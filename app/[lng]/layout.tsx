@@ -3,6 +3,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { dir } from "i18next";
 import { languages } from "@/app/i18n/settings";
 import { ToastContainer } from "react-toastify";
+import { Analytics } from "@vercel/analytics/react";
 import { getMe } from "@/app/shared/services/user/controller";
 import { getFilters } from "@/app/shared/services/filter/controller";
 import { getAllProducts } from "@/app/shared/services/product/controller";
@@ -88,6 +89,7 @@ export default async function RootLayout({
             </AuthComponent>
           </CartComponent>
         </ThemeComponent>
+        <Analytics />
       </body>
     </html>
   );
