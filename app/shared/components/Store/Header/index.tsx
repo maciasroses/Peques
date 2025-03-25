@@ -6,7 +6,7 @@ import { useRef } from "react";
 import CartMenu from "./CartMenu";
 import MainSearch from "./MainSearch";
 import ProfileMenu from "./ProfileMenu";
-import FiltersMenu from "./FiltersMenu";
+// import FiltersMenu from "../../../../[lng]/(store)/search/components/FiltersMenu";
 import { cn } from "@/app/shared/utils/cn";
 import { usePathname } from "next/navigation";
 import CollectionsMenu from "./CollectionsMenu";
@@ -173,13 +173,13 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                 onParentClose={toggleSearchBar}
               />
             </li>
-            {(pathname === `/${lng}/search` ||
+            {/* {(pathname === `/${lng}/search` ||
               new RegExp(`^/${lng}/collections/[a-z-]+$`).test(pathname)) &&
               isSearchBarOpen && (
                 <li className="md:hidden">
                   <FiltersMenu filters_available={filters} />
                 </li>
-              )}
+              )} */}
           </ul>
         )}
       </nav>

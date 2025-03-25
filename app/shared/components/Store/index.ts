@@ -5,6 +5,7 @@ import AddToCart from "./AddToCart";
 import HeroSlider from "./HeroSlider";
 import StarRating from "./StarRating";
 import ReviewList from "./ReviewList";
+import FiltersMenu from "./FiltersMenu";
 import ProductList from "./ProductList";
 import InitialModal from "./InitialModal";
 import ImageGallery from "./ImageGallery";
@@ -18,6 +19,7 @@ export {
   Filters,
   AddToCart,
   HeroSlider,
+  FiltersMenu,
   ReviewList,
   StarRating,
   ProductList,

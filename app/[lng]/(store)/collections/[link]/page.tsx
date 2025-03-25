@@ -2,7 +2,12 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProductList } from "./components";
 import { getFilters } from "@/app/shared/services/filter/controller";
-import { Filters, ListSkeleton, Pagination } from "@/app/shared/components";
+import {
+  Filters,
+  FiltersMenu,
+  ListSkeleton,
+  Pagination,
+} from "@/app/shared/components";
 import { getCollectionByLink } from "@/app/shared/services/collection/controller";
 import { getProductsByCollection } from "@/app/shared/services/product/controller";
 import type { Metadata } from "next";
@@ -79,11 +84,17 @@ const CollectionNamePage = async ({
         <Filters collection={link} filters={available_filters} />
       </aside>
       <section className="w-full md:w-3/4 lg:w-4/5">
-        <div className="mb-4">
+        <div className="w-full mb-4 flex justify-between items-center">
           <p className="text-sm md:text-lg text-gray-800">
             {totalCount} resultado
             {totalCount > 1 || totalCount === 0 ? "s" : ""}
           </p>
+          <div className="block md:hidden">
+            <FiltersMenu
+              collection={link}
+              filters_available={available_filters}
+            />
+          </div>
         </div>
         <Suspense
           key={page + filters + salePriceMXNTo + salePriceMXNFrom}
