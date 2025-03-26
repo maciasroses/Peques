@@ -507,7 +507,7 @@ const ProductSlugCard = ({ lng, product }: IProductSlugCard) => {
                 <div>
                   <button
                     onClick={onCustomOpen}
-                    className="px-4 py-2 border border-gray-300 rounded-lg"
+                    className="px-4 py-2 border bg-accent-light rounded-lg"
                   >
                     Personalizar
                   </button>

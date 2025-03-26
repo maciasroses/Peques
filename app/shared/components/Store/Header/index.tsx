@@ -103,7 +103,7 @@ const Header = ({ lng, user, products, filters, collections }: IHeader) => {
                 width={150}
                 height={150}
                 alt="Peques logo"
-                className="max-w-60 md:size-auto"
+                className="max-w-80"
               />
             </Link>
           </li>
