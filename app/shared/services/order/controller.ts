@@ -103,8 +103,8 @@ export async function getSales({
       yearOfData: yearOfData
         ? Number(yearOfData)
         : isForGraph
-          ? new Date().getFullYear()
-          : undefined,
+        ? new Date().getFullYear()
+        : undefined,
     });
   } catch (error) {
     console.error(error);
@@ -314,13 +314,10 @@ export async function createMassiveOrder(formData: FormData) {
     const errors: { [key: string]: string } = {};
     const localProductsStock = (await getProducts({})) as unknown as IProduct[];
     const localQuantitiesPerProduct: { [key: string]: number } =
-      localProductsStock.reduce(
-        (acc, product) => {
-          acc[product.key] = product.availableQuantity;
-          return acc;
-        },
-        {} as { [key: string]: number }
-      );
+      localProductsStock.reduce((acc, product) => {
+        acc[product.key] = product.availableQuantity;
+        return acc;
+      }, {} as { [key: string]: number });
 
     for (const [index, row] of jsonData.entries()) {
       try {
@@ -453,8 +450,9 @@ export async function createMassiveOrder(formData: FormData) {
           const currentProduct = orderProducts[i].productKey;
 
           if (processedProducts.has(currentProduct)) {
-            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
-              `Este producto (${currentProduct}) ya se consideró en esta orden`;
+            errors[
+              `Fila ${index + 2} - Producto ${i + 1}`
+            ] = `Este producto (${currentProduct}) ya se consideró en esta orden`;
             continue; // Saltar a la siguiente iteración
           }
 
@@ -465,8 +463,9 @@ export async function createMassiveOrder(formData: FormData) {
           })) as IProduct;
 
           if (!product) {
-            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
-              `Producto no encontrado`;
+            errors[
+              `Fila ${index + 2} - Producto ${i + 1}`
+            ] = `Producto no encontrado`;
             continue;
           }
 
@@ -474,10 +473,11 @@ export async function createMassiveOrder(formData: FormData) {
             orderProducts[i].quantity >
             localQuantitiesPerProduct[orderProducts[i].productKey]
           ) {
-            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
-              `La cantidad máxima permitida para este producto (${
-                validatedProducts[i]
-              }) es ${localQuantitiesPerProduct[validatedProducts[i]]}`;
+            errors[
+              `Fila ${index + 2} - Producto ${i + 1}`
+            ] = `La cantidad máxima permitida para este producto (${
+              validatedProducts[i]
+            }) es ${localQuantitiesPerProduct[validatedProducts[i]]}`;
             continue;
           }
 
@@ -547,7 +547,8 @@ export async function createMassiveOrder(formData: FormData) {
 export async function updateDeliveryStatus(
   id: string,
   deliveryStatus: string,
-  pathname: string
+  pathname: string,
+  link?: string
 ) {
   try {
     const order = (await read({
@@ -568,6 +569,8 @@ export async function updateDeliveryStatus(
       id,
       data: {
         deliveryStatus,
+        trackingLink:
+          deliveryStatus === "SHIPPED" && link ? link : order.trackingLink,
       },
     });
 
@@ -579,17 +582,18 @@ export async function updateDeliveryStatus(
           deliveryStatus === "PENDING"
             ? "Tu pedido está pendiente"
             : deliveryStatus === "SHIPPED"
-              ? "Tu pedido ha sido enviado"
-              : deliveryStatus === "DELIVERED"
-                ? "Tu pedido ha sido entregado"
-                : deliveryStatus === "READY_FOR_PICKUP"
-                  ? "Tu pedido está listo para ser recogido"
-                  : deliveryStatus === "PICKED_UP"
-                    ? "Tu pedido ha sido recogido"
-                    : "Tu pedido ha sido cancelado",
+            ? "Tu pedido ha sido enviado"
+            : deliveryStatus === "DELIVERED"
+            ? "Tu pedido ha sido entregado"
+            : deliveryStatus === "READY_FOR_PICKUP"
+            ? "Tu pedido está listo para ser recogido"
+            : deliveryStatus === "PICKED_UP"
+            ? "Tu pedido ha sido recogido"
+            : "Tu pedido ha sido cancelado",
         react: React.createElement(OrderStatus, {
           order,
           deliveryStatus,
+          link,
         }),
       });
     }
@@ -603,7 +607,8 @@ export async function updateDeliveryStatus(
 
 export async function updateMassiveDeliveryStatus(
   ids: string[],
-  deliveryStatus: string
+  deliveryStatus: string,
+  links?: string[]
 ) {
   try {
     if (deliveryStatus === "CANCELLED") {
@@ -621,18 +626,24 @@ export async function updateMassiveDeliveryStatus(
         });
       }
     }
-    await updateMassive({
-      ids,
-      data: {
-        deliveryStatus,
-      },
-    });
 
-    for (const id of ids) {
+    for (const [i, id] of ids.entries()) {
       const order = (await read({
         id,
         isAdminRequest: true,
       })) as IOrder;
+
+      await update({
+        id,
+        data: {
+          deliveryStatus,
+          trackingLink:
+            deliveryStatus === "SHIPPED" && links
+              ? links[i]
+              : order.trackingLink,
+        },
+      });
+
       if (order.user) {
         await resend.emails.send({
           from: `Peques <${process.env.RESEND_EMAIL}>`,
@@ -641,17 +652,18 @@ export async function updateMassiveDeliveryStatus(
             deliveryStatus === "PENDING"
               ? "Tu pedido está pendiente"
               : deliveryStatus === "SHIPPED"
-                ? "Tu pedido ha sido enviado"
-                : deliveryStatus === "DELIVERED"
-                  ? "Tu pedido ha sido entregado"
-                  : deliveryStatus === "READY_FOR_PICKUP"
-                    ? "Tu pedido está listo para ser recogido"
-                    : deliveryStatus === "PICKED_UP"
-                      ? "Tu pedido ha sido recogido"
-                      : "Tu pedido ha sido cancelado",
+              ? "Tu pedido ha sido enviado"
+              : deliveryStatus === "DELIVERED"
+              ? "Tu pedido ha sido entregado"
+              : deliveryStatus === "READY_FOR_PICKUP"
+              ? "Tu pedido está listo para ser recogido"
+              : deliveryStatus === "PICKED_UP"
+              ? "Tu pedido ha sido recogido"
+              : "Tu pedido ha sido cancelado",
           react: React.createElement(OrderStatus, {
             order,
             deliveryStatus,
+            link: links ? links[i] : undefined,
           }),
         });
       }

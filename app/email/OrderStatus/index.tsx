@@ -38,6 +38,7 @@ OrderStatus.PreviewProps = {
     isPaid: true,
     deliveryStatus: "SHIPPED",
     pendingPayment: null,
+    trackingLink: null,
     paymentIntentId: "pi_3QnOVf4cbtG1N3KF03Cdge6n",
     userId: "37a36c8a-2756-4475-aceb-37a04ee4ab43",
     paymentId: "6e1d5bce-9dd6-417e-a908-8408281686a3",
@@ -256,6 +257,7 @@ OrderStatus.PreviewProps = {
           shipmentType: "Compra desde e-commerce",
           shippingCost: 190,
           subtotal: 89,
+          trackingLink: null,
           total: 279,
           transactions: [],
           updatedAt: new Date("2025-01-31T18:00:11.167Z"),
@@ -271,9 +273,11 @@ OrderStatus.PreviewProps = {
 export default function OrderStatus({
   order,
   deliveryStatus,
+  link,
 }: {
   order: IOrder;
   deliveryStatus: string;
+  link?: string;
 }) {
   const getStatusLabel = (status: DeliveryStatus) => {
     const labels: Record<DeliveryStatus, string> = {
@@ -289,7 +293,18 @@ export default function OrderStatus({
 
   return (
     <Html lang="es">
-      <Preview>Recupera tu contraseña</Preview>
+      <Preview>
+        {deliveryStatus === DeliveryStatus.PENDING
+          ? "Estamos preparando tu pedido."
+          : deliveryStatus === DeliveryStatus.SHIPPED
+          ? "Tu pedido va en camino para que tú y tu peque lo disfruten."
+          : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
+          ? "¡Gracias por su confianza que lo disfruten!"
+          : deliveryStatus === DeliveryStatus.PICKED_UP ||
+            deliveryStatus === DeliveryStatus.DELIVERED
+          ? "Ayúdanos con tu reseña."
+          : "Lamentamos que no hayas podido disfrutar de tu pedido."}
+      </Preview>
       <Head />
       <Body className="bg-white">
         <Container className="max-w-2xl">
@@ -299,14 +314,14 @@ export default function OrderStatus({
                 deliveryStatus === DeliveryStatus.PENDING
                   ? "Pedido pendiente"
                   : deliveryStatus === DeliveryStatus.DELIVERED
-                    ? "Pedido entregado"
-                    : deliveryStatus === DeliveryStatus.SHIPPED
-                      ? "Pedido enviado"
-                      : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
-                        ? "Pedido listo para recoger"
-                        : deliveryStatus === DeliveryStatus.PICKED_UP
-                          ? "Pedido recogido"
-                          : "Pedido cancelado"
+                  ? "Pedido entregado"
+                  : deliveryStatus === DeliveryStatus.SHIPPED
+                  ? "Pedido enviado"
+                  : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
+                  ? "Pedido listo para recoger"
+                  : deliveryStatus === DeliveryStatus.PICKED_UP
+                  ? "Pedido recogido"
+                  : "Pedido cancelado"
               }
             />
             <Section
@@ -378,6 +393,21 @@ export default function OrderStatus({
                     <strong>Notas:</strong> {PICK_UP_ADDRESSES[0].notes}
                   </p>
                 </>
+              )}
+
+              {deliveryStatus === DeliveryStatus.SHIPPED && (
+                <Text>
+                  <a
+                    href={link}
+                    style={{
+                      color: "#2563eb",
+                      textDecoration: "none",
+                      margin: "0 5px",
+                    }}
+                  >
+                    Ver seguimiento
+                  </a>
+                </Text>
               )}
 
               <Button
