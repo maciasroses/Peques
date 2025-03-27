@@ -347,6 +347,7 @@ model Order {
   deliveryStatus  DeliveryStatus @default(PENDING)
   pendingPayment  Float? // This is functional when the user is not logged in
   paymentIntentId String?
+  trackingLink    String?
 
   products     ProductOnOrder[]
   promotions   OrderOnPromotion[]

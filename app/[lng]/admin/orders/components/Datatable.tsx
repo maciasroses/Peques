@@ -20,6 +20,7 @@ import {
   DatatableSkeleton,
   Datatable as CustomDatatable,
   Modal,
+  GenericInput,
 } from "@/app/shared/components";
 import type {
   IUser,
@@ -64,6 +65,7 @@ const Datatable = ({ lng, orders }: IDataTable) => {
   >(undefined);
   const [eventForConfirm, setEventForConfirm] =
     useState<React.ChangeEvent<HTMLSelectElement>>();
+  const [isShippedTypeForConfirm, setIsShippedTypeForConfirm] = useState(false);
   const { selectedRows, showMultiActions, handleSelectRows } =
     useRowSelection<IOrder>();
 
@@ -75,31 +77,49 @@ const Datatable = ({ lng, orders }: IDataTable) => {
     id: string,
     event: React.ChangeEvent<HTMLSelectElement>,
     isMassive?: boolean,
-    confirm?: boolean
+    confirm?: boolean,
+    links?: string[]
   ) => {
     const newValue = event.target.value;
     const order = orders.find((order) => order.id === id);
 
-    if (newValue === "CANCELLED" && !confirm) {
+    if ((newValue === "CANCELLED" || newValue === "SHIPPED") && !confirm) {
       if (isMassive) {
         setIsMassiveForConfirm(true);
       } else {
         setSelectedRowForConfirm(order);
       }
+      setIsShippedTypeForConfirm(newValue === "SHIPPED");
       setEventForConfirm(event);
       onOpen();
     } else {
       if (isMassive) {
         await updateMassiveDeliveryStatus(
           selectedRows.map((row) => row.id),
-          newValue
+          newValue,
+          links
         );
         location.replace(pathname);
       } else {
-        await updateDeliveryStatus(id, newValue, pathname);
+        await updateDeliveryStatus(id, newValue, pathname, links?.[0]);
       }
     }
     if (confirm) onClose();
+  };
+
+  const handleShippedTypeConfirmation: React.FormEventHandler<
+    HTMLFormElement
+  > = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const links = Array.from(formData.getAll("trackingLink")) as string[];
+    handleSelectDeliveryStatus(
+      selectedRowForConfirm?.id as string,
+      eventForConfirm!,
+      isMassiveForConfirm,
+      true,
+      links
+    );
   };
 
   const handleIsPaid = async (id: string, isMassive?: boolean) => {
@@ -119,7 +139,7 @@ const Datatable = ({ lng, orders }: IDataTable) => {
   const columns = [
     {
       name: "Acciones",
-      width: pathname === `/${lng}/admin/orders` ? "250px" : "80px",
+      width: pathname === `/${lng}/admin/orders` ? "250px" : "100px",
       cell: (row: IOrder) => (
         <div className="flex justify-center gap-2">
           <Action action="delete">
@@ -144,11 +164,6 @@ const Datatable = ({ lng, orders }: IDataTable) => {
           )}
         </div>
       ),
-    },
-    {
-      name: "Número de Orden",
-      selector: (row: { id: string }) => row.id,
-      sortable: true,
     },
     {
       name: "Estado de Entrega",
@@ -192,33 +207,62 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       },
     },
     {
+      width: "300px",
+      name: "Número de Orden",
+      selector: (row: { id: string }) => row.id,
+      sortable: true,
+    },
+    {
+      width: "200px",
       name: "Tipo de Envío",
       selector: (row: { shipmentType: string }) => row.shipmentType,
       sortable: true,
     },
     {
       name: "Cliente (antiguo)",
-      width: "150px",
+      width: "200px",
       selector: (row: { client: string }) => row.client,
       sortable: true,
+      format: (row: { client: string }) => (
+        <p className="p-4 overflow-x-auto">{row.client}</p>
+      ),
     },
     {
       name: "Cliente (nuevo)",
-      width: "150px",
+      width: "300px",
       selector: (row: { user: IUser }) =>
         row.user?.firstName || row.user?.lastName
           ? `${row.user?.firstName} ${row.user?.lastName}`
-          : (row.user?.username ?? "Sin registro de usuario de e-commerce"),
+          : row.user?.username ?? "Sin registro de usuario de e-commerce",
+      sortable: true,
+      format: (row: { user: IUser }) => (
+        <p className="p-4 overflow-x-auto">
+          {row.user?.firstName || row.user?.lastName
+            ? `${row.user?.firstName} ${row.user?.lastName}`
+            : row.user?.username ?? "Sin registro de usuario de e-commerce"}
+        </p>
+      ),
     },
     {
+      width: "200px",
       name: "Correo Electrónico",
       selector: (row: { user: IUser }) => row.user?.email || "Sin correo",
       sortable: true,
+      format: (row: { user: IUser }) => (
+        <p className="p-4 overflow-x-auto">{row.user?.email || "Sin correo"}</p>
+      ),
     },
     {
+      width: "150px",
       name: "Teléfono",
       selector: (row: { address: IAddress }) =>
         row.address?.phoneNumber || "Sin teléfono",
+      sortable: true,
+      format: (row: { address: IAddress }) => (
+        <p className="p-4 overflow-x-auto">
+          {row.address?.phoneNumber || "Sin teléfono"}
+        </p>
+      ),
     },
     {
       name: "Método de Pago",
@@ -283,12 +327,12 @@ const Datatable = ({ lng, orders }: IDataTable) => {
     },
     {
       name: "Promociones",
-      width: "250px",
+      width: "300px",
       cell: (row: { promotions: IOrderOnPromotion[] }) => {
         return (
           <>
             {row.promotions.length > 0 ? (
-              <div>
+              <div className="p-2 max-h-[300px] overflow-auto">
                 <p className="my-4">
                   {row.promotions.length} promociones aplicadas
                 </p>
@@ -327,14 +371,14 @@ const Datatable = ({ lng, orders }: IDataTable) => {
     },
     {
       name: "Dirección de Envío",
-      width: "200px",
+      width: "300px",
       selector: (row: { address: IAddress }) => row.address,
       cell: (row: { address: IAddress; user: IUser }) => {
         return (
-          <div className="p-2">
+          <div className="p-2 max-h-[300px] overflow-auto">
             {row.address ? (
               <>
-                <h3 className="font-bold text-lg line-clamp-1 pr-5">
+                <h3 className="font-bold text-lg pr-5">
                   {row.address.fullName}
                 </h3>
                 <p>
@@ -359,18 +403,12 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       },
     },
     {
-      name: "Creado en",
+      width: "200px",
+      name: "Ordenado el",
       selector: (row: { createdAt: string }) => row.createdAt,
       sortable: true,
       format: (row: { createdAt: Date }) =>
         formatDateLatinAmerican(row.createdAt),
-    },
-    {
-      name: "Actualizado en",
-      selector: (row: { updatedAt: string }) => row.updatedAt,
-      sortable: true,
-      format: (row: { updatedAt: Date }) =>
-        formatDateLatinAmerican(row.updatedAt),
     },
   ];
 
@@ -393,90 +431,171 @@ const Datatable = ({ lng, orders }: IDataTable) => {
                 <OrderSummary order={{ products: orderSelectedForSummary }} />
               </Modal>
               <Modal isOpen={isOpen} onClose={handleCancel}>
-                <div className="flex flex-col gap-2">
-                  <p className="text-2xl text-center text-red-500">
-                    ⚠️ Acción irreversible ⚠️
-                  </p>
-                  <p className="text-center text-base md:text-xl">
-                    {isMassiveForConfirm
-                      ? `¿Estás seguro de cancelar ${
-                          pathname === `/${lng}/admin/orders`
-                            ? "estos pedidos"
-                            : "estas ventas"
-                        }?`
-                      : `¿Estás seguro de cancelar ${
-                          pathname === `/${lng}/admin/orders`
-                            ? "este pedido"
-                            : "esta venta"
-                        }?`}
-                  </p>
-                  {isMassiveForConfirm ? (
-                    <ul className="flex flex-col gap-2 items-center">
-                      {selectedRows.map((row, index) => (
-                        <li key={index} className="border-b border-b-black">
+                <>
+                  {isShippedTypeForConfirm ? (
+                    <form onSubmit={handleShippedTypeConfirmation}>
+                      <div className="flex flex-col gap-2">
+                        {isMassiveForConfirm ? (
+                          <>
+                            {selectedRows.map((row) => (
+                              <div
+                                key={row.id}
+                                className="flex flex-col gap-2 py-2"
+                              >
+                                <GenericInput
+                                  ariaLabel="Link de Rastreo"
+                                  id="trackingLink"
+                                  type="text"
+                                  placeholder="https://envia.com/es-MX/tracking?label=XXXXXXXXXXX"
+                                />
+                                <p>
+                                  Pedido #
+                                  <span className="font-bold">{row.id}</span>
+                                </p>
+                                <p>
+                                  Cliente:{" "}
+                                  <span className="font-bold">
+                                    {row.user
+                                      ? `${row.user.firstName} ${row.user.lastName}`
+                                      : row.client}
+                                  </span>
+                                </p>
+                              </div>
+                            ))}
+                          </>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            <GenericInput
+                              ariaLabel="Link de Rastreo"
+                              id="trackingLink"
+                              type="text"
+                              placeholder="https://envia.com/es-MX/tracking?label=XXXXXXXXXXX"
+                            />
+                            <p>
+                              Pedido #
+                              <span className="font-bold">
+                                {selectedRowForConfirm?.id}
+                              </span>
+                            </p>
+                            <p>
+                              Cliente:{" "}
+                              <span className="font-bold">
+                                {selectedRowForConfirm?.user
+                                  ? `${selectedRowForConfirm?.user.firstName} ${selectedRowForConfirm?.user.lastName}`
+                                  : selectedRowForConfirm?.client}
+                              </span>
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex justify-center gap-2 mt-4">
+                        <button
+                          type="submit"
+                          className="bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg"
+                        >
+                          Confirmar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCancel}
+                          className="bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <div className="flex flex-col gap-2">
+                        <p className="text-2xl text-center text-red-500">
+                          ⚠️ Acción irreversible ⚠️
+                        </p>
+                        <p className="text-center text-base md:text-xl">
+                          {isMassiveForConfirm
+                            ? `¿Estás seguro de cancelar ${
+                                pathname === `/${lng}/admin/orders`
+                                  ? "estos pedidos"
+                                  : "estas ventas"
+                              }?`
+                            : `¿Estás seguro de cancelar ${
+                                pathname === `/${lng}/admin/orders`
+                                  ? "este pedido"
+                                  : "esta venta"
+                              }?`}
+                        </p>
+                        {isMassiveForConfirm ? (
+                          <ul className="flex flex-col gap-2 items-center">
+                            {selectedRows.map((row, index) => (
+                              <li
+                                key={index}
+                                className="border-b border-b-black"
+                              >
+                                <div className="text-center">
+                                  <h2 className="text-lg">
+                                    <strong>Cliente: </strong>
+                                    {row.client}
+                                  </h2>
+                                  <p>
+                                    <strong>Tipo de envío: </strong>
+                                    {row.shipmentType}
+                                  </p>
+                                  <div className="w-[220px] sm:w-[300px] md:w-[200px] lg:w-[300px] xl:w-full mx-auto">
+                                    <OrderSummary
+                                      order={{
+                                        products:
+                                          row.products as unknown as IProductInOrder[],
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
                           <div className="text-center">
                             <h2 className="text-lg">
                               <strong>Cliente: </strong>
-                              {row.client}
+                              {selectedRowForConfirm?.client}
                             </h2>
                             <p>
                               <strong>Tipo de envío: </strong>
-                              {row.shipmentType}
+                              {selectedRowForConfirm?.shipmentType}
                             </p>
                             <div className="w-[220px] sm:w-[300px] md:w-[200px] lg:w-[300px] xl:w-full mx-auto">
                               <OrderSummary
                                 order={{
                                   products:
-                                    row.products as unknown as IProductInOrder[],
+                                    selectedRowForConfirm?.products as unknown as IProductInOrder[],
                                 }}
                               />
                             </div>
                           </div>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="text-center">
-                      <h2 className="text-lg">
-                        <strong>Cliente: </strong>
-                        {selectedRowForConfirm?.client}
-                      </h2>
-                      <p>
-                        <strong>Tipo de envío: </strong>
-                        {selectedRowForConfirm?.shipmentType}
-                      </p>
-                      <div className="w-[220px] sm:w-[300px] md:w-[200px] lg:w-[300px] xl:w-full mx-auto">
-                        <OrderSummary
-                          order={{
-                            products:
-                              selectedRowForConfirm?.products as unknown as IProductInOrder[],
-                          }}
-                        />
+                        )}
                       </div>
-                    </div>
+                      <div className="flex justify-center gap-2 mt-4">
+                        <button
+                          onClick={() =>
+                            handleSelectDeliveryStatus(
+                              selectedRowForConfirm?.id as string,
+                              eventForConfirm!,
+                              isMassiveForConfirm,
+                              true
+                            )
+                          }
+                          className="bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg"
+                        >
+                          Sí, cancelar
+                        </button>
+                        <button
+                          onClick={handleCancel}
+                          className="bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg"
+                        >
+                          No, regresar
+                        </button>
+                      </div>
+                    </>
                   )}
-                </div>
-                <div className="flex justify-center gap-2 mt-4">
-                  <button
-                    onClick={() =>
-                      handleSelectDeliveryStatus(
-                        selectedRowForConfirm?.id as string,
-                        eventForConfirm!,
-                        isMassiveForConfirm,
-                        true
-                      )
-                    }
-                    className="bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg"
-                  >
-                    Sí, cancelar
-                  </button>
-                  <button
-                    onClick={handleCancel}
-                    className="bg-accent hover:bg-accent-dark focus:ring-accent text-white px-4 py-2 rounded-lg"
-                  >
-                    No, regresar
-                  </button>
-                </div>
+                </>
               </Modal>
               {showMultiActions && (
                 <div className="flex justify-end gap-2 mb-4">
