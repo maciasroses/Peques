@@ -576,10 +576,8 @@ export async function updateDeliveryStatus(
 
     if (order.user) {
       await resend.emails.send({
-        // from: `Peques <${process.env.RESEND_EMAIL}>`,
-        // to: order.user.email,
-        from: `TESTING <${process.env.RESEND_EMAIL}>`,
-        to: "a00573134@itesm.mx",
+        from: `Peques <${process.env.RESEND_EMAIL}>`,
+        to: order.user.email,
         subject:
           deliveryStatus === "PENDING"
             ? "Tu pedido está pendiente"
@@ -648,10 +646,8 @@ export async function updateMassiveDeliveryStatus(
 
       if (order.user) {
         await resend.emails.send({
-          // from: `Peques <${process.env.RESEND_EMAIL}>`,
-          // to: order.user.email,
-          from: `TESTING <${process.env.RESEND_EMAIL}>`,
-          to: "a00573134@itesm.mx",
+          from: `Peques <${process.env.RESEND_EMAIL}>`,
+          to: order.user.email,
           subject:
             deliveryStatus === "PENDING"
               ? "Tu pedido está pendiente"
