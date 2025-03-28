@@ -30,6 +30,7 @@ import type {
 } from "@/app/shared/interfaces";
 import OrderSummary from "./OrderSummary";
 import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
+import Link from "next/link";
 
 interface IDataTable {
   lng: string;
@@ -403,10 +404,21 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       },
     },
     {
-      width: "200px",
+      width: "150px",
       name: "Link de Rastreo",
       selector: (row: { trackingLink: string }) =>
         row.trackingLink || "Sin link asignado.",
+      format: (row: { trackingLink: string }) => (
+        <>
+          {row.trackingLink ? (
+            <Link href={row.trackingLink} target="_blank">
+              {row.trackingLink}
+            </Link>
+          ) : (
+            <p>Sin link asignado.</p>
+          )}
+        </>
+      ),
     },
     {
       width: "200px",
