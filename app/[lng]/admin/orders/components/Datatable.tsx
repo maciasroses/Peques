@@ -30,6 +30,7 @@ import type {
 } from "@/app/shared/interfaces";
 import OrderSummary from "./OrderSummary";
 import { roundUpNumber } from "@/app/shared/utils/roundUpNumber";
+import Link from "next/link";
 
 interface IDataTable {
   lng: string;
@@ -233,13 +234,13 @@ const Datatable = ({ lng, orders }: IDataTable) => {
       selector: (row: { user: IUser }) =>
         row.user?.firstName || row.user?.lastName
           ? `${row.user?.firstName} ${row.user?.lastName}`
-          : row.user?.username ?? "Sin registro de usuario de e-commerce",
+          : (row.user?.username ?? "Sin registro de usuario de e-commerce"),
       sortable: true,
       format: (row: { user: IUser }) => (
         <p className="p-4 overflow-x-auto">
           {row.user?.firstName || row.user?.lastName
             ? `${row.user?.firstName} ${row.user?.lastName}`
-            : row.user?.username ?? "Sin registro de usuario de e-commerce"}
+            : (row.user?.username ?? "Sin registro de usuario de e-commerce")}
         </p>
       ),
     },
@@ -401,6 +402,23 @@ const Datatable = ({ lng, orders }: IDataTable) => {
           </div>
         );
       },
+    },
+    {
+      width: "150px",
+      name: "Link de Rastreo",
+      selector: (row: { trackingLink: string }) =>
+        row.trackingLink || "Sin link asignado.",
+      format: (row: { trackingLink: string }) => (
+        <>
+          {row.trackingLink ? (
+            <Link href={row.trackingLink} target="_blank">
+              {row.trackingLink}
+            </Link>
+          ) : (
+            <p>Sin link asignado.</p>
+          )}
+        </>
+      ),
     },
     {
       width: "200px",

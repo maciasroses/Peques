@@ -297,13 +297,13 @@ export default function OrderStatus({
         {deliveryStatus === DeliveryStatus.PENDING
           ? "Estamos preparando tu pedido."
           : deliveryStatus === DeliveryStatus.SHIPPED
-          ? "Tu pedido va en camino para que tú y tu peque lo disfruten."
-          : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
-          ? "¡Gracias por su confianza que lo disfruten!"
-          : deliveryStatus === DeliveryStatus.PICKED_UP ||
-            deliveryStatus === DeliveryStatus.DELIVERED
-          ? "Ayúdanos con tu reseña."
-          : "Lamentamos que no hayas podido disfrutar de tu pedido."}
+            ? "Tu pedido va en camino para que tú y tu peque lo disfruten."
+            : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
+              ? "¡Gracias por su confianza que lo disfruten!"
+              : deliveryStatus === DeliveryStatus.PICKED_UP ||
+                  deliveryStatus === DeliveryStatus.DELIVERED
+                ? "Ayúdanos con tu reseña."
+                : "Lamentamos que no hayas podido disfrutar de tu pedido."}
       </Preview>
       <Head />
       <Body className="bg-white">
@@ -314,14 +314,14 @@ export default function OrderStatus({
                 deliveryStatus === DeliveryStatus.PENDING
                   ? "Pedido pendiente"
                   : deliveryStatus === DeliveryStatus.DELIVERED
-                  ? "Pedido entregado"
-                  : deliveryStatus === DeliveryStatus.SHIPPED
-                  ? "Pedido enviado"
-                  : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
-                  ? "Pedido listo para recoger"
-                  : deliveryStatus === DeliveryStatus.PICKED_UP
-                  ? "Pedido recogido"
-                  : "Pedido cancelado"
+                    ? "Pedido entregado"
+                    : deliveryStatus === DeliveryStatus.SHIPPED
+                      ? "Pedido enviado"
+                      : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
+                        ? "Pedido listo para recoger"
+                        : deliveryStatus === DeliveryStatus.PICKED_UP
+                          ? "Pedido recogido"
+                          : "Pedido cancelado"
               }
             />
             <Section
@@ -405,7 +405,7 @@ export default function OrderStatus({
                       margin: "0 5px",
                     }}
                   >
-                    Ver seguimiento
+                    Rastrea tu envío aquí
                   </a>
                 </Text>
               )}
@@ -422,7 +422,7 @@ export default function OrderStatus({
                   marginTop: "10px",
                 }}
               >
-                Ver detalle del pedido
+                Ver detalles del pedido
               </Button>
             </Section>
             <Footer />
