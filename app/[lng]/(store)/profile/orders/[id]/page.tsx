@@ -49,12 +49,21 @@ const OrderPage = async ({ params: { id, lng } }: IOrderPage) => {
           <div className="flex flex-col lg:flex-row gap-1 justify-between ">
             <h1 className="text-xl md:text-4xl">Detalles</h1>
             <p className="text-base md:text-2xl text-gray-500">
-              Identificador: {order.id}
+              Número de Orden: {order.id}
             </p>
           </div>
           <p className="text-base md:text-2xl text-gray-500">
             Ordenado el {formatDateLatinAmerican(order.createdAt)}
           </p>
+          {order.trackingLink && order.deliveryStatus === "SHIPPED" && (
+            <Link
+              target="_blank"
+              href={order.trackingLink}
+              className="text-blue-600 hover:text-blue-700 mt-1"
+            >
+              Rastrea tu envío aquí
+            </Link>
+          )}
         </div>
       </div>
       <OrderSummary lng={lng} order={order} />

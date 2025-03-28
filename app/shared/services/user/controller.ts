@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import WelcomeEmail from "@/app/email/WelcomeEmail";
 import { createMyNewCart } from "../cart/controller";
 import { deleteFile } from "@/app/shared/services/aws/s3";
@@ -481,5 +482,32 @@ export async function deleteAccount() {
   }
   cookies().set("session", "", { expires: new Date(0) });
   const lng = cookies().get("i18next")?.value ?? "es";
+  redirect(`/${lng}`);
+}
+
+export async function switchNewsletterDecision() {
+  try {
+    const session = await getSession();
+    if (!session || !session.userId) throw new Error("No session found");
+
+    const { wantsNewsletter } = (await read({
+      id: session.userId as string,
+    })) as IUser;
+
+    await update({
+      id: session.userId as string,
+      data: {
+        wantsNewsletter: !wantsNewsletter,
+      },
+    });
+  } catch (error) {
+    console.error("Error switching newsletter decision", error);
+    return {
+      message: "Ocurrió un error interno.",
+      success: false,
+    };
+  }
+  const lng = cookies().get("i18next")?.value ?? "es";
+  revalidatePath(`/${lng}/unsubscribe`);
   redirect(`/${lng}`);
 }
