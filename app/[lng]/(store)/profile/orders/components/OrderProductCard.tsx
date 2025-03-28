@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { cn } from "@/app/shared/utils/cn";
 import formatDateLatinAmerican from "@/app/shared/utils/formatdate-latin";
 import type { IOrder, IProduct } from "@/app/shared/interfaces";
 
@@ -28,7 +29,22 @@ const OrderProductCard = ({ order, product }: IOrderProductCard) => {
         </div>
         <div>
           <h1 className="text-xl md:text-2xl">{product.name}</h1>
-          <p className="text-gray-400 text-sm md:text-base">
+          <p
+            className={cn(
+              "text-sm md:text-base",
+              order.deliveryStatus === "PENDING"
+                ? "text-gray-400"
+                : order.deliveryStatus === "CANCELLED"
+                  ? "text-red-500"
+                  : order.deliveryStatus === "SHIPPED"
+                    ? "text-blue-500"
+                    : order.deliveryStatus === "DELIVERED"
+                      ? "text-green-500"
+                      : order.deliveryStatus === "READY_FOR_PICKUP"
+                        ? "text-yellow-500"
+                        : "text-green-500"
+            )}
+          >
             {order.deliveryStatus === "PENDING"
               ? "Pendiente de entrega"
               : order.deliveryStatus === "CANCELLED"
