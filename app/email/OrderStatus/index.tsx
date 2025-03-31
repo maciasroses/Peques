@@ -10,6 +10,7 @@ import {
   Head,
   Section,
   Tailwind,
+  Img,
 } from "@react-email/components";
 import { BASE_URL, PICK_UP_ADDRESSES } from "@/app/shared/constants";
 import { IOrder } from "@/app/shared/interfaces";
@@ -309,122 +310,210 @@ export default function OrderStatus({
       <Body className="bg-white">
         <Container className="max-w-2xl">
           <Tailwind>
-            <Header
-              title={
-                deliveryStatus === DeliveryStatus.PENDING
-                  ? "Pedido pendiente"
-                  : deliveryStatus === DeliveryStatus.DELIVERED
-                    ? "Pedido entregado"
-                    : deliveryStatus === DeliveryStatus.SHIPPED
-                      ? "Pedido enviado"
-                      : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
-                        ? "Pedido listo para recoger"
-                        : deliveryStatus === DeliveryStatus.PICKED_UP
-                          ? "Pedido recogido"
+            {deliveryStatus !== DeliveryStatus.DELIVERED &&
+            deliveryStatus !== DeliveryStatus.PICKED_UP ? (
+              <>
+                <Header
+                  title={
+                    deliveryStatus === DeliveryStatus.PENDING
+                      ? "Pedido pendiente"
+                      : deliveryStatus === DeliveryStatus.SHIPPED
+                        ? "Pedido enviado"
+                        : deliveryStatus === DeliveryStatus.READY_FOR_PICKUP
+                          ? "Pedido listo para recoger"
                           : "Pedido cancelado"
-              }
-            />
-            <Section
-              style={{
-                padding: "20px",
-                backgroundColor: "#f9fafb",
-                borderRadius: "8px",
-              }}
-            >
-              <Heading as="h3" style={{ marginBottom: "10px" }}>
-                Estado del pedido:{" "}
-                {getStatusLabel(deliveryStatus as DeliveryStatus)}
-              </Heading>
+                  }
+                />
+                <Section
+                  style={{
+                    padding: "20px",
+                    backgroundColor: "#f9fafb",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <Heading as="h3" style={{ marginBottom: "10px" }}>
+                    Estado del pedido:{" "}
+                    {getStatusLabel(deliveryStatus as DeliveryStatus)}
+                  </Heading>
 
-              <Text>
-                Productos en el pedido: <strong>{order.products.length}</strong>
-              </Text>
+                  <Text>
+                    Productos en el pedido:{" "}
+                    <strong>{order.products.length}</strong>
+                  </Text>
 
-              <h3
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  marginBottom: "8px",
-                }}
-              >
-                {order.address ? "Dirección de Envío" : "Dirección de Recogida"}
-              </h3>
-              {order.address ? (
-                <>
-                  <p>
-                    <strong>{order.address.fullName}</strong>
-                  </p>
-                  <p>
-                    {order.address.address1}, {order.address.address2}
-                  </p>
-                  <p>
-                    {order.address.city}, {order.address.state},{" "}
-                    {order.address.zipCode}
-                  </p>
-                  <p>{order.address.country}</p>
-                  <p>
-                    <strong>Teléfono:</strong> {order.address.phoneNumber}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p>
-                    <strong>{PICK_UP_ADDRESSES[0].name}</strong>
-                  </p>
-                  <p>{PICK_UP_ADDRESSES[0].street}</p>
-                  <p>
-                    {PICK_UP_ADDRESSES[0].city}, {PICK_UP_ADDRESSES[0].state},{" "}
-                    {PICK_UP_ADDRESSES[0].zipCode}
-                  </p>
-                  <p>{PICK_UP_ADDRESSES[0].country}</p>
-                  <p>
-                    <strong>Referencia:</strong>{" "}
-                    {PICK_UP_ADDRESSES[0].reference}
-                  </p>
-                  <p>
-                    <strong>Horario:</strong>
-                    <ul>
-                      {PICK_UP_ADDRESSES[0].schedule.map((item) => (
-                        <li key={item.id}>{item.value}</li>
-                      ))}
-                    </ul>
-                  </p>
-                  <p>
-                    <strong>Notas:</strong> {PICK_UP_ADDRESSES[0].notes}
-                  </p>
-                </>
-              )}
-
-              {deliveryStatus === DeliveryStatus.SHIPPED && (
-                <Text>
-                  <a
-                    href={link}
+                  <h3
                     style={{
-                      color: "#2563eb",
-                      textDecoration: "none",
-                      margin: "0 5px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      marginBottom: "8px",
                     }}
                   >
-                    Rastrea tu envío aquí
-                  </a>
-                </Text>
-              )}
+                    {order.address
+                      ? "Dirección de Envío"
+                      : "Dirección de Recogida"}
+                  </h3>
+                  {order.address ? (
+                    <>
+                      <p>
+                        <strong>{order.address.fullName}</strong>
+                      </p>
+                      <p>
+                        {order.address.address1}, {order.address.address2}
+                      </p>
+                      <p>
+                        {order.address.city}, {order.address.state},{" "}
+                        {order.address.zipCode}
+                      </p>
+                      <p>{order.address.country}</p>
+                      <p>
+                        <strong>Teléfono:</strong> {order.address.phoneNumber}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        <strong>{PICK_UP_ADDRESSES[0].name}</strong>
+                      </p>
+                      <p>{PICK_UP_ADDRESSES[0].street}</p>
+                      <p>
+                        {PICK_UP_ADDRESSES[0].city},{" "}
+                        {PICK_UP_ADDRESSES[0].state},{" "}
+                        {PICK_UP_ADDRESSES[0].zipCode}
+                      </p>
+                      <p>{PICK_UP_ADDRESSES[0].country}</p>
+                      <p>
+                        <strong>Referencia:</strong>{" "}
+                        {PICK_UP_ADDRESSES[0].reference}
+                      </p>
+                      <p>
+                        <strong>Horario:</strong>
+                        <ul>
+                          {PICK_UP_ADDRESSES[0].schedule.map((item) => (
+                            <li key={item.id}>{item.value}</li>
+                          ))}
+                        </ul>
+                      </p>
+                      <p>
+                        <strong>Notas:</strong> {PICK_UP_ADDRESSES[0].notes}
+                      </p>
+                    </>
+                  )}
 
-              <Button
-                href={`${BASE_URL}/es/profile/orders/${order.id}`}
-                style={{
-                  backgroundColor: "#2563eb",
-                  color: "#fff",
-                  padding: "10px 20px",
-                  borderRadius: "5px",
-                  textDecoration: "none",
-                  display: "inline-block",
-                  marginTop: "10px",
-                }}
-              >
-                Ver detalles del pedido
-              </Button>
-            </Section>
+                  {deliveryStatus === DeliveryStatus.SHIPPED && (
+                    <Text>
+                      <a
+                        href={link}
+                        style={{
+                          color: "#2563eb",
+                          textDecoration: "none",
+                          margin: "0 5px",
+                        }}
+                      >
+                        Rastrea tu envío aquí
+                      </a>
+                    </Text>
+                  )}
+
+                  <Button
+                    href={`${BASE_URL}/es/profile/orders/${order.id}`}
+                    style={{
+                      backgroundColor: "#2563eb",
+                      color: "#fff",
+                      padding: "10px 20px",
+                      borderRadius: "5px",
+                      textDecoration: "none",
+                      display: "inline-block",
+                      marginTop: "10px",
+                    }}
+                  >
+                    Ver detalles del pedido
+                  </Button>
+                </Section>
+              </>
+            ) : (
+              <>
+                <Section className="bg-[#D2D8C0] w-full text-center py-2">
+                  <Img
+                    src="https://pequesbucket.s3.us-east-2.amazonaws.com/logo-white.webp"
+                    alt="Peques"
+                    className="w-auto h-14 mx-auto"
+                  />
+                </Section>
+
+                <Section className="text-center">
+                  <Text className="text-lg">
+                    <span className="font-semibold">
+                      Tu pedido ha sido{" "}
+                      {deliveryStatus === DeliveryStatus.PICKED_UP
+                        ? "recogido"
+                        : "entregado"}
+                    </span>
+                    <br />
+                    AYÚDANOS CON TU RESEÑA
+                  </Text>
+                  <Text>
+                    ¡Gracias por elegirnos y confiar en nosotras!
+                    <br />
+                    Sabemos que tú y tu peque disfrutarán tanto los productos
+                    que ordenaron como nosotras lo hicimos al elegirlos y
+                    empacarlos.
+                  </Text>
+
+                  <Img
+                    alt="5 estrellas"
+                    className="h-14 w-auto mx-auto"
+                    src="https://pequesbucket.s3.us-east-2.amazonaws.com/5-stars.webp"
+                  />
+
+                  <Text className="text-gray-600">
+                    Pasos para escribir una reseña, lo único que necesitas hacer
+                    es:
+                    <ol className="list-decimal list-inside text-left mx-auto max-w-[300px] text-gray-600">
+                      <li>Da clic en Cuenta.</li>
+                      <li>Selecciona mis pedidos.</li>
+                      <li>Da clic en el pedido.</li>
+                      <li>
+                        Selecciona el producto del cual quieres dejar una
+                        reseña.
+                      </li>
+                      <li>Califica con estrellas el producto.</li>
+                      <li>Escribe alguna opinión sobre el producto.</li>
+                      <li>Da clic en Enviar reseña.</li>
+                      <li>
+                        Recibiremos tu reseña y también otras personas la podrán
+                        ver para conocer tu opinión.
+                      </li>
+                    </ol>
+                  </Text>
+                  <Button
+                    href={`${BASE_URL}/es/profile/orders/${order.id}`}
+                    className="bg-[#778586] text-white py-2 px-4 rounded-md mt-4"
+                  >
+                    ESCRIBIR RESEÑA
+                  </Button>
+                </Section>
+
+                <Img
+                  alt="Ejemplo de Review"
+                  className="w-full mt-6"
+                  src="https://pequesbucket.s3.us-east-2.amazonaws.com/review-example.webp"
+                />
+
+                <Section className="text-center mt-6">
+                  <Text className="text-gray-600">
+                    Lo más importante para nosotras es tu opinión, por lo que
+                    estaríamos infinitamente agradecidos si nos pudieras regalar
+                    un poco de tu preciado tiempo para escribir tu opinión; así
+                    conocerla y siempre mejorar para ti y tu familia.
+                  </Text>
+                  <Text className="text-gray-600">
+                    Gracias por tu tiempo,
+                    <br />
+                    con amor, Peques.
+                  </Text>
+                </Section>
+              </>
+            )}
             <Footer />
           </Tailwind>
         </Container>
