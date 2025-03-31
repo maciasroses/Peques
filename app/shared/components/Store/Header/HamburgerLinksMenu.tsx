@@ -35,14 +35,14 @@ const HamburgerLinksMenu = ({ lng, collections }: IHamburgerLinksMenu) => {
       >
         <div className="h-full p-4 flex flex-col gap-8">
           <div className="flex justify-between items-center gap-2">
-            <div className="rounded-full bg-white h-[50px] min-h-[50px]">
+            <div className="rounded-full bg-white max-w-[60px] h-auto">
               <Link href={`/${lng}`}>
                 <Image
                   src={LogoMini}
                   width={50}
                   height={50}
                   alt="Peques logo"
-                  className="size-full object-cover "
+                  className="size-full object-cover"
                 />
               </Link>
             </div>
