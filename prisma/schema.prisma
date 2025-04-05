@@ -522,3 +522,21 @@ model Hero {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum LogType {
+  ERROR
+  INFO
+  WARNING
+}
+
+model Log {
+  id         String   @id @default(uuid())
+  type       LogType
+  message    String
+  user_email String?
+  context    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type])
+}

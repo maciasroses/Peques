@@ -33,7 +33,14 @@ export async function POST(req: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET as string
     );
   } catch (err) {
-    console.error("❌ Stripe webhook signature verification failed:", err);
+    await prisma.log.create({
+      data: {
+        type: "ERROR",
+        message: `❌ Stripe webhook signature verification failed: ${err}`,
+        context: JSON.stringify(err),
+        user_email: null,
+      },
+    });
     return new NextResponse("Webhook signature verification failed", {
       status: 400,
     });
@@ -118,7 +125,14 @@ export async function POST(req: NextRequest) {
         charge.metadata;
 
       if (!userId || !shippingCost) {
-        console.error("❌ Missing metadata");
+        await prisma.log.create({
+          data: {
+            type: "ERROR",
+            message: `❌ Missing metadata: ${JSON.stringify(charge.metadata)}`,
+            context: JSON.stringify(charge),
+            user_email: userId,
+          },
+        });
         return new NextResponse("Missing metadata", { status: 400 });
       }
 
@@ -129,7 +143,14 @@ export async function POST(req: NextRequest) {
           })) as ICart;
 
           if (!cart || !cart.orderInfoDataForStripe) {
-            console.error("❌ Missing cart order info data for Stripe");
+            await prisma.log.create({
+              data: {
+                type: "ERROR",
+                message: `❌ Missing cart order info data for Stripe`,
+                context: JSON.stringify(charge),
+                user_email: userId,
+              },
+            });
             return new NextResponse("Missing cart order info data for Stripe", {
               status: 400,
             });
@@ -210,16 +231,28 @@ export async function POST(req: NextRequest) {
         console.log("✅ Transaction completed successfully");
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          console.error("❌ Database error:", error);
+          await prisma.log.create({
+            data: {
+              type: "ERROR",
+              message: `❌ Database error: ${error.message}`,
+              context: JSON.stringify(error),
+              user_email: null,
+            },
+          });
           return new NextResponse("Database transaction failed", {
             status: 500,
           });
         }
-
-        console.error("❌ Unexpected error:", error);
+        await prisma.log.create({
+          data: {
+            type: "ERROR",
+            message: `❌ Unexpected error: ${error}`,
+            context: JSON.stringify(error),
+            user_email: null,
+          },
+        });
         return new NextResponse("Unexpected error", { status: 500 });
       }
-
       break;
     }
     default: {
@@ -229,4 +262,3 @@ export async function POST(req: NextRequest) {
   }
   return new NextResponse("Webhook received", { status: 200 });
 }
-// testing

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/app/shared/utils/cn";
 import { PlusCircle } from "@/app/shared/icons";
+import prisma from "@/app/shared/services/prisma";
 import { PaymentMethodCard } from "@/app/shared/components";
 import { loadStripe, StripeElementLocale } from "@stripe/stripe-js";
 import { updateBillingDetails } from "@/app/shared/services/stripe/payment";
@@ -135,21 +136,22 @@ const StripeForm = ({
               postal_code: address.zipCode.toString(),
             },
           };
-
-          await updateBillingDetails({
-            paymentMethodId: selectedMethod,
-            billing_details: BILLING_DETAILS,
-          });
+          try {
+            await updateBillingDetails({
+              paymentMethodId: selectedMethod,
+              billing_details: BILLING_DETAILS,
+            });
+          } catch (error) {
+            throw new Error("Error al actualizar los datos de facturación");
+          }
         }
-
         const { error } = await stripe.confirmPayment({
           clientSecret,
           confirmParams: {
             return_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/${lng}/checkout/success`,
           },
         });
-
-        if (error) throw error;
+        if (error) throw new Error(error.message);
       } else {
         const cardElement = elements.getElement(CardElement);
 
@@ -187,13 +189,22 @@ const StripeForm = ({
           }
         );
 
-        if (error) throw error;
+        if (error) throw new Error(error.message);
 
         await savePaymentMethod(setupIntent.payment_method as string);
         handleChangePaymentMethod(setupIntent.payment_method as string);
       }
     } catch (error) {
-      setErrorMessage((error as Error).message ?? "An unknown error occurred");
+      const err = error as Error;
+      await prisma.log.create({
+        data: {
+          type: "ERROR",
+          message: err.message,
+          context: "checkout",
+          user_email: user.email,
+        },
+      });
+      setErrorMessage(err.message ?? "Error desconocido");
     } finally {
       setIsLoading(false);
       handleFinish();

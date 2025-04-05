@@ -27,7 +27,7 @@ const GenericBackToPage = ({
       <p className="text-gray-500 text-base md:text-lg">{description}</p>
       <Link
         href={link}
-        className="bg-accent hover:bg-accent-dark focus:ring-accent rounded-lg text-base md:text-lg mt-4"
+        className="bg-accent hover:bg-accent-dark focus:ring-accent rounded-lg text-base md:text-lg mt-4 px-4 py-2"
       >
         {linkText}
       </Link>
