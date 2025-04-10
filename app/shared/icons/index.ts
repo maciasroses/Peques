@@ -1,6 +1,7 @@
 import Plus from "./Plus";
 import XBox from "./XBox";
 import Star from "./Star";
+import Email from "./Email";
 import XMark from "./XMark";
 import Heart from "./Heart";
 import Check from "./Check";
@@ -61,6 +62,7 @@ export {
   Dollar,
   EyeIcon,
   BulletList,
+  Email,
   TagIcon,
   TikTok,
   SadFace,
