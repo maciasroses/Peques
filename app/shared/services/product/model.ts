@@ -39,7 +39,7 @@ export async function read({
   id,
   key,
   page = 1,
-  limit = 18,
+  limit = 12,
   filters,
   allData = false,
   orderBy = { updatedAt: "desc" },
@@ -318,7 +318,7 @@ export async function read({
         JOIN "ProductOnCollection" pc ON p.id = pc."productId"
         JOIN "Collection" c ON pc."collectionId" = c.id
         ${whereSQL}
-        ORDER BY pc."order" ASC
+        ORDER BY pc."order" ASC, p.id ASC
         LIMIT $${params.length + 1} OFFSET $${params.length + 2};`,
         ...params,
         take,
