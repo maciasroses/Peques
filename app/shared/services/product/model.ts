@@ -39,7 +39,7 @@ export async function read({
   id,
   key,
   page = 1,
-  limit = 12,
+  limit = 18,
   filters,
   allData = false,
   orderBy = { updatedAt: "desc" },

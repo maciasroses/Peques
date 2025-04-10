@@ -14,6 +14,7 @@ import { create, deleteById, read, update } from "./model";
 import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
+import NewsLetterTemplate from "@/app/email/NewsLetterTemplate";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const resend_email = process.env.RESEND_EMAIL as string;
@@ -510,4 +511,33 @@ export async function switchNewsletterDecision() {
   const lng = cookies().get("i18next")?.value ?? "es";
   revalidatePath(`/${lng}/unsubscribe`);
   redirect(`/${lng}`);
+}
+
+export async function sendNewsLetter({
+  emailUsers,
+  html,
+}: {
+  emailUsers: string[];
+  html: string;
+}) {
+  try {
+    const { error } = await resend.emails.send({
+      from: `Peques <${resend_email}>`,
+      to: emailUsers,
+      subject: "Boletín de Peques",
+      react: NewsLetterTemplate({ html }),
+    });
+
+    if (error) {
+      console.error(error);
+      return {
+        message: "Error al enviar el correo de boletín",
+        success: false,
+      };
+    }
+  } catch (error) {
+    console.error(error);
+    return { message: "An internal error occurred", success: false };
+  }
+  return { message: "Boletín enviado correctamente", success: true };
 }
