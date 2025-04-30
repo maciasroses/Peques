@@ -112,29 +112,59 @@ export const SET_IDEAL = {
 // Normalmente esta listo en 3 horas dentro del horario
 
 export const PICK_UP_ADDRESSES = [
+  // {
+  //   id: 1,
+  //   name: "SET Concept Store",
+  //   street: "Col. Las Hacienda, Carrizal 3200 4",
+  //   city: "Chihuahua",
+  //   state: "Chihuahua",
+  //   country: "México",
+  //   zipCode: "31215",
+  //   reference: "Frente a Club Britania",
+  //   schedule: [
+  //     {
+  //       id: 1,
+  //       value: "Lunes a Viernes: 11:00 am- 7:00 pm",
+  //       pickupAddressId: 1,
+  //     },
+  //     {
+  //       id: 2,
+  //       value: "Sábado: 10:00 am - 6:00 pm",
+  //       pickupAddressId: 1,
+  //     },
+  //   ],
+  //   notes: "Normalmente está listo en 3 horas dentro del horario",
+  //   createdAt: "2025-01-31 17:17:03.417",
+  //   updatedAt: "2025-01-31 17:17:03.417",
+  // },
   {
-    id: 1,
-    name: "SET Concept Store",
-    street: "Col. Las Hacienda, Carrizal 3200 4",
+    id: 2,
+    name: "LUCIANA’S",
+    street: "Plaza Albero (Av. Misión del Bosque y Cantera)",
     city: "Chihuahua",
     state: "Chihuahua",
     country: "México",
-    zipCode: "31215",
-    reference: "Frente a Club Britania",
+    zipCode: "31110",
+    reference: "Plaza donde está el DQ, la viña, papelería de cantera.",
     schedule: [
       {
         id: 1,
-        value: "Lunes a Viernes: 11:00 am- 7:00 pm",
-        pickupAddressId: 1,
+        value: "Lunes a viernes: 7:00 am - 7:00 pm",
+        pickupAddressId: 2,
       },
       {
         id: 2,
-        value: "Sábado: 10:00 am - 6:00 pm",
-        pickupAddressId: 1,
+        value: "Sábado: 9:00 am - 7:00 pm",
+        pickupAddressId: 2,
+      },
+      {
+        id: 3,
+        value: "Domingo: 9:00 am - 2:00 pm",
+        pickupAddressId: 2,
       },
     ],
     notes: "Normalmente está listo en 3 horas dentro del horario",
-    createdAt: "2025-01-31 17:17:03.417",
-    updatedAt: "2025-01-31 17:17:03.417",
+    createdAt: "2025-04-30 17:17:03.417",
+    updatedAt: "2025-04-30 17:17:03.417",
   },
 ];
