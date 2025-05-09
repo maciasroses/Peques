@@ -37,6 +37,7 @@ import type {
 } from "@/app/shared/interfaces";
 import React from "react";
 import OrderStatus from "@/app/email/OrderStatus";
+import prisma from "../prisma";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
@@ -103,8 +104,8 @@ export async function getSales({
       yearOfData: yearOfData
         ? Number(yearOfData)
         : isForGraph
-        ? new Date().getFullYear()
-        : undefined,
+          ? new Date().getFullYear()
+          : undefined,
     });
   } catch (error) {
     console.error(error);
@@ -314,10 +315,13 @@ export async function createMassiveOrder(formData: FormData) {
     const errors: { [key: string]: string } = {};
     const localProductsStock = (await getProducts({})) as unknown as IProduct[];
     const localQuantitiesPerProduct: { [key: string]: number } =
-      localProductsStock.reduce((acc, product) => {
-        acc[product.key] = product.availableQuantity;
-        return acc;
-      }, {} as { [key: string]: number });
+      localProductsStock.reduce(
+        (acc, product) => {
+          acc[product.key] = product.availableQuantity;
+          return acc;
+        },
+        {} as { [key: string]: number }
+      );
 
     for (const [index, row] of jsonData.entries()) {
       try {
@@ -450,9 +454,8 @@ export async function createMassiveOrder(formData: FormData) {
           const currentProduct = orderProducts[i].productKey;
 
           if (processedProducts.has(currentProduct)) {
-            errors[
-              `Fila ${index + 2} - Producto ${i + 1}`
-            ] = `Este producto (${currentProduct}) ya se consideró en esta orden`;
+            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
+              `Este producto (${currentProduct}) ya se consideró en esta orden`;
             continue; // Saltar a la siguiente iteración
           }
 
@@ -463,9 +466,8 @@ export async function createMassiveOrder(formData: FormData) {
           })) as IProduct;
 
           if (!product) {
-            errors[
-              `Fila ${index + 2} - Producto ${i + 1}`
-            ] = `Producto no encontrado`;
+            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
+              `Producto no encontrado`;
             continue;
           }
 
@@ -473,11 +475,10 @@ export async function createMassiveOrder(formData: FormData) {
             orderProducts[i].quantity >
             localQuantitiesPerProduct[orderProducts[i].productKey]
           ) {
-            errors[
-              `Fila ${index + 2} - Producto ${i + 1}`
-            ] = `La cantidad máxima permitida para este producto (${
-              validatedProducts[i]
-            }) es ${localQuantitiesPerProduct[validatedProducts[i]]}`;
+            errors[`Fila ${index + 2} - Producto ${i + 1}`] =
+              `La cantidad máxima permitida para este producto (${
+                validatedProducts[i]
+              }) es ${localQuantitiesPerProduct[validatedProducts[i]]}`;
             continue;
           }
 
@@ -575,27 +576,37 @@ export async function updateDeliveryStatus(
     });
 
     if (order.user) {
-      await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: `Peques <${process.env.RESEND_EMAIL}>`,
         to: order.user.email,
         subject:
           deliveryStatus === "PENDING"
             ? "Tu pedido está pendiente"
             : deliveryStatus === "SHIPPED"
-            ? "Tu pedido ha sido enviado"
-            : deliveryStatus === "DELIVERED"
-            ? "Tu pedido ha sido entregado"
-            : deliveryStatus === "READY_FOR_PICKUP"
-            ? "Tu pedido está listo para ser recogido"
-            : deliveryStatus === "PICKED_UP"
-            ? "Tu pedido ha sido recogido"
-            : "Tu pedido ha sido cancelado",
+              ? "Tu pedido ha sido enviado"
+              : deliveryStatus === "DELIVERED"
+                ? "Tu pedido ha sido entregado"
+                : deliveryStatus === "READY_FOR_PICKUP"
+                  ? "Tu pedido está listo para ser recogido"
+                  : deliveryStatus === "PICKED_UP"
+                    ? "Tu pedido ha sido recogido"
+                    : "Tu pedido ha sido cancelado",
         react: React.createElement(OrderStatus, {
           order,
           deliveryStatus,
           link,
         }),
       });
+      if (error) {
+        await prisma.log.create({
+          data: {
+            type: "ERROR",
+            message: `❌ Error sending delivery status email: ${error}`,
+            context: JSON.stringify(error),
+            user_email: order.user.email,
+          },
+        });
+      }
     }
   } catch (error) {
     console.error(error);
@@ -645,27 +656,37 @@ export async function updateMassiveDeliveryStatus(
       });
 
       if (order.user) {
-        await resend.emails.send({
+        const { error } = await resend.emails.send({
           from: `Peques <${process.env.RESEND_EMAIL}>`,
           to: order.user.email,
           subject:
             deliveryStatus === "PENDING"
               ? "Tu pedido está pendiente"
               : deliveryStatus === "SHIPPED"
-              ? "Tu pedido ha sido enviado"
-              : deliveryStatus === "DELIVERED"
-              ? "Tu pedido ha sido entregado"
-              : deliveryStatus === "READY_FOR_PICKUP"
-              ? "Tu pedido está listo para ser recogido"
-              : deliveryStatus === "PICKED_UP"
-              ? "Tu pedido ha sido recogido"
-              : "Tu pedido ha sido cancelado",
+                ? "Tu pedido ha sido enviado"
+                : deliveryStatus === "DELIVERED"
+                  ? "Tu pedido ha sido entregado"
+                  : deliveryStatus === "READY_FOR_PICKUP"
+                    ? "Tu pedido está listo para ser recogido"
+                    : deliveryStatus === "PICKED_UP"
+                      ? "Tu pedido ha sido recogido"
+                      : "Tu pedido ha sido cancelado",
           react: React.createElement(OrderStatus, {
             order,
             deliveryStatus,
             link: links ? links[i] : undefined,
           }),
         });
+        if (error) {
+          await prisma.log.create({
+            data: {
+              type: "ERROR",
+              message: `❌ Error sending delivery status email: ${error}`,
+              context: JSON.stringify(error),
+              user_email: order.user.email,
+            },
+          });
+        }
       }
     }
   } catch (error) {
