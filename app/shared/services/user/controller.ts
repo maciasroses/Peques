@@ -15,6 +15,7 @@ import PasswordRecoveryEmail from "@/app/email/PasswordRecoveryEmail";
 import { getSession, createUserSession } from "@/app/shared/services/auth";
 import type { IUser, IUserSearchParams } from "@/app/shared/interfaces";
 import NewsLetterTemplate from "@/app/email/NewsLetterTemplate";
+import prisma from "../prisma";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 const resend_email = process.env.RESEND_EMAIL as string;
@@ -108,11 +109,14 @@ export async function register(formData: FormData) {
     });
 
     if (error) {
-      console.error(error);
-      return {
-        message: "Error al enviar el correo de bienvenida",
-        success: false,
-      };
+      await prisma.log.create({
+        data: {
+          type: "ERROR",
+          message: `❌ Error sending welcome email: ${error}`,
+          context: JSON.stringify(error),
+          user_email: (newUser as IUser).email,
+        },
+      });
     }
   } catch (error) {
     console.error(error);
@@ -171,11 +175,14 @@ export async function passwordRecovery(formData: FormData) {
     });
 
     if (error) {
-      console.error(error);
-      return {
-        message: "Error al enviar el correo de recuperación",
-        success: false,
-      };
+      await prisma.log.create({
+        data: {
+          type: "ERROR",
+          message: `❌ Error sending password recovery email: ${error}`,
+          context: JSON.stringify(error),
+          user_email: (user as IUser).email,
+        },
+      });
     }
 
     return {
@@ -529,11 +536,14 @@ export async function sendNewsLetter({
     });
 
     if (error) {
-      console.error(error);
-      return {
-        message: "Error al enviar el correo de boletín",
-        success: false,
-      };
+      await prisma.log.create({
+        data: {
+          type: "ERROR",
+          message: `❌ Error sending newsletter email: ${error}`,
+          context: JSON.stringify(error),
+          user_email: emailUsers.join(", "),
+        },
+      });
     }
   } catch (error) {
     console.error(error);

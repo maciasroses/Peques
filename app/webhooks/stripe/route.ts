@@ -137,98 +137,106 @@ export async function POST(req: NextRequest) {
       }
 
       try {
-        await prisma.$transaction(async () => {
-          const cart = (await prisma.cart.findUnique({
-            where: { userId },
-          })) as ICart;
+        const cart = (await prisma.cart.findUnique({
+          where: { userId },
+        })) as ICart;
 
-          if (!cart || !cart.orderInfoDataForStripe) {
-            await prisma.log.create({
-              data: {
-                type: "ERROR",
-                message: `❌ Missing cart order info data for Stripe`,
-                context: JSON.stringify(charge),
-                user_email: userId,
-              },
-            });
-            return new NextResponse("Missing cart order info data for Stripe", {
-              status: 400,
-            });
-          }
-
-          const parsedProducts = genericParseJSON<IProductFromStripe[]>(
-            cart.orderInfoDataForStripe
-          );
-
-          const uniquePromotionIds = [
-            ...new Set(
-              parsedProducts
-                .map((product) => product.promotionId)
-                .filter((id) => id !== null)
-            ),
-          ];
-
-          const order = (await createOrderThroughStripeWebHook({
-            userId,
-            addressId,
-            discountCodeId,
-            promotionsIds: uniquePromotionIds,
-            shippingCost: Number(shippingCost),
-            amount: Number(charge.amount / 100),
-            paymentIntentId: charge.payment_intent as string,
-            stripePaymentMethodId: charge.payment_method as string,
-            productsIds: parsedProducts.map((product) => product.id),
-            productsPrices: parsedProducts.map((product) => product.price),
-            productsQuantities: parsedProducts.map(
-              (product) => product.quantity
-            ),
-            productsFinalPrices: parsedProducts.map(
-              (product) => product.finalPrice
-            ),
-            productsCustomRequests: parsedProducts.map(
-              (product) => product.customRequest
-            ),
-            paymentMethodFromStripe: `${charge.payment_method_details?.card?.brand} ${charge.payment_method_details?.card?.funding}`,
-          })) as IOrder;
-
-          for (const product of parsedProducts) {
-            const { id: productId } = (await getProductByKey({
-              key: product.id,
-            })) as { id: string };
-
-            const reservation = (await getStockReservationByUserIdNProductId({
-              userId,
-              productId,
-            })) as IStockReservation;
-
-            if (reservation) {
-              await createInventoryTransactionThroughStripeWebHook({
-                productId,
-                orderId: order.id,
-                quantity: reservation.quantity,
-                description: `Producto ${product.name} vendido ${product.discount ? `con la promoción ${product.discount}` : ""} por el precio de ${product.finalPrice}`,
-              });
-              await deleteStockReservationById(reservation.id);
-            }
-          }
-
-          const orderInfoForEmail: IOrderInfoForEmail = {
-            order,
-            products: parsedProducts,
-            email: charge.billing_details.email as string,
-          };
-
-          await resend.emails.send({
-            from: `Peques <${process.env.RESEND_EMAIL}>`,
-            to: charge.billing_details.email as string,
-            subject: "Recibo de compra",
-            react: React.createElement(OrderReceipt, {
-              order: orderInfoForEmail,
-            }),
+        if (!cart || !cart.orderInfoDataForStripe) {
+          await prisma.log.create({
+            data: {
+              type: "ERROR",
+              message: `❌ Missing cart order info data for Stripe`,
+              context: JSON.stringify(charge),
+              user_email: userId,
+            },
           });
+          return new NextResponse("Missing cart order info data for Stripe", {
+            status: 400,
+          });
+        }
+
+        const parsedProducts = genericParseJSON<IProductFromStripe[]>(
+          cart.orderInfoDataForStripe
+        );
+
+        const uniquePromotionIds = [
+          ...new Set(
+            parsedProducts
+              .map((product) => product.promotionId)
+              .filter((id) => id !== null)
+          ),
+        ];
+
+        const order = (await createOrderThroughStripeWebHook({
+          userId,
+          addressId,
+          discountCodeId,
+          promotionsIds: uniquePromotionIds,
+          shippingCost: Number(shippingCost),
+          amount: Number(charge.amount / 100),
+          paymentIntentId: charge.payment_intent as string,
+          stripePaymentMethodId: charge.payment_method as string,
+          productsIds: parsedProducts.map((product) => product.id),
+          productsPrices: parsedProducts.map((product) => product.price),
+          productsQuantities: parsedProducts.map((product) => product.quantity),
+          productsFinalPrices: parsedProducts.map(
+            (product) => product.finalPrice
+          ),
+          productsCustomRequests: parsedProducts.map(
+            (product) => product.customRequest
+          ),
+          paymentMethodFromStripe: `${charge.payment_method_details?.card?.brand} ${charge.payment_method_details?.card?.funding}`,
+        })) as IOrder;
+
+        for (const product of parsedProducts) {
+          const { id: productId } = (await getProductByKey({
+            key: product.id,
+          })) as { id: string };
+
+          const reservation = (await getStockReservationByUserIdNProductId({
+            userId,
+            productId,
+          })) as IStockReservation;
+
+          if (reservation) {
+            await createInventoryTransactionThroughStripeWebHook({
+              productId,
+              orderId: order.id,
+              quantity: reservation.quantity,
+              description: `Producto ${product.name} vendido ${product.discount ? `con la promoción ${product.discount}` : ""} por el precio de ${product.finalPrice}`,
+            });
+            await deleteStockReservationById(reservation.id);
+          }
+        }
+
+        const orderInfoForEmail: IOrderInfoForEmail = {
+          order,
+          products: parsedProducts,
+          email: charge.billing_details.email as string,
+        };
+
+        const { error } = await resend.emails.send({
+          from: `Peques <${process.env.RESEND_EMAIL}>`,
+          to: charge.billing_details.email as string,
+          subject: "Recibo de compra",
+          react: React.createElement(OrderReceipt, {
+            order: orderInfoForEmail,
+          }),
         });
 
-        console.log("✅ Transaction completed successfully");
+        if (error) {
+          await prisma.log.create({
+            data: {
+              type: "ERROR",
+              message: `❌ Error sending invoice email: ${error}`,
+              context: JSON.stringify(error),
+              user_email: charge.billing_details.email as string,
+            },
+          });
+          // return new NextResponse("Error sending email", { status: 500 });
+        }
+
+        console.log("✅ All events completed successfully");
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           await prisma.log.create({
