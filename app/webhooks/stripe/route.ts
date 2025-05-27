@@ -209,15 +209,21 @@ export async function POST(req: NextRequest) {
           }
         }
 
+        const userResult = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { email: true },
+        });
+        const email = userResult?.email;
+
         const orderInfoForEmail: IOrderInfoForEmail = {
           order,
           products: parsedProducts,
-          email: charge.billing_details.email as string,
+          email: email || "",
         };
 
         const { error } = await resend.emails.send({
           from: `Peques <${process.env.RESEND_EMAIL}>`,
-          to: charge.billing_details.email as string,
+          to: email || "",
           subject: "Recibo de compra",
           react: React.createElement(OrderReceipt, {
             order: orderInfoForEmail,
@@ -230,7 +236,7 @@ export async function POST(req: NextRequest) {
               type: "ERROR",
               message: `❌ Error sending invoice email: ${error}`,
               context: JSON.stringify(error),
-              user_email: charge.billing_details.email as string,
+              user_email: email || userId,
             },
           });
           // return new NextResponse("Error sending email", { status: 500 });
