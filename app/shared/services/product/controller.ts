@@ -1,15 +1,12 @@
 "use server";
 
-import * as XLSX from "xlsx";
 import { cookies } from "next/headers";
 import { validateSchema } from "./schema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/app/shared/services/auth";
 import { deleteFile } from "@/app/shared/services/aws/s3";
-import formatdateExcel from "@/app/shared/utils/formatdate-excel";
 import { normalizeString } from "@/app/shared/utils/normalize-string";
-import { getProviderByAlias } from "@/app/shared/services/provider/controller";
 import {
   read,
   update,
@@ -24,7 +21,6 @@ import {
 } from "./model";
 import type {
   IProduct,
-  IProvider,
   IProductHistory,
   IProductSearchParams,
 } from "@/app/shared/interfaces";
@@ -277,122 +273,6 @@ export async function createProduct(formData: FormData) {
   } catch (error) {
     console.error(error);
     // throw new Error("An internal error occurred");
-    return { message: "An internal error occurred", success: false };
-  }
-  const lng = cookies().get("i18next")?.value ?? "es";
-  revalidatePath(`/${lng}/admin/products`);
-  redirect(`/${lng}/admin/products`);
-}
-
-export async function createMassiveProduct(formData: FormData) {
-  try {
-    // Obtener el archivo Excel
-    const file = formData.get("products") as File;
-
-    // Leer el archivo Excel
-    const data = await file.arrayBuffer();
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
-
-    // Variables para almacenar los datos válidos y los errores
-    const validData = [];
-    const errors: { [key: string]: string } = {};
-
-    for (const [index, row] of jsonData.entries()) {
-      try {
-        // Convertir y validar los datos de la fila
-        const data = {
-          name: row["Nombre Producto"],
-          key: row["Clave Producto"],
-          minimumAcceptableQuantity: Number(row["Cantidad Mínima Aceptable"]),
-          quantityPerCarton: Number(row["Cantidad"]),
-          chinesePriceUSD: Number(row["Precio China (USD)"]),
-          dollarExchangeRate: Number(row["Cambio Dolar"]),
-          shippingCostMXN: Number(row["Costo de Envio (MXN)"]),
-          salePriceMXN: Number(row["Precio de Venta (MXN)"]),
-          orderDate: formatdateExcel(row["Fecha de Orden"]),
-          providerAlias: row["Alias Proveedor"],
-        };
-
-        const rowErrors = validateSchema("massiveCreate", data);
-
-        if (Object.keys(rowErrors).length !== 0) {
-          // Mapeo de errores
-          for (const [key, value] of Object.entries(rowErrors)) {
-            errors[`Fila ${index + 2} - ${key}`] = value;
-          }
-          continue;
-        }
-
-        const provider = (await getProviderByAlias(
-          data.providerAlias
-        )) as IProvider;
-
-        if (!provider) {
-          errors[`Fila ${index + 2}`] = `Proveedor no encontrado`;
-          continue;
-        }
-
-        // Comprobamos si la clave del producto existe
-        const product = await read({ key: data.key });
-        if (product) {
-          errors[`Fila ${index + 2}`] = `Un producto ya tiene esta clave.`;
-        }
-
-        // Calcular los campos adicionales
-        const pricePerCartonOrProductUSD =
-          data.chinesePriceUSD * data.quantityPerCarton;
-        const costMXN = data.chinesePriceUSD * data.dollarExchangeRate;
-        const totalCostMXN = costMXN + data.shippingCostMXN;
-        const margin = (data.salePriceMXN / totalCostMXN - 1) * 100;
-        const salePerQuantity = data.salePriceMXN * data.quantityPerCarton;
-
-        const { name, key, providerAlias, minimumAcceptableQuantity, ...rest } =
-          data;
-
-        const updatedData = {
-          name,
-          name_normalized: normalizeString(name as string),
-          key,
-          minimumAcceptableQuantity,
-          availableQuantity: data.quantityPerCarton,
-          salePriceMXN: data.salePriceMXN,
-          providerId: provider.id,
-          history: {
-            create: {
-              ...rest,
-              pricePerCartonOrProductUSD,
-              costMXN,
-              totalCostMXN,
-              margin,
-              salePerQuantity,
-            },
-          },
-        };
-
-        // Agregar a la lista de datos válidos
-        validData.push(updatedData);
-      } catch (error: any) {
-        errors[`Row ${index + 2}`] = `Internal error: ${error.message}`;
-      }
-    }
-
-    if (Object.keys(errors).length !== 0) {
-      return {
-        success: false,
-        errors,
-      };
-    }
-
-    if (validData.length > 0) {
-      validData.forEach(async (data) => {
-        await create({ data });
-      });
-    }
-  } catch (error) {
-    console.error(error);
     return { message: "An internal error occurred", success: false };
   }
   const lng = cookies().get("i18next")?.value ?? "es";
