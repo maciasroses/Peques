@@ -182,48 +182,52 @@ const CartSummary = ({
           </span>
         )}
       </p>
-      {!discountCode ? (
-        <form onSubmit={submitAction}>
-          <fieldset
-            disabled={isPending}
-            className={cn(isPending && "opacity-50")}
-          >
-            {badResponse.message && (
-              <p className="text-red-600">{badResponse.message}</p>
-            )}
+      {cart.every((item) => !item.discount) && (
+        <>
+          {!discountCode ? (
+            <form onSubmit={submitAction}>
+              <fieldset
+                disabled={isPending}
+                className={cn(isPending && "opacity-50")}
+              >
+                {badResponse.message && (
+                  <p className="text-red-600">{badResponse.message}</p>
+                )}
+                <div className="flex flex-col gap-2 my-2">
+                  <GenericInput
+                    id="code"
+                    type="text"
+                    ariaLabel="¿Tienes un cupón?"
+                    placeholder="WELCOME10"
+                    className="w-36"
+                  />
+                </div>
+                <SubmitButton
+                  title="Aplicar"
+                  color="accent"
+                  finish={finished}
+                  pending={isPending}
+                />
+              </fieldset>
+            </form>
+          ) : (
             <div className="flex flex-col gap-2 my-2">
-              <GenericInput
-                id="code"
-                type="text"
-                ariaLabel="¿Tienes un cupón?"
-                placeholder="WELCOME10"
-                className="w-36"
-              />
+              <p className="text-lg">Código de descuento aplicado: </p>
+              <p className="text-xl">{discountCode.promotion.title}</p>
+              <p className="text-lg">{discountCode.promotion.description}</p>
+              <div>
+                <button
+                  type="button"
+                  disabled={finished}
+                  onClick={() => setDiscountCode(null)}
+                  className="text-sm link-button-red"
+                >
+                  Eliminar
+                </button>
+              </div>
             </div>
-            <SubmitButton
-              title="Aplicar"
-              color="accent"
-              finish={finished}
-              pending={isPending}
-            />
-          </fieldset>
-        </form>
-      ) : (
-        <div className="flex flex-col gap-2 my-2">
-          <p className="text-lg">Código de descuento aplicado: </p>
-          <p className="text-xl">{discountCode.promotion.title}</p>
-          <p className="text-lg">{discountCode.promotion.description}</p>
-          <div>
-            <button
-              type="button"
-              disabled={finished}
-              onClick={() => setDiscountCode(null)}
-              className="text-sm link-button-red"
-            >
-              Eliminar
-            </button>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );
